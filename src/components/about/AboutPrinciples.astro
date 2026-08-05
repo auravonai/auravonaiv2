@@ -1,0 +1,61 @@
+---
+import Code2 from 'lucide-astro/Code2';
+import Layers from 'lucide-astro/Layers';
+import Gauge from 'lucide-astro/Gauge';
+import Globe from 'lucide-astro/Globe';
+import MessageSquare from 'lucide-astro/MessageSquare';
+import Scale from 'lucide-astro/Scale';
+
+import Section from '@/components/ui/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Card from '@/components/ui/Card.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import { principles } from '@/lib/about-seo';
+
+/**
+ * Engineering principles.
+ *
+ * These are habits that show up in delivered work, not values-poster copy.
+ * The test applied to each one when editing: could a client point at a
+ * decision we made and say we broke this? If not, it is decoration and does
+ * not belong on a page whose entire job is credibility.
+ */
+
+const iconMap: Record<string, unknown> = {
+  Code2,
+  Layers,
+  Gauge,
+  Globe,
+  MessageSquare,
+  Scale,
+};
+---
+
+<Section surface="soft" spacing="tight" as="section" divided>
+  <SectionHeader
+    eyebrow="Philosophy"
+    title="The engineering principles we actually work by"
+    lead="Six habits that shape how a project is scoped, built, and argued about — including the ones that occasionally cost us the sale."
+    align="left"
+    class="max-w-3xl"
+  />
+
+  <ul class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+    {
+      principles.map((principle, i) => {
+        const Icon = iconMap[principle.icon] as any;
+        return (
+          <Reveal as="li" delay={i * 60} class="flex">
+            <Card surface="canvas" elevation={2} padding="lg" interactive class="flex-1">
+              <span class="mb-4 flex size-11 items-center justify-center rounded-md bg-canvas-soft text-ink">
+                <Icon size={20} aria-hidden="true" />
+              </span>
+              <h3 class="text-display-sm">{principle.title}</h3>
+              <p class="mt-2 text-body-sm text-body">{principle.description}</p>
+            </Card>
+          </Reveal>
+        );
+      })
+    }
+  </ul>
+</Section>

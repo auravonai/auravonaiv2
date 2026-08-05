@@ -1,0 +1,53 @@
+---
+/**
+ * Marketing band.
+ *
+ * DESIGN.md cycles page surfaces canvas → canvas-soft → ink; the
+ * polarity-flipped dark band IS the depth cue between sections. Bands
+ * stretch edge-to-edge in colour while content holds the max-width.
+ */
+interface Props {
+  /** `invert` is the polarity-flipped band — dark on a light page, light on
+   *  a dark one. It is always the opposite of the surrounding surface. */
+  surface?: 'canvas' | 'soft' | 'invert';
+  /** `tight` for secondary bands, `default` for primary marketing bands. */
+  spacing?: 'tight' | 'default';
+  /** Hairline rule along the top edge — the system's section separator. */
+  divided?: boolean;
+  id?: string;
+  as?: string;
+  class?: string;
+  innerClass?: string;
+  [key: string]: unknown;
+}
+
+const {
+  surface = 'canvas',
+  spacing = 'default',
+  divided = false,
+  as: Tag = 'section',
+  class: className,
+  innerClass,
+  ...rest
+} = Astro.props;
+
+const surfaces = {
+  canvas: 'bg-canvas text-ink',
+  soft: 'bg-canvas-soft text-ink',
+  invert: 'bg-invert text-on-invert',
+} as const;
+---
+
+<Tag
+  class:list={[
+    surfaces[surface],
+    spacing === 'tight' ? 'band-tight' : 'band',
+    divided && 'border-t border-hairline',
+    className,
+  ]}
+  {...rest}
+>
+  <div class:list={['container-page', innerClass]}>
+    <slot />
+  </div>
+</Tag>

@@ -1,0 +1,103 @@
+---
+import Bot from 'lucide-astro/Bot';
+import Sparkles from 'lucide-astro/Sparkles';
+import MessageSquare from 'lucide-astro/MessageSquare';
+import Plug from 'lucide-astro/Plug';
+import Workflow from 'lucide-astro/Workflow';
+import Code2 from 'lucide-astro/Code2';
+import Layers from 'lucide-astro/Layers';
+import Smartphone from 'lucide-astro/Smartphone';
+import ArrowRight from 'lucide-astro/ArrowRight';
+
+import Section from '@/components/ui/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Card from '@/components/ui/Card.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Badge from '@/components/ui/Badge.astro';
+import Button from '@/components/ui/Button.astro';
+import { homeServices } from '@/lib/seo';
+
+/**
+ * The card copy lives in `src/lib/seo.ts` because the same array is emitted
+ * as Service structured data on this page. Editing a description here would
+ * silently desynchronise the markup from the schema, so edit it there.
+ *
+ * Icons stay local: they are Astro components and cannot live in a .ts
+ * module, so the data references them by name — the same iconMap idiom the
+ * Navbar uses for service categories.
+ */
+const iconMap: Record<string, unknown> = {
+  Bot,
+  Sparkles,
+  MessageSquare,
+  Plug,
+  Workflow,
+  Code2,
+  Layers,
+  Smartphone,
+};
+---
+
+<Section id="services" surface="canvas">
+  <SectionHeader
+    eyebrow="What we do"
+    title="AI Development Services We Design, Build, and Ship"
+    lead="Eight practices covering the full path from an AI idea to a maintained production system — and the custom software development work that surrounds it."
+    class="mb-16 md:mb-20"
+  />
+
+  <ul class="grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    {
+      homeServices.map(({ icon, name, description, tags, href }, i) => {
+        const Icon = iconMap[icon] as any;
+        return (
+          <Reveal as="li" delay={i * 70} class="flex">
+            <Card
+              as="article"
+              surface="canvas"
+              elevation={2}
+              interactive
+              class="relative flex flex-1 flex-col"
+            >
+              <span class="mb-5 flex size-10 items-center justify-center rounded-md bg-canvas-soft text-ink">
+                <Icon size={20} aria-hidden="true" />
+              </span>
+
+              <h3 class="text-display-sm">
+                <a href={href} class="after:absolute after:inset-0">
+                  {name}
+                </a>
+              </h3>
+              <p class="mt-2 flex-1 text-body-sm text-body">{description}</p>
+
+              <ul class="mt-5 flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <li>
+                    <Badge variant="outline">{tag}</Badge>
+                  </li>
+                ))}
+              </ul>
+
+              <span class="mt-5 inline-flex items-center gap-1.5 text-body-sm text-link">
+                Learn more
+                <ArrowRight size={14} aria-hidden="true" />
+              </span>
+            </Card>
+          </Reveal>
+        );
+      })
+    }
+  </ul>
+
+  <Reveal delay={200} class="mt-14 text-center">
+    <p class="mx-auto mb-6 max-w-2xl text-body-sm text-body">
+      Need something that is not listed — model fine-tuning, a data pipeline, a
+      migration off a prototype that outgrew itself? Those are usually part of
+      the same conversation.
+    </p>
+    <Button href="/contact" variant="secondary" size="lg">
+      Discuss Your AI Project
+      <ArrowRight size={16} aria-hidden="true" />
+    </Button>
+  </Reveal>
+</Section>

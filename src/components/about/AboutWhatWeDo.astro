@@ -1,0 +1,70 @@
+---
+import Brain from 'lucide-astro/Brain';
+import Code2 from 'lucide-astro/Code2';
+import Layers from 'lucide-astro/Layers';
+import BookOpen from 'lucide-astro/BookOpen';
+import ArrowRight from 'lucide-astro/ArrowRight';
+
+import Section from '@/components/ui/Section.astro';
+import Card from '@/components/ui/Card.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import { whatWeDo } from '@/lib/about-seo';
+
+/**
+ * "What we do" — the page's main internal-linking surface.
+ *
+ * This section exists to route, not to sell. It restates the company's scope
+ * in one paragraph and then hands the reader to the four pages that carry the
+ * detail: `/services` for the commercial answer, `/projects` for evidence,
+ * `/blog` for practice. That is the "support, don't compete" rule made
+ * structural — the About page ranks for about-intent and passes commercial
+ * intent onward instead of trying to absorb it.
+ *
+ * Anchor text is descriptive on purpose. "Learn more" ×4 tells a crawler
+ * nothing about what sits at the other end of the link.
+ */
+
+const iconMap: Record<string, unknown> = { Brain, Code2, Layers, BookOpen };
+---
+
+<Section surface="canvas" spacing="tight" as="section" divided>
+  <Reveal class="max-w-3xl">
+    <Eyebrow class="mb-4">What We Do</Eyebrow>
+    <h2 class="text-display-lg">
+      What we build as an AI development company
+    </h2>
+    <p class="mt-4 text-body-md text-body">
+      Our work splits into two halves that most buyers have to hire separately:
+      the AI itself, and the software it has to live inside. We do both with one
+      team, which removes the gap where a model integration meets an
+      application and each vendor believes the other owns it.
+    </p>
+  </Reveal>
+
+  <ul class="mt-12 grid gap-5 md:grid-cols-2">
+    {
+      whatWeDo.map((item, i) => {
+        const Icon = iconMap[item.icon] as any;
+        return (
+          <Reveal as="li" delay={i * 70} class="flex">
+            <Card surface="soft" elevation={1} padding="lg" class="flex flex-1 flex-col">
+              <span class="mb-4 flex size-11 items-center justify-center rounded-md bg-canvas text-ink shadow-level-1">
+                <Icon size={20} aria-hidden="true" />
+              </span>
+              <h3 class="text-display-sm">{item.title}</h3>
+              <p class="mt-2 mb-6 text-body-sm text-body">{item.description}</p>
+              <a
+                href={item.href}
+                class="mt-auto inline-flex items-center gap-1.5 text-body-sm font-medium text-link underline-offset-2 hover:underline"
+              >
+                {item.linkLabel}
+                <ArrowRight size={14} aria-hidden="true" />
+              </a>
+            </Card>
+          </Reveal>
+        );
+      })
+    }
+  </ul>
+</Section>

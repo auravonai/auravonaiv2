@@ -1,0 +1,90 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+
+import Section from '@/components/ui/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Accordion from '@/components/ui/Accordion.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import { homeFaqs } from '@/lib/seo';
+
+/**
+ * The questions and answers come from `src/lib/seo.ts`, which also builds the
+ * FAQPage JSON-LD for this page. Google requires the marked-up answer to be
+ * the answer a visitor can read; sourcing both from one array is what
+ * guarantees that stays true through future edits.
+ *
+ * Every row shares one `name`, which makes the browser's own <details>
+ * grouping close the previously open answer when a new one is opened — no
+ * JavaScript involved. All fifteen start closed, so the visitor sees the
+ * complete list of questions first rather than landing mid-answer.
+ *
+ * Accordion bodies are ordinary DOM inside <details>. Google indexes that
+ * content, so collapsing every answer costs nothing in crawlability while
+ * keeping fifteen questions scannable.
+ */
+
+const relatedReading = [
+  {
+    href: '/blog/ai-agents-for-business-2026',
+    label: 'AI Agents for Business: What They Are, What They Cost',
+  },
+  {
+    href: '/blog/ai-app-development-cost-guide',
+    label: 'How Much Does It Cost to Build an AI-Powered App?',
+  },
+  {
+    href: '/blog/build-ai-chatbot-business-2026',
+    label: 'How to Build an AI Chatbot for Your Business',
+  },
+  {
+    href: '/blog/mvp-cost-agency-overcharging-2026',
+    label: 'What an MVP Should Actually Cost You',
+  },
+];
+---
+
+<Section surface="canvas" divided>
+  <SectionHeader
+    eyebrow="FAQs"
+    title="AI Development Company: Frequently Asked Questions"
+    lead="The questions companies ask us most often when they are choosing between AI development companies — answered straight, including the ones where the honest answer is not the flattering one."
+    class="mb-14 md:mb-16"
+  />
+
+  <Reveal class="mx-auto max-w-3xl">
+    <div class="rounded-lg bg-canvas-soft px-6 shadow-level-1 md:px-8">
+      {
+        homeFaqs.map((faq) => (
+          <Accordion question={faq.question} headingLevel="h3" name="home-faq">
+            <p>{faq.answer}</p>
+          </Accordion>
+        ))
+      }
+    </div>
+  </Reveal>
+
+  <Reveal delay={150} class="mx-auto mt-12 max-w-3xl">
+    <h3 class="mb-4 text-body-md font-medium text-ink">
+      Go deeper on AI development
+    </h3>
+    <ul class="grid gap-2 sm:grid-cols-2">
+      {
+        relatedReading.map(({ href, label }) => (
+          <li>
+            <a
+              href={href}
+              class="inline-flex items-start gap-1.5 text-body-sm text-link transition-colors hover:text-link-deep"
+            >
+              <ArrowRight
+                size={14}
+                class="mt-1 shrink-0"
+                aria-hidden="true"
+              />
+              {label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </Reveal>
+</Section>

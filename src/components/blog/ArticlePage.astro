@@ -1,0 +1,427 @@
+---
+import ArrowLeft from 'lucide-astro/ArrowLeft';
+import Clock from 'lucide-astro/Clock';
+import Calendar from 'lucide-astro/Calendar';
+import Copy from 'lucide-astro/Copy';
+import Check from 'lucide-astro/Check';
+import ArrowRight from 'lucide-astro/ArrowRight';
+import BookOpen from 'lucide-astro/BookOpen';
+import ChevronRight from 'lucide-astro/ChevronRight';
+
+import Card from '@/components/ui/Card.astro';
+import Badge from '@/components/ui/Badge.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Button from '@/components/ui/Button.astro';
+import type { Article } from '@/lib/articles';
+import { blogCategoryPath, getCategoryForArticle } from '@/lib/blog';
+import { CARD_SIZES, HERO_SIZES, coverSrcset } from '@/lib/images';
+
+interface Props {
+  article: Article;
+  related: Article[];
+}
+
+const { article, related } = Astro.props;
+
+/**
+ * Resolved rather than assumed: `getCategoryForArticle` returns undefined for
+ * a category with no registry entry. `src/lib/blog.ts` throws at build time in
+ * that case, so this is belt-and-braces — but the fallback keeps the badge
+ * rendering as plain text instead of linking to a URL that does not exist.
+ */
+const category = getCategoryForArticle(article);
+
+// Code blocks use the `code-surface` / `on-code` tokens rather than the
+// theme-dependent ink pair: DESIGN.md sets the code-editor-mockup to the ink
+// primary, and a terminal that flips to white stops reading as a terminal.
+// Those tokens are constants in both themes.
+
+const tocItems = article.content.flatMap((block) =>
+  block.type === 'heading'
+    ? [{ id: block.id, text: block.text, level: block.level }]
+    : [],
+);
+---
+
+{/* Reading progress. Driven by a scroll-linked CSS animation where
+     supported, so it costs no JavaScript at all. */}
+<div
+  class="progress-bar fixed inset-x-0 top-0 z-50 h-[3px] origin-left bg-ink"
+  aria-hidden="true"
+>
+</div>
+
+{/* ── Article header ── */}
+<header class="border-b border-hairline bg-canvas-soft">
+  <div class="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 md:py-14">
+    <a
+      href="/blog"
+      class="mb-8 inline-flex items-center gap-1.5 text-body-sm text-body transition-colors hover:text-ink"
+    >
+      <ArrowLeft size={14} aria-hidden="true" />
+      Back to Blog
+    </a>
+
+    <div class="mb-4 flex flex-wrap items-center gap-3">
+      {
+        /* Linked, not a bare label. This is the post's only link up into its
+           cluster — without it the category page collects posts that never
+           point back, and the topic hub earns no internal links from the
+           content it is supposed to be the hub for. */
+        category ? (
+          <a href={blogCategoryPath(category.slug)} class="inline-flex">
+            <Badge variant="outline">{article.category}</Badge>
+          </a>
+        ) : (
+          <Badge variant="outline">{article.category}</Badge>
+        )
+      }
+      <span class="flex items-center gap-1.5 text-body-sm text-mute">
+        <Clock size={14} aria-hidden="true" />
+        {article.readTime}
+      </span>
+      <span class="flex items-center gap-1.5 text-body-sm text-mute">
+        <Calendar size={14} aria-hidden="true" />
+        <time>{article.date}</time>
+      </span>
+    </div>
+
+    <h1 class="text-display-xl">{article.title}</h1>
+
+    <p class="mt-4 mb-6 max-w-3xl text-body-lg text-body">{article.excerpt}</p>
+
+    <ul class="flex flex-wrap gap-2">
+      {
+        article.tags.map((tag) => (
+          <li>
+            <Badge>{tag}</Badge>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</header>
+
+{/* ── Hero image ── */}
+<div class="mx-auto w-full max-w-4xl px-4 pt-8 sm:px-6">
+  <img
+    src={article.image}
+    srcset={coverSrcset(article.image)}
+    sizes={HERO_SIZES}
+    alt=""
+    width="1200"
+    height="630"
+    fetchpriority="high"
+    decoding="async"
+    class="h-[240px] w-full rounded-lg object-cover shadow-level-4 md:h-[380px]"
+  />
+</div>
+
+{/* ── Body: content + TOC ── */}
+<div class="container-page flex items-start gap-16 py-12 md:py-16">
+  <article class="mx-auto min-w-0 max-w-3xl flex-1 xl:mx-0">
+    {
+      article.content.map((block) => {
+        switch (block.type) {
+          case 'paragraph':
+            return <p class="mb-5 text-body-lg text-body">{block.text}</p>;
+
+          case 'heading':
+            return block.level === 2 ? (
+              <h2
+                id={block.id}
+                class="mt-12 mb-4 scroll-mt-28 border-b border-hairline pb-3 text-display-md"
+              >
+                {block.text}
+              </h2>
+            ) : (
+              <h3 id={block.id} class="mt-9 mb-3 scroll-mt-28 text-display-sm">
+                {block.text}
+              </h3>
+            );
+
+          case 'code':
+            return (
+              <figure class="my-7 overflow-hidden rounded-lg bg-code-surface shadow-level-4">
+                <figcaption class="flex items-center justify-between border-b border-code-line px-4 py-2.5">
+                  <span class="flex items-center gap-2">
+                    <span class="flex gap-1.5" aria-hidden="true">
+                      <span class="size-2.5 rounded-full bg-code-line" />
+                      <span class="size-2.5 rounded-full bg-code-line" />
+                      <span class="size-2.5 rounded-full bg-code-line" />
+                    </span>
+                    <span class="ml-1 font-mono text-caption uppercase tracking-[0.08em] text-code-mute">
+                      {block.lang}
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    data-copy
+                    class="flex items-center gap-1.5 rounded-sm px-2 py-1 text-caption text-code-mute transition-colors hover:bg-code-line hover:text-on-code"
+                  >
+                    <Copy size={12} data-copy-idle aria-hidden="true" />
+                    <Check size={12} class="hidden" data-copy-done aria-hidden="true" />
+                    <span data-copy-label>Copy</span>
+                  </button>
+                </figcaption>
+                <pre class="overflow-x-auto p-5 font-mono text-code text-on-code"><code>{block.code}</code></pre>
+              </figure>
+            );
+
+          case 'note':
+            return (
+              <aside class="my-7 rounded-md border-l-2 border-link bg-canvas-soft py-4 pr-5 pl-5">
+                <p class="text-body-md text-body">{block.text}</p>
+              </aside>
+            );
+
+          case 'list':
+            return (
+              <ul class="my-6 space-y-3">
+                {block.items.map((item) => (
+                  <li class="flex gap-3 text-body-md text-body">
+                    <ChevronRight size={16} class="mt-1 shrink-0 text-mute" aria-hidden="true" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            );
+
+          case 'quote':
+            return (
+              <blockquote class="my-8 border-l-2 border-hairline-strong py-1 pl-6">
+                <p class="mb-3 text-body-lg text-ink italic">“{block.text}”</p>
+                {block.source && (
+                  <cite class="text-body-sm text-mute not-italic">— {block.source}</cite>
+                )}
+              </blockquote>
+            );
+
+          default:
+            return null;
+        }
+      })
+    }
+
+    {/* Author */}
+    <footer class="mt-14 border-t border-hairline pt-8">
+      <div class="flex items-center gap-4">
+        <span
+          class="flex size-12 shrink-0 items-center justify-center rounded-full bg-canvas-soft text-ink"
+        >
+          <BookOpen size={20} aria-hidden="true" />
+        </span>
+        <div>
+          <p class="text-body-md font-medium text-ink">{article.author}</p>
+          <p class="text-body-sm text-mute">{article.authorRole}</p>
+        </div>
+      </div>
+    </footer>
+  </article>
+
+  {/* Sticky TOC */}
+  {
+    tocItems.length > 0 && (
+      <nav
+        id="article-toc"
+        aria-label="On this page"
+        class="sticky top-28 hidden w-60 shrink-0 self-start xl:block"
+      >
+        <p class="mb-4 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+          On this page
+        </p>
+        <ul class="space-y-0.5">
+          {tocItems.map((item) => (
+            <li class={item.level === 3 ? 'pl-3' : ''}>
+              <a
+                href={`#${item.id}`}
+                data-toc-link={item.id}
+                class="block rounded-sm px-2 py-1.5 text-body-sm text-mute transition-colors hover:bg-canvas-soft hover:text-ink aria-[current=true]:bg-canvas-soft aria-[current=true]:font-medium aria-[current=true]:text-ink"
+              >
+                {item.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
+</div>
+
+{/* ── Related ── */}
+{
+  related.length > 0 && (
+    <section class="border-t border-hairline py-12 md:py-16">
+      <div class="mx-auto w-full max-w-4xl px-4 sm:px-6">
+        <h2 class="mb-6 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+          Related Articles
+        </h2>
+        <ul class="grid gap-4 md:grid-cols-3">
+          {related.map((a) => (
+            <li class="flex">
+              <Card
+                as="a"
+                href={`/blog/${a.slug}`}
+                surface="canvas"
+                elevation={2}
+                padding="sm"
+                interactive
+                class="group flex flex-1 flex-col overflow-hidden !p-0"
+              >
+                <div class="h-32 w-full overflow-hidden">
+                  <img
+                    src={a.image}
+                    srcset={coverSrcset(a.image)}
+                    sizes={CARD_SIZES}
+                    alt=""
+                    width="600"
+                    height="340"
+                    loading="lazy"
+                    decoding="async"
+                    class="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+                <div class="p-4">
+                  <div class="mb-2 flex flex-wrap items-center gap-2">
+                    <Badge variant="outline">{a.category}</Badge>
+                    <span class="flex items-center gap-1 text-caption text-mute">
+                      <Clock size={12} aria-hidden="true" />
+                      {a.readTime}
+                    </span>
+                  </div>
+                  <h3 class="mb-3 line-clamp-2 text-body-sm font-medium text-ink">
+                    {a.title}
+                  </h3>
+                  <span class="flex items-center gap-1 text-body-sm text-link">
+                    Read article
+                    <ArrowRight
+                      size={12}
+                      class="transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
+                  </span>
+                </div>
+              </Card>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+{/* ── Newsletter ── */}
+<section class="border-t border-hairline py-12 md:py-16">
+  <div class="mx-auto w-full max-w-lg px-4 text-center sm:px-6">
+    <Card surface="soft" elevation={1} padding="lg">
+      <Eyebrow>Newsletter</Eyebrow>
+      <h2 class="mt-4 mb-2 text-display-md">Get Practical Engineering Insights</h2>
+      <p class="mb-6 text-body-sm text-body">
+        Articles like this one, delivered to your inbox. No filler, no news
+        roundups — just engineering practice.
+      </p>
+      <form class="flex gap-2">
+        <label for="article-newsletter" class="sr-only">Email address</label>
+        <input
+          id="article-newsletter"
+          type="email"
+          name="email"
+          required
+          autocomplete="email"
+          inputmode="email"
+          spellcheck="false"
+          autocapitalize="none"
+          placeholder="your@email.com"
+          class="h-12 flex-1 rounded-sm bg-canvas px-4 text-body-md text-ink shadow-level-1 transition-shadow duration-150 placeholder:text-mute focus:shadow-[inset_0_0_0_1px_var(--color-link)]"
+        />
+        <Button type="submit" variant="primary" size="lg" class="shrink-0">
+          Subscribe
+        </Button>
+      </form>
+    </Card>
+  </div>
+</section>
+
+<style>
+  /* Scroll-driven animation: no JS, no scroll listener, runs off the
+     compositor. Browsers without support simply show a full-width bar,
+     so it is scoped behind a support query. */
+  .progress-bar {
+    transform: scaleX(0);
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .progress-bar {
+      animation: progress-grow linear;
+      animation-timeline: scroll(root block);
+    }
+  }
+
+  @keyframes progress-grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+</style>
+
+<script>
+  // ── Code copy buttons ────────────────────────────────────────────
+  for (const button of document.querySelectorAll<HTMLElement>('[data-copy]')) {
+    button.addEventListener('click', async () => {
+      const code = button.closest('figure')?.querySelector('code')?.textContent;
+      if (!code) return;
+
+      try {
+        await navigator.clipboard.writeText(code);
+      } catch {
+        return;
+      }
+
+      const idle = button.querySelector('[data-copy-idle]');
+      const done = button.querySelector('[data-copy-done]');
+      const label = button.querySelector('[data-copy-label]');
+
+      idle?.classList.add('hidden');
+      done?.classList.remove('hidden');
+      if (label) label.textContent = 'Copied!';
+
+      setTimeout(() => {
+        idle?.classList.remove('hidden');
+        done?.classList.add('hidden');
+        if (label) label.textContent = 'Copy';
+      }, 2000);
+    });
+  }
+
+  // ── Table-of-contents scrollspy ──────────────────────────────────
+  const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+
+  if (links.length > 0) {
+    const byId = new Map<string, HTMLAnchorElement>();
+    for (const link of links) {
+      const id = link.dataset.tocLink;
+      if (id) byId.set(id, link);
+    }
+
+    const setActive = (id: string) => {
+      for (const [key, link] of byId) {
+        link.setAttribute('aria-current', String(key === id));
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        }
+      },
+      { rootMargin: '-20% 0% -70% 0%', threshold: 0 },
+    );
+
+    for (const id of byId.keys()) {
+      const heading = document.getElementById(id);
+      if (heading) observer.observe(heading);
+    }
+  }
+</script>

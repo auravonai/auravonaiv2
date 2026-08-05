@@ -1,0 +1,129 @@
+---
+import Section from '@/components/ui/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Card from '@/components/ui/Card.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Badge from '@/components/ui/Badge.astro';
+
+/**
+ * The AI layer leads the grid deliberately. A visitor comparing AI
+ * development companies scans this section for whether the team names
+ * specific models, orchestration tools, and vector stores — vague "AI-powered"
+ * claims with no stack behind them are the tell they are looking for.
+ */
+const categories = [
+  {
+    label: 'AI & LLMs',
+    techs: ['Claude', 'GPT', 'Llama', 'LangChain', 'LlamaIndex', 'Hugging Face'],
+  },
+  {
+    label: 'Data & Retrieval',
+    techs: ['Pinecone', 'pgvector', 'Qdrant', 'PostgreSQL', 'MongoDB', 'Redis'],
+  },
+  {
+    label: 'Application',
+    techs: ['Next.js', 'React', 'TypeScript', 'Node.js', 'Python', 'FastAPI'],
+  },
+  {
+    label: 'Cloud & DevOps',
+    techs: ['AWS', 'Vercel', 'Cloudflare', 'Docker', 'n8n', 'GitHub Actions'],
+  },
+];
+
+const scrollingTechs = [
+  'Claude', 'GPT', 'Llama', 'LangChain', 'LlamaIndex', 'Pinecone',
+  'pgvector', 'Qdrant', 'Python', 'FastAPI', 'Next.js', 'React',
+  'TypeScript', 'Node.js', 'PostgreSQL', 'Redis', 'Docker', 'AWS',
+  'Vercel', 'Cloudflare', 'n8n', 'React Native', 'Flutter', 'Stripe',
+];
+---
+
+<Section surface="canvas" divided>
+  <SectionHeader
+    eyebrow="Technology"
+    title="The AI and Engineering Stack We Build On"
+    lead="We pick models and tools per problem — accuracy, latency, privacy, and cost all pull in different directions. We are not locked to a single vendor, and we will tell you when a smaller open-weight model is the better answer."
+    class="mb-16 md:mb-20"
+  />
+
+  <ul class="mb-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    {
+      categories.map(({ label, techs }, i) => (
+        <Reveal as="li" delay={i * 80} class="flex">
+          <Card surface="soft" elevation={1} class="flex-1">
+            <p class="mb-4 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+              {label}
+            </p>
+            <ul class="flex flex-wrap gap-2">
+              {techs.map((t) => (
+                <li>
+                  <Badge variant="outline">{t}</Badge>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </Reveal>
+      ))
+    }
+  </ul>
+
+  {/* ── Marquee ──────────────────────────────────────────────────────
+       CSS-only infinite scroll. The list is duplicated so the -50%
+       translation lands exactly on a seam. The duplicate is aria-hidden
+       so screen readers announce the stack once. */}
+  <div class="marquee relative overflow-hidden">
+    <div
+      class="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-linear-to-r from-canvas to-transparent"
+    >
+    </div>
+    <div
+      class="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-linear-to-l from-canvas to-transparent"
+    >
+    </div>
+
+    <div class="marquee-track flex gap-3 py-1">
+      {
+        [0, 1].map((copy) => (
+          <ul class="flex shrink-0 gap-3" aria-hidden={copy === 1 ? 'true' : undefined}>
+            {scrollingTechs.map((tech) => (
+              <li class="shrink-0 rounded-md bg-canvas px-4 py-2 text-body-sm text-body shadow-level-1">
+                {tech}
+              </li>
+            ))}
+          </ul>
+        ))
+      }
+    </div>
+  </div>
+</Section>
+
+<style>
+  .marquee-track {
+    width: max-content;
+    animation: marquee 40s linear infinite;
+  }
+
+  /* Pausing on hover lets people actually read a chip they spotted. */
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      /* Half the track = exactly one copy of the list. */
+      transform: translateX(calc(-50% - 0.375rem));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+    }
+    .marquee {
+      overflow-x: auto;
+    }
+  }
+</style>

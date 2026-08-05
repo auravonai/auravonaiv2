@@ -1,0 +1,112 @@
+---
+import Search from 'lucide-astro/Search';
+import Database from 'lucide-astro/Database';
+import FlaskConical from 'lucide-astro/FlaskConical';
+import Code2 from 'lucide-astro/Code2';
+import ShieldCheck from 'lucide-astro/ShieldCheck';
+import Rocket from 'lucide-astro/Rocket';
+
+import Section from '@/components/ui/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Card from '@/components/ui/Card.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+
+/**
+ * Six steps, not the generic four, because the two extra ones — data
+ * readiness and evaluation — are exactly what separates AI delivery from
+ * ordinary software delivery. They are also what a buyer comparing AI
+ * development companies is trying to assess, so spelling them out is both
+ * the honest answer and the differentiating one.
+ */
+const steps = [
+  {
+    n: '01',
+    icon: Search,
+    title: 'Discovery & Use-Case Fit',
+    description:
+      'We start from the business problem and work backwards. Some problems need AI; many need a well-built query and a form. We tell you which one you have before anyone writes code.',
+  },
+  {
+    n: '02',
+    icon: Database,
+    title: 'Data & Architecture Review',
+    description:
+      'What data exists, where it lives, how clean it is, and what may not leave your infrastructure. This determines model choice, hosting, and cost long before the first sprint.',
+  },
+  {
+    n: '03',
+    icon: FlaskConical,
+    title: 'Prototype & Validation',
+    description:
+      'A working proof of concept you can use against real inputs — typically in two to three weeks. If accuracy will not clear the bar, this is where we find out cheaply.',
+  },
+  {
+    n: '04',
+    icon: Code2,
+    title: 'Engineering & Integration',
+    description:
+      'The production build: application code, APIs, model orchestration, and integration with your CRM, ERP, or support desk. Weekly demos on working software, not slide decks.',
+  },
+  {
+    n: '05',
+    icon: ShieldCheck,
+    title: 'Evaluation & Guardrails',
+    description:
+      'Test sets, accuracy scoring, hallucination checks, rate limits, cost ceilings, and defined fallback behaviour. AI must fail visibly and safely, never silently.',
+  },
+  {
+    n: '06',
+    icon: Rocket,
+    title: 'Launch, Monitor & Iterate',
+    description:
+      'Deployment, logging, cost dashboards, and model-drift monitoring — plus documentation and a handover so your team can run it without us if it ever wants to.',
+  },
+];
+---
+
+<Section surface="canvas" divided>
+  <SectionHeader
+    eyebrow="How we work"
+    title="Our AI Development Process, Step by Step"
+    lead="A six-stage process refined across 50+ projects. The order matters: two of these stages exist specifically to catch an AI project that should not be built as designed."
+    class="mb-16 md:mb-20"
+  />
+
+  <div class="relative">
+    <ol class="relative grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {
+        steps.map(({ n, icon, title, description }, i) => {
+          const Icon = icon as any;
+          return (
+            <Reveal as="li" delay={i * 100} class="flex">
+              <Card
+                surface="canvas"
+                elevation={2}
+                padding="lg"
+                interactive
+                class="relative flex flex-1 flex-col"
+              >
+                <span
+                  class="absolute top-5 right-6 text-display-lg text-canvas-soft-2 select-none"
+                  aria-hidden="true"
+                >
+                  {n}
+                </span>
+
+                <span class="mb-6 flex size-14 items-center justify-center rounded-lg bg-canvas-soft text-ink">
+                  <Icon size={24} aria-hidden="true" />
+                </span>
+
+                <p class="mb-2 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+                  Step {n}
+                </p>
+                <h3 class="text-display-sm">{title}</h3>
+                <p class="mt-2.5 text-body-sm text-body">{description}</p>
+              </Card>
+            </Reveal>
+          );
+        })
+      }
+    </ol>
+  </div>
+</Section>

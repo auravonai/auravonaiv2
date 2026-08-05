@@ -1,0 +1,65 @@
+---
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Section from '@/components/ui/Section.astro';
+import { workingPractice } from '@/lib/about-seo';
+
+/**
+ * "How we work with you".
+ *
+ * Deliberately NOT a second copy of the delivery process on `/services`.
+ * That page answers "what are the phases of an engagement" — a commercial
+ * question. This one answers "what is it like to have us on the project" — a
+ * trust question. Same company, different question, and no duplicated copy
+ * between two indexed pages.
+ *
+ * Rendered as a numbered `ol` rather than a card grid: these are commitments
+ * read in sequence, and the numbering gives the section an outline a reader
+ * can scan without a heading per row competing with the H3s elsewhere on the
+ * page. Each item still gets a real `h3` — this is a section a "how does X
+ * work with clients" query can match into.
+ */
+---
+
+<Section surface="soft" spacing="tight" as="section" divided>
+  <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] lg:gap-20">
+    <Reveal>
+      <Eyebrow class="mb-4">How We Work</Eyebrow>
+      <h2 class="text-display-lg">How we work with the teams who hire us</h2>
+      <p class="mt-4 text-body-md text-body">
+        Engineering quality is hard to assess from the outside before a project
+        starts. How a team communicates is not — and it predicts the outcome
+        more reliably than a technology list does. This is ours, written down
+        so you can hold us to it.
+      </p>
+      <p class="mt-4 text-body-sm text-body">
+        The phase-by-phase version — scoping, discovery, build, evaluation,
+        launch — is on the
+        <a href="/services" class="text-link underline-offset-2 hover:underline">
+          AI development services
+        </a> page.
+      </p>
+    </Reveal>
+
+    <Reveal delay={120}>
+      <ol class="divide-y divide-hairline border-y border-hairline">
+        {
+          workingPractice.map((item, i) => (
+            <li class="flex gap-5 py-6">
+              <span
+                class="mt-0.5 shrink-0 font-mono text-caption text-mute"
+                aria-hidden="true"
+              >
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <div class="min-w-0">
+                <h3 class="text-body-md font-medium text-ink">{item.title}</h3>
+                <p class="mt-1.5 text-body-sm text-body">{item.description}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </Reveal>
+  </div>
+</Section>

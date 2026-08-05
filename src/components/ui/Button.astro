@@ -1,0 +1,74 @@
+---
+/**
+ * The site's only button primitive.
+ *
+ * DESIGN.md defines two shapes that must never share a screen:
+ *   - `pill` (100px radius) for marketing-scale CTAs
+ *   - `square` (6px radius) for nav-scale controls
+ * Pick one per surface and stay there.
+ *
+ * Renders <a> when `href` is passed, <button> otherwise.
+ */
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  shape?: 'pill' | 'square';
+  type?: 'button' | 'submit' | 'reset';
+  external?: boolean;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  shape = 'pill',
+  type = 'button',
+  external = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+
+const base =
+  'group inline-flex items-center justify-center gap-2 font-medium whitespace-nowrap ' +
+  'transition-[background-color,border-color,color,box-shadow,transform] duration-150 ease-out ' +
+  'active:translate-y-px disabled:pointer-events-none disabled:opacity-50';
+
+const variants = {
+  // Ink IS the conversion target — DESIGN.md reserves it for primary CTAs.
+  primary:
+    'bg-ink text-on-primary shadow-level-2 hover:bg-ink/90 hover:shadow-level-3',
+  secondary:
+    'bg-canvas text-ink shadow-level-2 hover:bg-canvas-soft hover:shadow-level-3',
+  ghost:
+    'bg-transparent text-body hover:bg-canvas-soft hover:text-ink',
+} as const;
+
+const sizes = {
+  sm: 'h-8 px-3 text-button-md',
+  md: 'h-10 px-5 text-button-md',
+  lg: 'h-12 px-6 text-button-lg',
+} as const;
+
+const shapes = {
+  pill: 'rounded-pill',
+  square: 'rounded-sm',
+} as const;
+
+const externalAttrs =
+  external && href ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+---
+
+<Tag
+  href={href}
+  type={href ? undefined : type}
+  class:list={[base, variants[variant], sizes[size], shapes[shape], className]}
+  {...externalAttrs}
+  {...rest}
+>
+  <slot />
+</Tag>

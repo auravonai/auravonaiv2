@@ -1,0 +1,57 @@
+---
+import ErrorPage from '@/components/error/ErrorPage.astro';
+
+/**
+ * `/404` — built to `dist/client/404.html`.
+ *
+ * The reference relied on Next.js's built-in not-found page (reached via
+ * `notFound()` on unknown service and article slugs). Astro has no default, so
+ * this restores the same behaviour inside the site chrome.
+ *
+ * **The status code is the host's job.** Astro emits a plain HTML file; most
+ * platforms (Netlify, Cloudflare Pages, Vercel) find `404.html` automatically
+ * and serve it *with* a real 404. A host that serves it with `200` instead
+ * creates a soft 404 on every bad URL, which is worth checking once after
+ * deploy — request a nonsense path and read the status line, don't just look
+ * at the page.
+ *
+ * There is one live source of 404s worth watching: the 34 old
+ * `/services/<marketing-slug>` URLs. Those should be redirecting, not landing
+ * here. If they reach this page, `_redirects` is not being read — see
+ * `docs/keyword-strategy.md` §6.1.
+ */
+
+const destinations = [
+  {
+    label: 'AI & software services',
+    description: 'The fifteen things we build, from AI agents to APIs.',
+    href: '/services',
+  },
+  {
+    label: 'Industries',
+    description: 'Fintech, healthcare, logistics, and three more.',
+    href: '/industries',
+  },
+  {
+    label: 'Blog',
+    description: 'Engineering writing, grouped by topic.',
+    href: '/blog',
+  },
+  {
+    label: 'Contact',
+    description: "Tell us what you need and we'll point you at it.",
+    href: '/contact',
+  },
+];
+---
+
+<ErrorPage
+  code="404"
+  eyebrow="Error 404 — Not found"
+  title="This page doesn't exist."
+  description="The page you were looking for may have moved or may never have existed. Nothing is broken on your end — the link just points somewhere we don't have."
+  metaTitle="Page Not Found"
+  primary={{ label: 'Back to home', href: '/' }}
+  secondary={{ label: 'Browse services', href: '/services' }}
+  destinations={destinations}
+/>

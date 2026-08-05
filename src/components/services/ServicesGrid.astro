@@ -1,0 +1,94 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+
+import Section from '@/components/ui/Section.astro';
+import Card from '@/components/ui/Card.astro';
+import Badge from '@/components/ui/Badge.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import ServiceIcon from '@/components/services/ServiceIcon.astro';
+import { serviceCategories, servicesByCategory } from '@/lib/services';
+
+/**
+ * The hub's card grid — the whole point of the redesign.
+ *
+ * This replaces `ServicesHubCatalog.astro`, which rendered fifteen full
+ * service sections (~6,000 words) into one page with `#anchor` navigation.
+ * Each card is now a link to a real URL that ranks on its own.
+ *
+ * Heading levels: the category label is the `h2` and each service is an `h3`.
+ * On the old page the reverse was true — services were `h2` because they
+ * carried the commercial keywords and the page needed them at that level.
+ * Now each keyword owns a page whose `h1` carries it, so the hub can use the
+ * outline that actually reflects its structure.
+ *
+ * The whole card is the link, not just the "Learn more" text. A 44px text
+ * target inside a large card is a mobile usability failure, and "Learn more"
+ * as anchor text tells a crawler nothing — so the accessible name comes from
+ * the `h3` inside the anchor.
+ */
+---
+
+<Section surface="canvas" spacing="tight" as="section" divided>
+  <div class="space-y-20">
+    {
+      serviceCategories.map((category) => {
+        const services = servicesByCategory(category.id);
+        return (
+          <div id={`${category.id}-services`} class="scroll-mt-24">
+            <Reveal class="max-w-2xl">
+              <h2 class="text-display-lg">{category.label}</h2>
+              <p class="mt-3 text-body-md text-body">{category.blurb}</p>
+            </Reveal>
+
+            <ul class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {services.map((service, i) => (
+                <Reveal as="li" delay={i * 60} class="flex">
+                  <a
+                    href={`/services/${service.slug}`}
+                    class="group flex flex-1 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2"
+                  >
+                    <Card
+                      surface="canvas"
+                      elevation={2}
+                      padding="lg"
+                      interactive
+                      class="flex flex-1 flex-col"
+                    >
+                      <span class="mb-5 flex size-11 items-center justify-center rounded-md bg-canvas-soft text-ink transition-colors duration-200 group-hover:bg-ink group-hover:text-on-primary">
+                        <ServiceIcon name={service.icon} size={20} />
+                      </span>
+
+                      <h3 class="text-display-sm">{service.cardTitle}</h3>
+                      <p class="mt-2 text-body-sm text-body">
+                        {service.cardDescription}
+                      </p>
+
+                      {service.badges && (
+                        <ul class="mt-5 flex flex-wrap gap-2">
+                          {service.badges.map((badge) => (
+                            <li>
+                              <Badge variant="outline">{badge}</Badge>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+
+                      <span class="mt-6 inline-flex items-center gap-1.5 text-body-sm font-medium text-link">
+                        Learn more
+                        <ArrowRight
+                          size={14}
+                          class="transition-transform duration-150 group-hover:translate-x-0.5"
+                          aria-hidden="true"
+                        />
+                      </span>
+                    </Card>
+                  </a>
+                </Reveal>
+              ))}
+            </ul>
+          </div>
+        );
+      })
+    }
+  </div>
+</Section>

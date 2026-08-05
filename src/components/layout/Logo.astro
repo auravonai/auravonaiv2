@@ -1,0 +1,56 @@
+---
+import { Image } from 'astro:assets';
+
+import logoMark from '@/assets/logo-mark.png';
+
+/**
+ * Wordmark. Shared by the navbar and the footer so the lockup can only ever
+ * change in one place.
+ *
+ * The mark is the brand asset itself — it already carries its own rounded
+ * black square, so it must not be wrapped in another tile or given a
+ * background. It is served through astro:assets, which emits 1x/2x variants
+ * and the width/height needed to avoid layout shift.
+ */
+interface Props {
+  /** Hides the wordmark below `sm`, matching the navbar's tight layout. */
+  responsive?: boolean;
+  class?: string;
+}
+const { responsive = false, class: className } = Astro.props;
+---
+
+<a
+  href="/"
+  class:list={['flex shrink-0 items-center gap-2.5', className]}
+  aria-label="Auravon AI — home"
+>
+  <Image
+    src={logoMark}
+    alt=""
+    width={32}
+    height={32}
+    densities={[1, 2]}
+    loading="eager"
+    class="logo-mark size-8 shrink-0"
+  />
+  <span
+    class:list={[
+      'text-display-sm tracking-[-0.03em]',
+      responsive && 'hidden sm:block',
+    ]}
+  >
+    Auravon <span class="text-mute">AI</span>
+  </span>
+</a>
+
+<style>
+  /* The supplied mark is a black tile with a white glyph, which disappears
+     against the dark canvas. It is a pure black-and-white asset, so
+     inverting it produces the correct polarity — a light tile with a dark
+     glyph — without needing a second file. Replace this with a proper light
+     variant if one is ever supplied. */
+  :global([data-theme='dark']) .logo-mark {
+    filter: invert(1);
+  }
+</style>

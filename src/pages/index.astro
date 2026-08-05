@@ -1,0 +1,104 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+import Hero from '@/components/home/Hero.astro';
+import TrustSection from '@/components/home/TrustSection.astro';
+import ServicesSection from '@/components/home/ServicesSection.astro';
+import ProjectShowcase from '@/components/home/ProjectShowcase.astro';
+import ProcessSection from '@/components/home/ProcessSection.astro';
+import TechStack from '@/components/home/TechStack.astro';
+import IndustriesSection from '@/components/home/IndustriesSection.astro';
+import WhyChooseUs from '@/components/home/WhyChooseUs.astro';
+import EngagementSection from '@/components/home/EngagementSection.astro';
+import FAQSection from '@/components/home/FAQSection.astro';
+import CTA from '@/components/home/CTA.astro';
+
+import {
+  HOME_SEO,
+  breadcrumbSchema,
+  faqPageSchema,
+  homeFaqs,
+  homeServiceSchemas,
+  webPageSchema,
+} from '@/lib/seo';
+
+/**
+ * Homepage — the primary landing page for "AI development company" and the
+ * commercial keyword cluster around it.
+ *
+ * Section order follows buyer intent rather than aesthetics: identity →
+ * services → proof → process → stack → industries → differentiators →
+ * engagement → objections → conversion. A visitor who bounces at any point
+ * has still seen everything above it in the order that matters most.
+ *
+ * `Testimonials.astro` is deliberately not rendered here. Its content was six
+ * delivery principles that restated WhyChooseUs; two near-identical card
+ * grids on one page is the definition of thin content. The file is left in
+ * place for reuse elsewhere.
+ *
+ * Structured data: Organization and WebSite are emitted site-wide by
+ * BaseLayout. This page adds the nodes that are specific to it, all anchored
+ * by @id to the site-wide entities.
+ */
+
+const breadcrumbs = breadcrumbSchema([{ name: 'Home', path: '/' }], '/');
+
+const webPage = webPageSchema({
+  path: '/',
+  name: HOME_SEO.title,
+  description: HOME_SEO.description,
+  hasBreadcrumb: true,
+});
+
+const faqPage = faqPageSchema(homeFaqs, '/');
+const services = homeServiceSchemas();
+---
+
+<BaseLayout
+  title={HOME_SEO.title}
+  description={HOME_SEO.description}
+  canonical={HOME_SEO.canonical}
+  ogTitle={HOME_SEO.ogTitle}
+  ogDescription={HOME_SEO.ogDescription}
+  twitterTitle={HOME_SEO.twitterTitle}
+  twitterDescription={HOME_SEO.twitterDescription}
+>
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(webPage)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(breadcrumbs)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(faqPage)}
+    />
+    {
+      services.map((service) => (
+        <script
+          type="application/ld+json"
+          is:inline
+          set:html={JSON.stringify(service)}
+        />
+      ))
+    }
+  </Fragment>
+
+  <Hero />
+  <TrustSection />
+  <ServicesSection />
+  <ProjectShowcase />
+  <ProcessSection />
+  <TechStack />
+  <IndustriesSection />
+  <WhyChooseUs />
+  <EngagementSection />
+  <FAQSection />
+  <CTA />
+</BaseLayout>

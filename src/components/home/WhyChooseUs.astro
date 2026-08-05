@@ -1,0 +1,92 @@
+---
+import Users from 'lucide-astro/Users';
+import FlaskConical from 'lucide-astro/FlaskConical';
+import Brain from 'lucide-astro/Brain';
+import Lock from 'lucide-astro/Lock';
+import KeyRound from 'lucide-astro/KeyRound';
+import HeartHandshake from 'lucide-astro/HeartHandshake';
+
+import Section from '@/components/ui/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+
+/**
+ * These six map deliberately onto the evaluation criteria in the FAQ block
+ * ("How to choose an AI development company"). If the page tells a buyer what
+ * to look for, it has to then show its own answer to each point — otherwise
+ * the advice reads as filler and the section reads as boilerplate.
+ */
+const features = [
+  {
+    icon: Users,
+    title: 'You talk to the engineers',
+    description:
+      'No account managers, no handoff to a junior team after the pitch. The people who scope your project are the people who build it, and you have their direct line throughout.',
+  },
+  {
+    icon: FlaskConical,
+    title: 'Evaluation before launch',
+    description:
+      'We define what "accurate enough" means in numbers, build a test set from your real inputs, and measure against it. You see the score before the system goes anywhere near a customer.',
+  },
+  {
+    icon: Brain,
+    title: 'AI only where it earns its place',
+    description:
+      'We turn down AI features that a database query would handle better, and we say so early. A partner who never pushes back is selling scope, not solving problems.',
+  },
+  {
+    icon: Lock,
+    title: 'Your data stays where you decide',
+    description:
+      'Hosted APIs, private cloud, or fully self-hosted open-weight models — we walk through the trade-offs and build to the constraint, rather than defaulting to whatever is easiest.',
+  },
+  {
+    icon: KeyRound,
+    title: 'You own everything',
+    description:
+      'Code, prompts, evaluation sets, infrastructure, and documentation are yours from day one. No proprietary wrapper you have to keep paying us to maintain.',
+  },
+  {
+    icon: HeartHandshake,
+    title: 'Reachable after launch',
+    description:
+      'Models change, providers deprecate endpoints, and usage patterns shift. We stay available for the maintenance that AI systems genuinely require — this is not fire-and-forget software.',
+  },
+];
+---
+
+<Section surface="canvas" divided>
+  <SectionHeader
+    eyebrow="Why Auravon AI"
+    title="Why Companies Choose Auravon AI as Their AI Development Partner"
+    lead="The questions worth asking any AI development company — and our answers to them, stated plainly enough to hold us to."
+    class="mb-16 md:mb-20"
+  />
+
+  {/* Hairline grid: the 1px gaps are the container's background showing
+       through, which keeps every cell edge perfectly aligned. */}
+  <ul
+    class="grid gap-px overflow-hidden rounded-lg bg-hairline shadow-level-1 md:grid-cols-2 lg:grid-cols-3"
+  >
+    {
+      features.map(({ icon, title, description }, i) => {
+        const Icon = icon as any;
+        return (
+          <Reveal
+            as="li"
+            delay={i * 70}
+            direction="fade"
+            class="bg-canvas p-7 transition-colors duration-200 hover:bg-canvas-soft md:p-8"
+          >
+            <span class="mb-5 flex size-9 items-center justify-center rounded-md bg-canvas-soft text-ink">
+              <Icon size={18} aria-hidden="true" />
+            </span>
+            <h3 class="text-display-sm">{title}</h3>
+            <p class="mt-2 text-body-sm text-body">{description}</p>
+          </Reveal>
+        );
+      })
+    }
+  </ul>
+</Section>

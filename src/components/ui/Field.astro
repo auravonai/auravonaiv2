@@ -1,0 +1,115 @@
+---
+import ChevronDown from 'lucide-astro/ChevronDown';
+
+/**
+ * Labelled form control — DESIGN.md `form-input` / `form-input-lg`.
+ *
+ * Handles input, textarea and select behind one API so every control on the
+ * site shares the same height, radius, border and focus treatment. Form
+ * controls use the 6px `sm` radius, which DESIGN.md scopes to in-app chrome
+ * rather than marketing CTAs.
+ */
+interface Props {
+  name: string;
+  label: string;
+  type?: 'text' | 'email' | 'tel' | 'textarea' | 'select';
+  placeholder?: string;
+  required?: boolean;
+  rows?: number;
+  /** Select only. The first entry renders as the empty placeholder option. */
+  options?: string[];
+  /** Defaults are inferred from `name`; pass to override. */
+  autocomplete?: string;
+  class?: string;
+}
+
+const {
+  name,
+  label,
+  type = 'text',
+  placeholder,
+  required = false,
+  rows = 5,
+  options = [],
+  autocomplete,
+  class: className,
+} = Astro.props;
+
+const id = `field-${name}`;
+
+// Sensible autocomplete tokens per field name so browsers and password
+// managers fill these correctly.
+const AUTOCOMPLETE: Record<string, string> = {
+  name: 'name',
+  payerName: 'name',
+  email: 'email',
+  payerEmail: 'email',
+  phone: 'tel',
+  payerPhone: 'tel',
+  company: 'organization',
+};
+
+const autoComplete = autocomplete ?? AUTOCOMPLETE[name] ?? 'off';
+
+// Autocorrect fights structured values like emails and phone numbers.
+const noSpellcheck = type === 'email' || type === 'tel';
+
+const control =
+  'w-full rounded-sm bg-canvas px-3 text-body-md text-ink shadow-level-1 ' +
+  'placeholder:text-mute transition-shadow duration-150 ' +
+  'focus:shadow-[inset_0_0_0_1px_var(--color-link)]';
+---
+
+<div class:list={[className]}>
+  <label for={id} class="mb-1.5 block text-body-sm font-medium text-body">
+    {label}
+    {required && <span class="text-error" aria-hidden="true">*</span>}
+  </label>
+
+  {
+    type === 'textarea' ? (
+      <textarea
+        id={id}
+        name={name}
+        rows={rows}
+        required={required}
+        placeholder={placeholder}
+        autocomplete={autoComplete}
+        class:list={[control, 'resize-y py-3 leading-relaxed']}
+      />
+    ) : type === 'select' ? (
+      <div class="relative">
+        <select
+          id={id}
+          name={name}
+          required={required}
+          autocomplete={autoComplete}
+          class:list={[control, 'h-12 appearance-none pr-10']}
+        >
+          <option value="">{placeholder}</option>
+          {options.map((o) => (
+            <option value={o}>{o}</option>
+          ))}
+        </select>
+        <ChevronDown
+          size={16}
+          aria-hidden="true"
+          class="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2 text-mute"
+        />
+      </div>
+    ) : (
+      <input
+        id={id}
+        type={type}
+        name={name}
+        required={required}
+        placeholder={placeholder}
+        autocomplete={autoComplete}
+        inputmode={type === 'tel' ? 'tel' : type === 'email' ? 'email' : undefined}
+        spellcheck={noSpellcheck ? 'false' : undefined}
+        autocapitalize={noSpellcheck ? 'none' : undefined}
+        class:list={[control, 'h-12']}
+      />
+    )
+  }
+</div>

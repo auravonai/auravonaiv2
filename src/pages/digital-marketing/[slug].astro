@@ -1,0 +1,36 @@
+---
+import type { GetStaticPaths } from 'astro';
+
+import MarketingServiceRoute from '@/components/services/MarketingServiceRoute.astro';
+import {
+  getServiceBySlug,
+  type ServicePageData,
+} from '@/lib/digital-agency-data';
+import { getAllMarketingSlugs } from '@/lib/marketing';
+
+/**
+ * `/digital-marketing/<slug>` — the 34 digital-marketing pages.
+ *
+ * These used to share `/services/[slug]` with the fifteen AI spokes, which
+ * forced that file to be a dispatcher and made every near-duplicate pair
+ * (`website-development` vs `web-application-development`) compete inside one
+ * namespace. Each family now owns its own segment and its own `[slug].astro`,
+ * so no dispatch and no collision guard is needed here — the guard that used
+ * to live in `/services/[slug].astro` is gone with the collision it guarded.
+ *
+ * Old URLs are redirected; see `marketingRedirects()` in `src/lib/marketing.ts`.
+ */
+export const getStaticPaths = (() =>
+  getAllMarketingSlugs().map((slug) => ({
+    params: { slug },
+    props: { service: getServiceBySlug(slug)! },
+  }))) satisfies GetStaticPaths;
+
+interface Props {
+  service: ServicePageData;
+}
+
+const { service } = Astro.props;
+---
+
+<MarketingServiceRoute service={service} />

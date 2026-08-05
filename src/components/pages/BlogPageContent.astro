@@ -1,0 +1,360 @@
+---
+import Search from 'lucide-astro/Search';
+import Clock from 'lucide-astro/Clock';
+import ArrowRight from 'lucide-astro/ArrowRight';
+import TrendingUp from 'lucide-astro/TrendingUp';
+import Calendar from 'lucide-astro/Calendar';
+
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Card from '@/components/ui/Card.astro';
+import Badge from '@/components/ui/Badge.astro';
+import Button from '@/components/ui/Button.astro';
+import { articles } from '@/lib/articles';
+import { blogCategories, blogCategoryPath } from '@/lib/blog';
+import { CARD_SIZES, coverSrcset } from '@/lib/images';
+
+/**
+ * The in-page filter. Derived from the taxonomy rather than hand-listed —
+ * the previous hard-coded array had drifted and was missing
+ * "SEO & Digital Marketing" entirely, so one category of posts could not be
+ * filtered to at all.
+ */
+const categories = ['All', ...blogCategories.map((category) => category.name)];
+
+const featured = articles.filter((p) => p.featured);
+
+// Cover images are remote Unsplash URLs. They stay as plain <img> with
+// explicit dimensions and lazy loading rather than going through
+// astro:assets — optimising them would make every build depend on a
+// network round-trip to a third-party CDN.
+---
+
+{/* ── Page hero ── */}
+<section class="border-b border-hairline bg-canvas-soft band-tight">
+  <div class="container-page text-center">
+    <Reveal>
+      <Eyebrow class="mb-4">Insights &amp; Tutorials</Eyebrow>
+      <h1 class="text-display-xl">
+        Engineering &amp; <span class="text-mute">AI Insights</span>
+      </h1>
+      <p class="mx-auto mt-5 mb-8 max-w-xl text-body-lg text-body">
+        Practical articles on AI development, modern web engineering, and
+        building products that hold up in production.
+      </p>
+
+      <div class="relative mx-auto max-w-md">
+        <label for="blog-search" class="sr-only">Search articles</label>
+        <Search
+          size={16}
+          aria-hidden="true"
+          class="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-mute"
+        />
+        <input
+          id="blog-search"
+          type="search"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Search articles…"
+          class="h-12 w-full rounded-sm bg-canvas pr-4 pl-11 text-body-md text-ink shadow-level-1 transition-shadow duration-150 placeholder:text-mute focus:shadow-[inset_0_0_0_1px_var(--color-link)]"
+        />
+      </div>
+    </Reveal>
+  </div>
+</section>
+
+{/* ── Featured articles — hidden while a filter or search is active ── */}
+<section id="featured-section" class="border-b border-hairline bg-canvas py-10">
+  <div class="container-page">
+    <div class="mb-6 flex items-center gap-2">
+      <TrendingUp size={16} class="text-mute" aria-hidden="true" />
+      <h2 class="font-mono text-caption uppercase tracking-[0.08em] text-mute">
+        Featured Articles
+      </h2>
+    </div>
+
+    <ul class="grid gap-5 md:grid-cols-2">
+      {
+        featured.map((post, i) => (
+          <Reveal as="li" delay={i * 100} class="flex">
+            <Card
+              as="a"
+              href={`/blog/${post.slug}`}
+              surface="canvas"
+              elevation={2}
+              padding="sm"
+              interactive
+              class="group flex flex-1 flex-col overflow-hidden !p-0"
+            >
+              <div class="relative h-52 w-full overflow-hidden">
+                <img
+                  src={post.image}
+                  srcset={coverSrcset(post.image)}
+                  sizes={CARD_SIZES}
+                  alt=""
+                  width="1200"
+                  height="630"
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  fetchpriority={i === 0 ? 'high' : undefined}
+                  decoding="async"
+                  class="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div class="absolute bottom-3 left-4 flex items-center gap-2">
+                  <span class="rounded-full bg-canvas/90 px-2.5 py-1 text-caption text-ink backdrop-blur-sm">
+                    {post.category}
+                  </span>
+                  <span class="flex items-center gap-1 rounded-full bg-canvas/90 px-2 py-1 text-caption text-body backdrop-blur-sm">
+                    <Clock size={12} aria-hidden="true" />
+                    {post.readTime}
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex flex-1 flex-col p-6">
+                <p class="mb-2 flex items-center gap-1 text-caption text-mute">
+                  <Calendar size={12} aria-hidden="true" />
+                  {post.date}
+                </p>
+                <h3 class="flex-1 text-display-sm">{post.title}</h3>
+                <p class="mt-2.5 mb-5 line-clamp-2 text-body-sm text-body">
+                  {post.excerpt}
+                </p>
+                <div class="flex items-center justify-between gap-3 border-t border-hairline pt-4">
+                  <ul class="flex flex-wrap gap-1.5">
+                    {post.tags.slice(0, 3).map((tag) => (
+                      <li>
+                        <Badge>{tag}</Badge>
+                      </li>
+                    ))}
+                  </ul>
+                  <span class="inline-flex shrink-0 items-center gap-1 text-body-sm text-link">
+                    Read
+                    <ArrowRight
+                      size={14}
+                      class="transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
+                  </span>
+                </div>
+              </div>
+            </Card>
+          </Reveal>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+{/* ── Filter bar ── */}
+<div
+  class="sticky top-16 z-30 border-b border-hairline bg-canvas/90 py-4 backdrop-blur-xl"
+>
+  <div class="container-page">
+    <div
+      class="flex flex-wrap justify-center gap-2"
+      role="group"
+      aria-label="Filter articles by category"
+    >
+      {
+        categories.map((cat, i) => (
+          <button
+            type="button"
+            data-filter={cat}
+            aria-pressed={i === 0 ? 'true' : 'false'}
+            class="rounded-pill-sm bg-canvas px-4 py-2 text-body-sm text-body shadow-level-1 transition-[background-color,color,box-shadow] hover:text-ink hover:shadow-level-2 aria-pressed:bg-ink aria-pressed:text-on-primary"
+          >
+            {cat}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+{/* ── Topic hubs ──
+     The filter bar above is buttons driving a client-side filter: it changes
+     nothing in the URL and creates no links, so a crawler sees one page and
+     the category pages get no inbound link from the section they belong to.
+     These anchors are the crawlable half. They are real navigation, not a
+     duplicate of the filter — each leads to a page with its own intro,
+     its own schema, and links to the services the topic supports. */}
+<section class="border-b border-hairline bg-canvas-soft py-8">
+  <div class="container-page">
+    <h2 class="mb-4 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+      Browse by topic
+    </h2>
+    <ul class="flex flex-wrap gap-2">
+      {
+        blogCategories.map((category) => (
+          <li>
+            <a
+              href={blogCategoryPath(category.slug)}
+              class="inline-flex rounded-full border border-hairline bg-canvas px-3.5 py-1.5 text-body-sm text-body transition-colors hover:border-ink hover:text-ink"
+            >
+              {category.heading}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+{/* ── Articles grid ── */}
+<section class="bg-canvas py-16 md:py-20">
+  <div class="container-page">
+    <ul id="articles-grid" class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {
+        articles.map((post, i) => (
+          <Reveal
+            as="li"
+            delay={Math.min(i, 6) * 50}
+            data-article
+            data-category={post.category}
+            data-search={`${post.title} ${post.tags.join(' ')}`.toLowerCase()}
+            class="flex"
+          >
+            <Card
+              as="a"
+              href={`/blog/${post.slug}`}
+              surface="canvas"
+              elevation={2}
+              padding="sm"
+              interactive
+              class="group flex flex-1 flex-col overflow-hidden !p-0"
+            >
+              <div class="h-44 w-full overflow-hidden">
+                <img
+                  src={post.image}
+                  srcset={coverSrcset(post.image)}
+                  sizes={CARD_SIZES}
+                  alt=""
+                  width="800"
+                  height="450"
+                  loading="lazy"
+                  decoding="async"
+                  class="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+
+              <div class="flex flex-1 flex-col p-5">
+                <div class="mb-2.5 flex flex-wrap items-center gap-2">
+                  <Badge variant="outline">{post.category}</Badge>
+                  <span class="flex items-center gap-1 text-caption text-mute">
+                    <Clock size={12} aria-hidden="true" />
+                    {post.readTime}
+                  </span>
+                </div>
+
+                <h3 class="line-clamp-2 flex-1 text-body-md font-medium text-ink">
+                  {post.title}
+                </h3>
+                <p class="mt-1.5 mb-2.5 flex items-center gap-1 text-caption text-mute">
+                  <Calendar size={12} aria-hidden="true" />
+                  {post.date}
+                </p>
+                <p class="mb-4 line-clamp-2 text-body-sm text-body">{post.excerpt}</p>
+
+                <div class="mt-auto flex items-center justify-between gap-3 border-t border-hairline pt-3">
+                  <ul class="flex flex-wrap gap-1.5">
+                    {post.tags.slice(0, 2).map((tag) => (
+                      <li>
+                        <Badge>{tag}</Badge>
+                      </li>
+                    ))}
+                  </ul>
+                  <span class="flex shrink-0 items-center gap-1 text-body-sm text-link">
+                    Read
+                    <ArrowRight
+                      size={12}
+                      class="transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
+                  </span>
+                </div>
+              </div>
+            </Card>
+          </Reveal>
+        ))
+      }
+    </ul>
+
+    <p id="articles-empty" hidden class="py-20 text-center text-body-md text-body">
+      No articles found matching your search.
+    </p>
+  </div>
+</section>
+
+{/* ── Newsletter CTA ── */}
+<section class="border-t border-hairline bg-canvas py-16 md:py-20">
+  <Reveal class="mx-auto max-w-lg px-4 text-center sm:px-6">
+    <Card surface="soft" elevation={1} padding="lg">
+      <Eyebrow>Newsletter</Eyebrow>
+      <h2 class="mt-4 mb-2 text-display-md">Get Practical Engineering Insights</h2>
+      <p class="mb-6 text-body-sm text-body">
+        Articles like these, delivered to your inbox. No filler, no news
+        roundups — just engineering practice you can use.
+      </p>
+      <form class="flex gap-2">
+        <label for="newsletter-email" class="sr-only">Email address</label>
+        <input
+          id="newsletter-email"
+          type="email"
+          name="email"
+          required
+          autocomplete="email"
+          inputmode="email"
+          spellcheck="false"
+          autocapitalize="none"
+          placeholder="your@email.com"
+          class="h-12 flex-1 rounded-sm bg-canvas px-4 text-body-md text-ink shadow-level-1 transition-shadow duration-150 placeholder:text-mute focus:shadow-[inset_0_0_0_1px_var(--color-link)]"
+        />
+        <Button type="submit" variant="primary" size="lg" class="shrink-0">
+          Subscribe
+        </Button>
+      </form>
+    </Card>
+  </Reveal>
+</section>
+
+<script>
+  const searchInput = document.getElementById('blog-search') as HTMLInputElement | null;
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = document.querySelectorAll<HTMLElement>('[data-article]');
+  const empty = document.getElementById('articles-empty');
+  const featuredSection = document.getElementById('featured-section');
+
+  let activeCategory = 'All';
+
+  function apply() {
+    const query = (searchInput?.value ?? '').trim().toLowerCase();
+    let visible = 0;
+
+    for (const card of cards) {
+      const matchesCategory =
+        activeCategory === 'All' || card.dataset.category === activeCategory;
+      const matchesSearch =
+        query === '' || (card.dataset.search ?? '').includes(query);
+      const show = matchesCategory && matchesSearch;
+
+      card.hidden = !show;
+      if (show) visible += 1;
+    }
+
+    if (empty) empty.hidden = visible > 0;
+
+    // The featured strip is only meaningful on the unfiltered view, which
+    // matches the reference's behaviour.
+    if (featuredSection) {
+      featuredSection.hidden = query !== '' || activeCategory !== 'All';
+    }
+  }
+
+  for (const button of buttons) {
+    button.addEventListener('click', () => {
+      activeCategory = button.dataset.filter ?? 'All';
+      for (const b of buttons) {
+        b.setAttribute('aria-pressed', String(b === button));
+      }
+      apply();
+    });
+  }
+
+  searchInput?.addEventListener('input', apply);
+</script>

@@ -1,0 +1,657 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════════════
+   AURAVON AI — DESIGN TOKENS
+   Every value here is transcribed from DESIGN.md. Do not introduce a
+   colour, radius, or type step that is not defined below.
+
+   THEMING
+   DESIGN.md specifies a light palette only, so the dark palette is derived
+   from the same neutral ramp: the surface ladder and the text ramp swap
+   ends, and nothing else about the system changes — same type scale, same
+   radii, same spacing, same elevation model.
+
+   Theme-dependent values live in :root / [data-theme='dark'] as plain CSS
+   variables, and `@theme inline` maps them onto Tailwind's colour
+   utilities. They have to be structured this way: `@theme` may not be
+   nested under a selector, and a non-inline `@theme` would bake the light
+   value in at build time instead of following the live variable.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Fonts must be registered with `@theme inline` so the utilities reference
+   the Astro Fonts API variables directly instead of copying their value at
+   build time — the <Font /> component defines them at runtime. */
+@theme inline {
+  --font-sans: var(--font-geist);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* ── LIGHT (the DESIGN.md palette, verbatim) ─────────────────────────── */
+:root {
+  color-scheme: light;
+
+  /* Surface ladder */
+  --canvas: #ffffff;
+  --canvas-soft: #fafafa;
+  --canvas-soft-2: #f5f5f5;
+
+  /* Ink & text. `ink` is both the primary text colour and the primary
+     button fill — DESIGN.md treats them as one token, and that is what
+     makes the dark theme fall out cleanly. */
+  --ink: #171717;
+  --body: #4d4d4d;
+  /* DESIGN.md specifies #888888. Darkened to the nearest value that clears
+     WCAG AA for normal-size text: #888888 scored 3.54:1 on canvas and 3.40:1
+     on canvas-soft, against the 4.5:1 threshold. `mute` carries eyebrows,
+     breadcrumbs, timestamps, and card sub-copy — all small text, so the 3:1
+     large-text allowance does not apply to it. #737373 is 4.74:1 on canvas
+     and 4.54:1 on canvas-soft: the smallest change that passes, so it stays
+     visually the same grey it was meant to be. */
+  --mute: #737373;
+  --on-primary: #ffffff;
+
+  /* Lines */
+  --hairline: #ebebeb;
+  --hairline-strong: #a1a1a1;
+
+  /* Link / semantic */
+  /* DESIGN.md's #0070f3 is 4.55:1 on white — a pass, but only just — and
+     4.36:1 on canvas-soft, which is a fail. Hero and card bands are
+     canvas-soft, so that is where most links actually sit. #006dee is the
+     smallest darkening that clears 4.5:1 on both (4.75:1 / 4.55:1) and is
+     indistinguishable from the specified blue. */
+  --link: #006dee;
+  --link-deep: #0761d1;
+  --link-bg-soft: #d3e5ff;
+  --error: #ee0000;
+  --error-soft: #f7d4d6;
+  --error-deep: #c50000;
+  --warning: #f5a623;
+  --warning-soft: #ffefcf;
+  --warning-deep: #ab570a;
+
+  /* The polarity-flipped band — DESIGN.md's chief depth cue between
+     sections. It is always the opposite of the page, so it inverts with
+     the theme rather than staying dark. */
+  --invert: #171717;
+  --on-invert: #ffffff;
+  --invert-line: rgb(255 255 255 / 20%);
+
+  /* Elevation. Stacked small offsets plus an inset hairline ring; never a
+     single heavy drop shadow. */
+  --shadow-1: inset 0 0 0 1px rgb(0 0 0 / 8%);
+  --shadow-2:
+    0 1px 1px rgb(0 0 0 / 2%), 0 2px 2px rgb(0 0 0 / 4%),
+    inset 0 0 0 1px rgb(0 0 0 / 8%);
+  --shadow-3:
+    0 2px 2px rgb(0 0 0 / 4%), 0 8px 8px -8px rgb(0 0 0 / 4%),
+    inset 0 0 0 1px rgb(0 0 0 / 8%);
+  --shadow-4:
+    0 2px 2px rgb(0 0 0 / 4%), 0 8px 16px -4px rgb(0 0 0 / 4%),
+    inset 0 0 0 1px rgb(0 0 0 / 8%);
+  --shadow-5:
+    0 1px 1px rgb(0 0 0 / 2%), 0 8px 16px -4px rgb(0 0 0 / 4%),
+    0 24px 32px -8px rgb(0 0 0 / 6%), inset 0 0 0 1px rgb(0 0 0 / 8%);
+
+  --mesh-opacity: 0.5;
+}
+
+/* ── DARK (derived) ──────────────────────────────────────────────────── */
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --canvas: #0a0a0a;
+  --canvas-soft: #111111;
+  --canvas-soft-2: #1a1a1a;
+
+  --ink: #ededed;
+  --body: #a1a1a1;
+  --mute: #7e7e7e;
+  --on-primary: #0a0a0a;
+
+  --hairline: #2a2a2a;
+  --hairline-strong: #545454;
+
+  /* Link blue is lifted so it clears 4.5:1 against the dark canvas; the
+     #0070f3 from DESIGN.md only reaches ~3:1 there. */
+  --link: #4ea6ff;
+  --link-deep: #7cc0ff;
+  --link-bg-soft: #102c47;
+  --error: #ff6166;
+  --error-soft: #3a1618;
+  --error-deep: #ff9a9d;
+  --warning: #f5a623;
+  --warning-soft: #3a2a12;
+  --warning-deep: #ffcd6b;
+
+  --invert: #ededed;
+  --on-invert: #0a0a0a;
+  --invert-line: rgb(10 10 10 / 20%);
+
+  /* Drop shadows barely register on a dark surface, so the hairline ring
+     does the work and the drops deepen to compensate. */
+  --shadow-1: inset 0 0 0 1px rgb(255 255 255 / 10%);
+  --shadow-2:
+    0 1px 2px rgb(0 0 0 / 40%), inset 0 0 0 1px rgb(255 255 255 / 10%);
+  --shadow-3:
+    0 2px 4px rgb(0 0 0 / 40%), 0 8px 8px -8px rgb(0 0 0 / 40%),
+    inset 0 0 0 1px rgb(255 255 255 / 12%);
+  --shadow-4:
+    0 2px 4px rgb(0 0 0 / 40%), 0 8px 16px -4px rgb(0 0 0 / 45%),
+    inset 0 0 0 1px rgb(255 255 255 / 12%);
+  --shadow-5:
+    0 1px 2px rgb(0 0 0 / 40%), 0 8px 16px -4px rgb(0 0 0 / 45%),
+    0 24px 32px -8px rgb(0 0 0 / 55%),
+    inset 0 0 0 1px rgb(255 255 255 / 14%);
+
+  --mesh-opacity: 0.34;
+}
+
+/* Map the theme variables onto Tailwind's utilities. */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-canvas-soft: var(--canvas-soft);
+  --color-canvas-soft-2: var(--canvas-soft-2);
+
+  --color-ink: var(--ink);
+  --color-body: var(--body);
+  --color-mute: var(--mute);
+  --color-on-primary: var(--on-primary);
+
+  --color-hairline: var(--hairline);
+  --color-hairline-strong: var(--hairline-strong);
+
+  --color-link: var(--link);
+  --color-link-deep: var(--link-deep);
+  --color-link-bg-soft: var(--link-bg-soft);
+  --color-success: var(--link);
+  --color-error: var(--error);
+  --color-error-soft: var(--error-soft);
+  --color-error-deep: var(--error-deep);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-deep: var(--warning-deep);
+
+  --color-invert: var(--invert);
+  --color-on-invert: var(--on-invert);
+  --color-invert-line: var(--invert-line);
+
+  --shadow-level-1: var(--shadow-1);
+  --shadow-level-2: var(--shadow-2);
+  --shadow-level-3: var(--shadow-3);
+  --shadow-level-4: var(--shadow-4);
+  --shadow-level-5: var(--shadow-5);
+}
+
+@theme {
+  /* ── Colour: brand constants ──────────────────────────────────────────
+     These do not flip with the theme — they are the brand's own colours.
+
+     DESIGN.md: the mesh gradient is the ENTIRE decorative system, used at
+     hero scale only. Never miniaturise, never reduce to one colour. */
+  --color-violet: #7928ca;
+  --color-violet-soft: #d8ccf1;
+  --color-violet-deep: #4c2889;
+  --color-cyan: #50e3c2;
+  --color-cyan-soft: #aaffec;
+  --color-cyan-deep: #29bc9b;
+  --color-highlight-pink: #ff0080;
+  --color-highlight-magenta: #eb367f;
+  --color-gradient-develop-start: #007cf0;
+  --color-gradient-develop-end: #00dfd8;
+  --color-gradient-preview-start: #7928ca;
+  --color-gradient-preview-end: #ff0080;
+  --color-gradient-ship-start: #ff4d4d;
+  --color-gradient-ship-end: #f9cb28;
+
+  /* Code surfaces stay dark in both themes — DESIGN.md sets the
+     code-editor-mockup to the ink primary, and a terminal that flips to
+     white would stop reading as a terminal. */
+  --color-code-surface: #171717;
+  --color-on-code: #ededed;
+  --color-code-line: rgb(255 255 255 / 12%);
+  --color-code-mute: rgb(255 255 255 / 50%);
+
+  /* ── Typography ───────────────────────────────────────────────────────
+     Sizes, line-heights and tracking transcribed exactly. Tracking is
+     converted to em so it scales with fluid sizes.
+     Negative tracking is part of the brand voice — do not neutralise it. */
+
+  /* Hero-scale step. DESIGN.md tops out at 48px (display-xl); marketing
+     heroes need to breathe on wide viewports, so this fluid step extends
+     the ramp upward while holding display-xl's -0.05em tracking and the
+     weight-600 ceiling. */
+  --text-display-2xl: clamp(2.75rem, 1.6rem + 5.1vw, 4.5rem);
+  --text-display-2xl--line-height: 1;
+  --text-display-2xl--letter-spacing: -0.05em;
+  --text-display-2xl--font-weight: 600;
+
+  --text-display-xl: clamp(2.25rem, 1.6rem + 2.6vw, 3rem);
+  --text-display-xl--line-height: 1;
+  --text-display-xl--letter-spacing: -0.05em;
+  --text-display-xl--font-weight: 600;
+
+  --text-display-lg: clamp(1.75rem, 1.4rem + 1.4vw, 2rem);
+  --text-display-lg--line-height: 1.25;
+  --text-display-lg--letter-spacing: -0.04em;
+  --text-display-lg--font-weight: 600;
+
+  --text-display-md: 1.5rem;
+  --text-display-md--line-height: 1.3333;
+  --text-display-md--letter-spacing: -0.04em;
+  --text-display-md--font-weight: 600;
+
+  --text-display-sm: 1.25rem;
+  --text-display-sm--line-height: 1.4;
+  --text-display-sm--letter-spacing: -0.03em;
+  --text-display-sm--font-weight: 600;
+
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.5556;
+  --text-body-lg--letter-spacing: 0em;
+
+  --text-body-md: 1rem;
+  --text-body-md--line-height: 1.5;
+  --text-body-md--letter-spacing: 0em;
+
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.4286;
+  --text-body-sm--letter-spacing: -0.02em;
+
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.3333;
+  --text-caption--letter-spacing: 0em;
+
+  --text-code: 0.8125rem;
+  --text-code--line-height: 1.5385;
+  --text-code--letter-spacing: 0em;
+
+  --text-button-md: 0.875rem;
+  --text-button-md--line-height: 1.4286;
+  --text-button-md--letter-spacing: 0em;
+  --text-button-md--font-weight: 500;
+
+  --text-button-lg: 1rem;
+  --text-button-lg--line-height: 1.5;
+  --text-button-lg--letter-spacing: 0em;
+  --text-button-lg--font-weight: 500;
+
+  /* ── Radius ───────────────────────────────────────────────────────────
+     Two pill scales coexist deliberately: `pill` (100px) for marketing
+     CTAs, `sm` (6px) for nav-scale controls. DESIGN.md forbids mixing
+     the two on the same screen. */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill-sm: 64px;
+  --radius-pill: 100px;
+
+  /* Elevation is theme-dependent and lives in the :root / [data-theme]
+     blocks above; it is mapped onto `shadow-level-*` by the @theme inline
+     block. Stacked small offsets plus an inset ring — never a single heavy
+     drop shadow. */
+
+  /* ── Layout ───────────────────────────────────────────────────────────
+     DESIGN.md: content caps at 1400px, gutters 24px desktop / 16px mobile. */
+  --container-page: 87.5rem;
+
+  /* ── Motion ───────────────────────────────────────────────────────────
+     One easing curve across the system — the same cubic-bezier the Next.js
+     reference used for every framer-motion transition. */
+  --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  html {
+    /* `color-scheme` is set per theme in the :root / [data-theme] blocks so
+       native controls (scrollbars, form widgets, date pickers) follow it. */
+    scroll-behavior: smooth;
+    /* Sticky nav is 64px; keep anchor targets clear of it. */
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body-md);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* DESIGN.md notes ss01/ss02 enable the geometric alternates that make
+       the substitute face read closest to the brand cut. */
+    font-feature-settings: "ss01", "ss02";
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background-color: var(--color-ink);
+    color: var(--color-canvas);
+  }
+
+  /* Theme switching is deliberately INSTANT.
+
+     An earlier version cross-faded every element for 200ms. It was both slow
+     and ugly: ~1700 nodes per page transitioning box-shadow forces a repaint
+     rather than a composite, and because the elevation model swaps from black
+     drop shadows to white inset rings, every card smeared through muddy
+     intermediate colours on the way across.
+
+     Removing that rule is not enough on its own, because components carry
+     their own `transition-[box-shadow,…]` for hover and would animate the
+     swap anyway. So the toggle clamps transitions off for exactly one frame
+     while the attribute flips. Animations are left alone — killing those
+     would make the tech marquee jump.
+
+     Do not reintroduce a universal colour transition here. If a future
+     version wants easing, animate one full-bleed overlay, not every node. */
+  html.theme-instant,
+  html.theme-instant *,
+  html.theme-instant *::before,
+  html.theme-instant *::after {
+    transition: none !important;
+  }
+
+  /* Headings inherit the weight-600 ceiling rather than the UA's 700. */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* A single visible focus treatment for every interactive element.
+     Nothing in this codebase may set `outline: none` without replacing it. */
+  :focus-visible {
+    outline: 2px solid var(--color-link);
+    outline-offset: 2px;
+    border-radius: var(--radius-xs);
+  }
+
+  /* Form controls carry their own radius, so the ring should hug the field
+     rather than float 2px off a rounded rectangle. */
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline-offset: 0;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Kills the 300ms tap delay without disabling pinch-zoom. */
+  a,
+  button,
+  label,
+  summary,
+  [role='button'] {
+    touch-action: manipulation;
+  }
+
+  /* Honour the OS reduced-motion setting everywhere, including the
+     scroll-reveal system below. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LAYOUT UTILITIES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* The page container. Every band's inner content uses this so gutters and
+   max-width stay identical site-wide. */
+@utility container-page {
+  width: 100%;
+  max-width: var(--container-page);
+  margin-inline: auto;
+  padding-inline: --spacing(4);
+  @media (width >= 40rem) {
+    padding-inline: --spacing(6);
+  }
+}
+
+/* Marketing band rhythm — DESIGN.md puts section padding at 64–96px, with
+   hero bands stretching further. */
+@utility band {
+  padding-block: --spacing(16);
+  @media (width >= 48rem) {
+    padding-block: --spacing(24);
+  }
+}
+
+@utility band-tight {
+  padding-block: --spacing(12);
+  @media (width >= 48rem) {
+    padding-block: --spacing(16);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SCROLL REVEAL
+   Replaces the framer-motion AnimatedSection from the Next.js reference.
+   Pure CSS transition driven by one shared IntersectionObserver (see
+   src/scripts/reveal.ts) — no framework, no hydration, no JS on the
+   critical path. Elements stay visible if the script never runs.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  /* Only hide content once JS has confirmed it can reveal it again. */
+  [data-reveal] {
+    opacity: 1;
+  }
+
+  html.js [data-reveal] {
+    opacity: 0;
+    transform: translateY(1.25rem);
+    transition:
+      opacity 0.6s var(--ease-brand),
+      transform 0.6s var(--ease-brand);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  html.js [data-reveal="fade"] {
+    transform: none;
+  }
+
+  html.js [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.js [data-reveal] {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PROSE — long-form legal and article copy
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@utility prose-doc {
+  color: var(--color-body);
+  font-size: var(--text-body-md);
+  line-height: 1.75;
+
+  & h2 {
+    margin-top: --spacing(12);
+    margin-bottom: --spacing(4);
+    padding-bottom: --spacing(3);
+    border-bottom: 1px solid var(--color-hairline);
+    color: var(--color-ink);
+    font-size: var(--text-display-sm);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    scroll-margin-top: 6rem;
+  }
+
+  & h3 {
+    margin-top: --spacing(8);
+    margin-bottom: --spacing(2);
+    color: var(--color-ink);
+    font-size: var(--text-body-md);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  & p {
+    margin-bottom: --spacing(4);
+  }
+
+  & ul {
+    margin: --spacing(2) 0 --spacing(5);
+    padding: 0;
+    list-style: none;
+  }
+
+  & ul li {
+    position: relative;
+    margin-bottom: --spacing(2);
+    padding-left: --spacing(6);
+  }
+
+  & ul li::before {
+    content: "";
+    position: absolute;
+    top: 0.6875rem;
+    left: --spacing(2);
+    width: 4px;
+    height: 4px;
+    border-radius: 9999px;
+    background-color: var(--color-hairline-strong);
+  }
+
+  & ol {
+    margin: --spacing(2) 0 --spacing(5);
+    padding: 0;
+    list-style: none;
+    counter-reset: item;
+  }
+
+  & ol li {
+    position: relative;
+    margin-bottom: --spacing(2);
+    padding-left: --spacing(7);
+    counter-increment: item;
+  }
+
+  & ol li::before {
+    content: counter(item) ".";
+    position: absolute;
+    left: 0;
+    color: var(--color-mute);
+    font-size: var(--text-body-sm);
+    font-variant-numeric: tabular-nums;
+  }
+
+  & a {
+    color: var(--color-link);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  & a:hover {
+    color: var(--color-link-deep);
+  }
+
+  & strong {
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+
+  & table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-body-sm);
+  }
+
+  & thead tr {
+    background-color: var(--color-canvas-soft);
+  }
+
+  & th {
+    padding: --spacing(2) --spacing(3);
+    border-bottom: 1px solid var(--color-hairline);
+    color: var(--color-body);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    font-weight: 400;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  & td {
+    padding: --spacing(2) --spacing(3);
+    border-bottom: 1px solid var(--color-hairline);
+    vertical-align: top;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LEGAL DOCUMENT BLOCKS
+   Used inside `prose-doc` on the privacy / terms / refund pages. The class
+   names are carried over from the reference markup so the legal copy could
+   be ported without rewriting it.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@utility legal-section {
+  margin-bottom: --spacing(6);
+  padding: --spacing(6);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-canvas-soft);
+
+  /* The card supplies the separation, so the first heading inside it
+     doesn't need its own top margin or rule. */
+  & > h2:first-child {
+    margin-top: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+}
+
+@utility legal-highlight {
+  margin-block: --spacing(4);
+  padding: --spacing(4) --spacing(5);
+  border-left: 2px solid var(--color-link);
+  border-radius: var(--radius-md);
+  background-color: var(--color-link-bg-soft);
+
+  & p {
+    margin-bottom: 0;
+    color: var(--color-ink);
+  }
+}
+
+@utility contact-box {
+  margin-top: --spacing(6);
+  padding: --spacing(5) --spacing(6);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-canvas-soft);
+  box-shadow: var(--shadow-level-1);
+
+  & p {
+    margin-bottom: --spacing(1);
+    font-size: var(--text-body-sm);
+  }
+}

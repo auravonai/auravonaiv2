@@ -1,0 +1,82 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+import ChevronRight from 'lucide-astro/ChevronRight';
+import CheckCircle2 from 'lucide-astro/CheckCircle2';
+
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Button from '@/components/ui/Button.astro';
+import { SERVICES_INTRO } from '@/lib/services-seo';
+
+/**
+ * `/services` hero.
+ *
+ * Rewritten for the hub-and-spoke redesign. What was removed and why:
+ *
+ * - The in-page table of contents. It listed fifteen `#anchor` links into
+ *   one enormous page. Those destinations are now fifteen separate URLs, so
+ *   the card grid below IS the table of contents — and every entry in it is a
+ *   crawlable, rankable page rather than a fragment.
+ * - The long assurance and positioning copy. A hub's job is to route, and
+ *   every extra paragraph above the cards delays that.
+ *
+ * The visible breadcrumb stays: Google requires BreadcrumbList markup to
+ * match a hierarchy the visitor can see, and this page emits that markup.
+ */
+
+const assurances = [
+  'Free 30-minute scoping call',
+  'Costed scope before you commit',
+  'You own the code and the IP',
+];
+---
+
+<section class="border-b border-hairline bg-canvas-soft band-tight">
+  <div class="container-page">
+    <nav aria-label="Breadcrumb" class="mb-10">
+      <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
+        <li><a href="/" class="transition-colors hover:text-ink">Home</a></li>
+        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
+        <li><span class="text-body" aria-current="page">Services</span></li>
+      </ol>
+    </nav>
+
+    <Reveal class="max-w-3xl">
+      <Eyebrow class="mb-4">What We Build</Eyebrow>
+
+      <h1 class="text-display-xl">
+        AI Development Services{' '}
+        <span class="text-mute">Built for Production</span>
+      </h1>
+
+      <p class="mt-5 max-w-2xl text-body-lg text-body">{SERVICES_INTRO}</p>
+
+      <ul
+        class="mt-8 mb-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-body-sm text-body"
+      >
+        {
+          assurances.map((item) => (
+            <li class="flex items-center gap-1.5">
+              <CheckCircle2 size={14} class="text-mute" aria-hidden="true" />
+              {item}
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <Button href="/contact" variant="primary" size="lg">
+          Get a Free Project Scope
+          <ArrowRight
+            size={16}
+            class="transition-transform duration-150 group-hover:translate-x-0.5"
+            aria-hidden="true"
+          />
+        </Button>
+        <Button href="#ai-services" variant="secondary" size="lg">
+          Browse Services
+        </Button>
+      </div>
+    </Reveal>
+  </div>
+</section>

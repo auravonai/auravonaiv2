@@ -1,0 +1,80 @@
+---
+/**
+ * Abstract product screenshot used beside the featured project.
+ *
+ * Purely decorative — it stands in for a real screenshot, so the whole thing
+ * is hidden from assistive tech rather than read out as a pile of numbers.
+ */
+const metrics = [
+  { value: '12', label: 'Open deals' },
+  { value: '87%', label: 'Response rate' },
+  { value: '4.2d', label: 'Avg. close' },
+];
+
+const bars = [35, 55, 42, 68, 58, 80, 65];
+
+const deals = [
+  { name: 'Enterprise lead', status: 'Proposal sent' },
+  { name: 'Agency partner', status: 'In review' },
+  { name: 'Series A startup', status: 'Contract' },
+];
+---
+
+<div
+  class="h-full min-h-[260px] overflow-hidden rounded-lg bg-canvas-soft shadow-level-1"
+  role="img"
+  aria-label="Illustrative product dashboard"
+>
+  {/* Window chrome */}
+  <div class="flex items-center gap-3 border-b border-hairline px-4 py-3">
+    <div class="flex gap-1.5" aria-hidden="true">
+      <span class="size-2.5 rounded-full bg-canvas-soft-2"></span>
+      <span class="size-2.5 rounded-full bg-canvas-soft-2"></span>
+      <span class="size-2.5 rounded-full bg-canvas-soft-2"></span>
+    </div>
+    <div class="flex h-5 flex-1 items-center gap-1.5 rounded-xs bg-canvas px-2">
+      <span class="size-1 rounded-full bg-hairline-strong"></span>
+      <span class="h-1 flex-1 rounded-xs bg-hairline"></span>
+    </div>
+  </div>
+
+  <div class="space-y-3 p-4" aria-hidden="true">
+    {/* Metric row */}
+    <div class="grid grid-cols-3 gap-2">
+      {
+        metrics.map(({ value, label }) => (
+          <div class="rounded-md bg-canvas p-2.5 shadow-level-1">
+            <div class="text-body-sm font-medium text-ink">{value}</div>
+            <div class="mt-1 text-caption text-mute">{label}</div>
+          </div>
+        ))
+      }
+    </div>
+
+    {/* Bar chart */}
+    <div class="rounded-md bg-canvas p-3 shadow-level-1">
+      <p class="mb-2 text-caption text-mute">Pipeline · last 7 days</p>
+      <div class="flex h-12 items-end gap-1">
+        {
+          bars.map((h, i) => (
+            <span
+              class="flex-1 rounded-t-xs bg-ink"
+              style={`height:${h}%;opacity:${0.25 + i * 0.09}`}
+            />
+          ))
+        }
+      </div>
+    </div>
+
+    {/* Deal rows */}
+    {
+      deals.map(({ name, status }) => (
+        <div class="flex items-center gap-2 py-0.5">
+          <span class="size-1.5 shrink-0 rounded-full bg-hairline-strong" />
+          <span class="flex-1 truncate text-caption text-body">{name}</span>
+          <span class="shrink-0 text-caption text-mute">{status}</span>
+        </div>
+      ))
+    }
+  </div>
+</div>

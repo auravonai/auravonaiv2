@@ -1,0 +1,37 @@
+---
+import type { GetStaticPaths } from 'astro';
+
+import AiServiceRoute from '@/components/services/AiServiceRoute.astro';
+import {
+  getAllServicePageSlugs,
+  getServicePage,
+  type ServicePage,
+} from '@/lib/services';
+
+/**
+ * `/services/<slug>` — the 15 AI and software engineering spokes.
+ *
+ * This file used to be a dispatcher. Both business lines lived under
+ * `/services/`, Astro permits one `[slug].astro` per directory, so the route
+ * had to resolve which of two data sources owned a slug and hand off — with a
+ * build-time guard against the two sets colliding.
+ *
+ * The marketing pages moved to `/digital-marketing/*` (see
+ * `src/lib/marketing.ts`), so the dispatch, the second route component, and
+ * the collision guard all went with them. One segment, one data source, one
+ * kind of page.
+ */
+export const getStaticPaths = (() =>
+  getAllServicePageSlugs().map((slug) => ({
+    params: { slug },
+    props: { page: getServicePage(slug)! },
+  }))) satisfies GetStaticPaths;
+
+interface Props {
+  page: ServicePage;
+}
+
+const { page } = Astro.props;
+---
+
+<AiServiceRoute page={page} />

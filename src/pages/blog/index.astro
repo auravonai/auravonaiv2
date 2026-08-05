@@ -1,0 +1,35 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BlogPageContent from '@/components/pages/BlogPageContent.astro';
+import { articles } from '@/lib/articles';
+
+const blogListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Auravon AI Blog',
+  description: 'Engineering and AI insights for founders and product teams.',
+  url: 'https://auravonai.com/blog',
+  itemListElement: articles.map((article, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    url: `https://auravonai.com/blog/${article.slug}`,
+    name: article.title,
+  })),
+};
+---
+
+<BaseLayout
+  title="AI Development Blog — SaaS, Startup Software & AI Guides"
+  description="In-depth guides on AI app development cost, SaaS architecture, MVP building, Next.js performance, RAG chatbots, business automation, and startup tech stack — written by the Auravon AI engineering team."
+  canonical="/blog"
+  remoteImages
+>
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(blogListSchema)}
+  />
+
+  <BlogPageContent />
+</BaseLayout>

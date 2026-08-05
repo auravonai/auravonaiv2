@@ -1,0 +1,262 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+import ChevronRight from 'lucide-astro/ChevronRight';
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Section from '@/components/ui/Section.astro';
+import Card from '@/components/ui/Card.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Button from '@/components/ui/Button.astro';
+import Accordion from '@/components/ui/Accordion.astro';
+
+import { breadcrumbSchema, faqPageSchema, webPageSchema, ORG_ID } from '@/lib/seo';
+import { SITE_URL } from '@/lib/site';
+import {
+  MARKETING_HUB_SEO as SEO,
+  marketingHubFaqs,
+} from '@/lib/marketing-seo';
+import {
+  MARKETING_LABEL,
+  getMarketingCategories,
+  hasMarketingPage,
+  marketingPath,
+} from '@/lib/marketing';
+
+/**
+ * `/digital-marketing` — the hub for the marketing practice.
+ *
+ * Structurally identical to `/services`: hero → categories → FAQ → CTA, and
+ * nothing else. It routes; the 34 pages beneath it explain. The two hubs are
+ * siblings rather than parent and child, because the two practices are
+ * genuinely separate businesses sharing a domain.
+ *
+ * Structured data mirrors the services hub exactly — `CollectionPage`,
+ * `BreadcrumbList`, one umbrella `Service`, an `ItemList` of the eight
+ * categories, and `FAQPage`. `Organization` and `WebSite` come from
+ * BaseLayout and are not repeated here.
+ */
+
+const categories = getMarketingCategories();
+const path = SEO.path;
+
+/**
+ * Categories that have a page of their own. The structured data below
+ * enumerates URLs, so the category the hub absorbed has to be excluded — an
+ * `ItemList` naming a URL that 301s elsewhere is a broken statement about the
+ * site, even though the visible card for it still renders (unlinked) above.
+ */
+const linkedCategories = categories.filter((category) =>
+  hasMarketingPage(category.slug),
+);
+
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: 'Home', path: '/' },
+    { name: MARKETING_LABEL, path },
+  ],
+  path,
+);
+
+const webPage = webPageSchema({
+  path,
+  name: 'Digital Marketing Services',
+  description: SEO.metaDescription,
+  hasBreadcrumb: true,
+  type: 'CollectionPage',
+});
+
+/**
+ * The umbrella node. Its `hasOfferCatalog` points at the category pages by
+ * URL rather than restating their content — each of those pages defines its
+ * own offering, and duplicating a description here would make two nodes claim
+ * the same thing.
+ */
+const umbrellaService = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': `${SITE_URL}${path}#service`,
+  name: 'Digital Marketing Services',
+  description: SEO.summary,
+  serviceType: 'Digital marketing',
+  provider: { '@id': ORG_ID },
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Digital marketing services',
+    itemListElement: linkedCategories.map((category) => ({
+      '@type': 'Offer',
+      itemOffered: {
+        '@type': 'Service',
+        name: category.label,
+        description: category.menuDescription,
+        url: `${SITE_URL}${marketingPath(category.slug)}`,
+      },
+    })),
+  },
+};
+
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  '@id': `${SITE_URL}${path}#itemlist`,
+  itemListOrder: 'https://schema.org/ItemListOrderAscending',
+  numberOfItems: linkedCategories.length,
+  itemListElement: linkedCategories.map((category, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: category.label,
+    url: `${SITE_URL}${marketingPath(category.slug)}`,
+  })),
+};
+
+const faqPage = faqPageSchema(marketingHubFaqs, path);
+---
+
+<BaseLayout
+  title={SEO.metaTitle}
+  description={SEO.metaDescription}
+  canonical={path}
+  ogTitle={SEO.ogTitle}
+  ogDescription={SEO.ogDescription}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(webPage)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbs)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(umbrellaService)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(itemList)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(faqPage)} />
+  </Fragment>
+
+  {/* ══════════════ HERO ══════════════ */}
+  <Section surface="soft" as="section">
+    <nav aria-label="Breadcrumb" class="mb-10">
+      <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
+        <li><a href="/" class="transition-colors hover:text-ink">Home</a></li>
+        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
+        <li><span class="text-body" aria-current="page">{MARKETING_LABEL}</span></li>
+      </ol>
+    </nav>
+
+    <Reveal>
+      <Eyebrow class="mb-4">Marketing practice</Eyebrow>
+      <h1 class="max-w-4xl text-display-xl">
+        {SEO.h1}
+        <span class="block text-mute">{SEO.h1Tail}</span>
+      </h1>
+      <p class="mt-6 max-w-2xl text-body-lg text-body">{SEO.summary}</p>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <Button href="/contact" variant="primary" size="lg">
+          Talk to us
+          <ArrowRight size={16} aria-hidden="true" />
+        </Button>
+        <Button href="/services" variant="secondary" size="lg">
+          Looking for AI &amp; software?
+        </Button>
+      </div>
+    </Reveal>
+  </Section>
+
+  {/* ══════════════ CATEGORIES ══════════════ */}
+  <Section surface="canvas" as="section" id="categories" divided>
+    <Reveal>
+      <Eyebrow class="mb-4">What we do</Eyebrow>
+      <h2 class="max-w-3xl text-display-lg">Eight service families</h2>
+      {SEO.intro.map((paragraph) => (
+        <p class="mt-4 max-w-2xl text-body-md text-body">{paragraph}</p>
+      ))}
+    </Reveal>
+
+    <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {
+        categories.map((category, i) => (
+          <Reveal delay={i * 60} class="flex">
+            <Card surface="soft" elevation={2} padding="md" class="flex w-full flex-col">
+              <h3 class="text-heading-md text-ink">
+                {
+                  hasMarketingPage(category.slug) ? (
+                    <a
+                      href={marketingPath(category.slug)}
+                      class="text-ink transition-colors hover:text-link"
+                    >
+                      {category.label}
+                    </a>
+                  ) : (
+                    /* The category this hub absorbed — see HUB_ALIAS_SLUG.
+                       Its sub-services below still link out normally. */
+                    category.label
+                  )
+                }
+              </h3>
+              <p class="mt-2 text-body-sm text-body">{category.menuDescription}</p>
+
+              <ul class="mt-5 space-y-1.5 border-t border-hairline pt-4">
+                {category.subServices.map((sub) => (
+                  <li>
+                    <a
+                      href={marketingPath(sub.slug)}
+                      class="group flex items-start gap-2 text-body-sm text-body transition-colors hover:text-ink"
+                    >
+                      <ChevronRight
+                        size={12}
+                        class="mt-1 shrink-0 text-mute"
+                        aria-hidden="true"
+                      />
+                      <span>
+                        {sub.label}
+                        <span class="block text-caption text-mute">
+                          {sub.menuDescription}
+                        </span>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          </Reveal>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* ══════════════ FAQ ══════════════ */}
+  <Section surface="canvas" spacing="tight" as="section" id="faq" divided>
+    <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-20">
+      <Reveal>
+        <Eyebrow class="mb-4">Questions</Eyebrow>
+        <h2 class="text-display-lg">Digital marketing services: common questions</h2>
+        <p class="mt-4 text-body-md text-body">
+          Catalog-level answers. Anything specific to one service is answered on
+          that service's own page.
+        </p>
+      </Reveal>
+
+      <Reveal delay={120}>
+        {
+          marketingHubFaqs.map((faq) => (
+            <Accordion question={faq.question} headingLevel="h3">
+              {faq.answer}
+            </Accordion>
+          ))
+        }
+      </Reveal>
+    </div>
+  </Section>
+
+  {/* ══════════════ CTA ══════════════ */}
+  <Section surface="invert" spacing="tight" as="section">
+    <Reveal class="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h2 class="text-display-md">Not sure which of these you need?</h2>
+        <p class="mt-3 max-w-xl text-body-md opacity-80">
+          Tell us what you sell and who buys it. If marketing is not the thing
+          holding you back, we will say so.
+        </p>
+      </div>
+      <Button href="/contact" variant="primary" size="lg" class="shrink-0">
+        Start a conversation
+        <ArrowRight size={16} aria-hidden="true" />
+      </Button>
+    </Reveal>
+  </Section>
+</BaseLayout>

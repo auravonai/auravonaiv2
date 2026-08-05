@@ -1,0 +1,378 @@
+---
+import Mail from 'lucide-astro/Mail';
+import MessageCircle from 'lucide-astro/MessageCircle';
+import Clock from 'lucide-astro/Clock';
+import ArrowRight from 'lucide-astro/ArrowRight';
+import CheckCircle2 from 'lucide-astro/CheckCircle2';
+import MapPin from 'lucide-astro/MapPin';
+import Globe from 'lucide-astro/Globe';
+
+import Card from '@/components/ui/Card.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Button from '@/components/ui/Button.astro';
+import Field from '@/components/ui/Field.astro';
+import { WHATSAPP_NUMBER, WHATSAPP_URL } from '@/lib/site';
+
+const contactCards = [
+  {
+    icon: Mail,
+    title: 'General Support',
+    value: 'support@auravonai.com',
+    href: 'mailto:support@auravonai.com',
+    description: 'General inquiries and support',
+  },
+  {
+    icon: Mail,
+    title: 'Project Inquiries',
+    value: 'projects@auravonai.com',
+    href: 'mailto:projects@auravonai.com',
+    description: 'Start a new project with us',
+  },
+  {
+    icon: Mail,
+    title: 'Business',
+    value: 'contacts@auravonai.com',
+    href: 'mailto:contacts@auravonai.com',
+    description: 'Partnerships and opportunities',
+  },
+  {
+    icon: MessageCircle,
+    title: 'WhatsApp',
+    value: '+91 88140 12395',
+    href: WHATSAPP_URL,
+    description: 'Fastest — usually within 1 hour',
+  },
+];
+
+const projectTypes = [
+  'SEO / Search Engine Optimisation',
+  'Google Ads / PPC',
+  'Meta Ads (Facebook & Instagram)',
+  'Website Development',
+  'Ecommerce Development (Shopify / WooCommerce)',
+  'Amazon / Flipkart / Meesho Account Management',
+  'Social Media Management',
+  'Content Marketing / SEO Blog Writing',
+  'Graphic Design & Branding',
+  'Logo Design',
+  'Business Strategy / Consulting',
+  'Digital Growth Planning',
+  'Multiple Services',
+  'Other / Not Sure Yet',
+];
+
+const budgetRanges = [
+  'Under ₹25,000',
+  '₹25,000 – ₹75,000',
+  '₹75,000 – ₹2,00,000',
+  '₹2,00,000 – ₹5,00,000',
+  '₹5,00,000+',
+  "Let's discuss",
+];
+
+const trustChips = [
+  { icon: CheckCircle2, text: 'Responds within 24 hours' },
+  { icon: Globe, text: 'Working with startups globally' },
+  { icon: Clock, text: 'Free 30-min strategy call' },
+];
+
+const expectations = [
+  { icon: Clock, text: 'Response within 24 hours' },
+  { icon: CheckCircle2, text: 'Free project assessment' },
+  { icon: MessageCircle, text: 'No-obligation strategy call' },
+  { icon: ArrowRight, text: 'Clear pricing & timeline' },
+];
+---
+
+{/* ── Hero ── */}
+<section class="border-b border-hairline bg-canvas-soft band-tight">
+  <div class="container-page text-center">
+    <Reveal>
+      <p class="mb-5 inline-flex items-center gap-2 text-body-sm text-body">
+        <span class="size-1.5 rounded-full bg-link" aria-hidden="true"></span>
+        Available for New Projects
+      </p>
+
+      <h1 class="text-display-xl">
+        Let's Build Something <span class="text-mute">Amazing</span>
+      </h1>
+      <p class="mx-auto mt-4 mb-8 max-w-xl text-body-lg text-body">
+        Book a free 30-minute strategy call, or send us a message. We respond
+        within 24 hours — usually much faster.
+      </p>
+
+      <ul class="flex flex-wrap items-center justify-center gap-2.5">
+        {
+          trustChips.map(({ icon, text }) => {
+            const Icon = icon as any;
+            return (
+              <li class="flex items-center gap-1.5 rounded-sm bg-canvas px-3 py-1.5 text-body-sm text-body shadow-level-1">
+                <Icon size={14} class="text-mute" aria-hidden="true" />
+                {text}
+              </li>
+            );
+          })
+        }
+      </ul>
+    </Reveal>
+  </div>
+</section>
+
+{/* ── Contact cards ── */}
+<section class="border-b border-hairline bg-canvas py-10">
+  <div class="container-page">
+    <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        contactCards.map(({ icon, title, value, href, description }, i) => {
+          const Icon = icon as any;
+          const isExternal = href.startsWith('http');
+          return (
+            <Reveal as="li" delay={i * 80} class="flex">
+              <Card
+                as="a"
+                surface="canvas"
+                elevation={2}
+                padding="sm"
+                interactive
+                class="group flex flex-1 flex-col"
+                href={href}
+                target={isExternal ? '_blank' : undefined}
+                rel={isExternal ? 'noopener noreferrer' : undefined}
+              >
+                <span class="mb-3 flex size-11 shrink-0 items-center justify-center rounded-md bg-canvas-soft text-ink">
+                  <Icon size={20} aria-hidden="true" />
+                </span>
+
+                <span class="mb-1 block font-mono text-caption uppercase tracking-[0.08em] text-mute">
+                  {title}
+                </span>
+                <span class="mb-1 block flex-1 text-body-sm font-medium break-all text-ink">
+                  {value}
+                </span>
+
+                <span class="mt-3 flex items-center justify-between gap-2 border-t border-hairline pt-3">
+                  <span class="text-caption text-mute">{description}</span>
+                  <ArrowRight
+                    size={14}
+                    class="shrink-0 text-mute opacity-0 transition-opacity duration-200 group-hover:opacity-100" aria-hidden="true" />
+                </span>
+              </Card>
+            </Reveal>
+          );
+        })
+      }
+    </ul>
+  </div>
+</section>
+
+{/* ── Form + sidebar ── */}
+<section class="bg-canvas py-14 md:py-20">
+  <div class="container-page">
+    <div class="grid gap-10 lg:grid-cols-3">
+      {/* ── Form ── */}
+      <div class="lg:col-span-2">
+        <Card surface="soft" elevation={1} padding="lg">
+          <h2 class="text-display-md">Send Us a Project Brief</h2>
+          <p class="mt-1 mb-7 text-body-sm text-body">
+            Fill in your details and we'll open WhatsApp with everything
+            pre-filled — just hit send.
+          </p>
+
+          <form id="brief-form" class="space-y-5" novalidate={false}>
+            <div class="grid gap-5 sm:grid-cols-2">
+              <Field name="name" label="Full Name" required placeholder="Your name" />
+              <Field
+                name="email"
+                type="email"
+                label="Email Address"
+                required
+                placeholder="you@company.com"
+              />
+            </div>
+
+            <div class="grid gap-5 sm:grid-cols-2">
+              <Field
+                name="phone"
+                type="tel"
+                label="Phone / WhatsApp"
+                placeholder="+91 98765 43210"
+              />
+              <Field name="company" label="Company / Startup" placeholder="Acme Inc." />
+            </div>
+
+            <div class="grid gap-5 sm:grid-cols-2">
+              <Field
+                name="projectType"
+                type="select"
+                label="Project Type"
+                required
+                placeholder="Select project type"
+                options={projectTypes}
+              />
+              <Field
+                name="budget"
+                type="select"
+                label="Budget Range"
+                placeholder="Select budget range"
+                options={budgetRanges}
+              />
+            </div>
+
+            <Field
+              name="timeline"
+              label="Timeline"
+              placeholder="e.g., Need to launch in 6 weeks"
+            />
+
+            <Field
+              name="message"
+              type="textarea"
+              label="Project Description"
+              required
+              placeholder="Tell us about your project — what are you building, what problem does it solve, and what do you need from us?"
+            />
+
+            <div class="space-y-3">
+              <Button type="submit" variant="primary" size="lg" class="w-full">
+                <MessageCircle size={16} aria-hidden="true" />
+                <span data-submit-label>Send via WhatsApp</span>
+              </Button>
+              <p class="text-center text-caption text-mute">
+                Opens WhatsApp with your message pre-filled · No commitment
+                required
+              </p>
+            </div>
+          </form>
+
+          {/* Success state, revealed once the deep link has been opened. */}
+          <div
+            id="brief-success"
+            hidden
+            class="flex flex-col items-center justify-center py-16 text-center"
+            role="status"
+          >
+            <span
+              class="mb-4 flex size-16 items-center justify-center rounded-full bg-canvas text-ink shadow-level-2"
+            >
+              <CheckCircle2 size={32} aria-hidden="true" />
+            </span>
+            <h3 class="text-display-md">WhatsApp Opened!</h3>
+            <p class="mt-2 max-w-sm text-body-sm text-body">
+              Your details have been pre-filled in WhatsApp. Just hit <strong
+                class="font-medium text-ink">Send</strong
+              > to reach us — we typically reply within 1 hour.
+            </p>
+          </div>
+        </Card>
+      </div>
+
+      {/* ── Sidebar ── */}
+      <div class="space-y-4">
+        <Reveal>
+          <Card surface="soft" elevation={1} interactive>
+            <span class="mb-4 flex size-10 items-center justify-center rounded-md bg-canvas text-ink shadow-level-1">
+              <MessageCircle size={20} aria-hidden="true" />
+            </span>
+            <h3 class="text-display-sm">WhatsApp Us</h3>
+            <p class="mt-2 mb-4 text-body-sm text-body">
+              For the fastest response, message us directly on WhatsApp. We
+              typically reply within 1 hour.
+            </p>
+            <Button
+              href={WHATSAPP_URL}
+              variant="primary"
+              size="md"
+              external
+              class="w-full"
+            >
+              <MessageCircle size={16} aria-hidden="true" />
+              Chat on WhatsApp
+            </Button>
+          </Card>
+        </Reveal>
+
+        <Reveal delay={80}>
+          <Card surface="soft" elevation={1}>
+            <h3 class="mb-4 text-display-sm">What to Expect</h3>
+            <ul class="space-y-3">
+              {
+                expectations.map(({ icon, text }) => {
+                  const Icon = icon as any;
+                  return (
+                    <li class="flex items-center gap-3">
+                      <span class="flex size-7 shrink-0 items-center justify-center rounded-sm bg-canvas text-ink shadow-level-1">
+                        <Icon size={14} aria-hidden="true" />
+                      </span>
+                      <span class="text-body-sm text-ink">{text}</span>
+                    </li>
+                  );
+                })
+              }
+            </ul>
+          </Card>
+        </Reveal>
+
+        <Reveal delay={150}>
+          <Card surface="soft" elevation={1} padding="sm" class="overflow-hidden !p-0">
+            <div
+              class="flex h-28 flex-col items-center justify-center border-b border-hairline bg-canvas text-center"
+            >
+              <span class="mb-2 flex size-10 items-center justify-center rounded-full bg-canvas-soft text-ink">
+                <MapPin size={20} aria-hidden="true" />
+              </span>
+              <p class="text-body-sm font-medium text-body">Remote Worldwide</p>
+            </div>
+            <div class="p-5">
+              <p class="text-body-sm text-body">
+                We work remotely with clients globally across Asia, Europe, North
+                America, and beyond.
+              </p>
+            </div>
+          </Card>
+        </Reveal>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ whatsappNumber: WHATSAPP_NUMBER }}>
+  const form = document.getElementById('brief-form');
+  const success = document.getElementById('brief-success');
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    // Let the browser surface its own validation UI first.
+    if (!form.reportValidity()) return;
+
+    const data = new FormData(form);
+    const get = (key) => String(data.get(key) ?? '').trim();
+
+    const optional = (label, key) => {
+      const value = get(key);
+      return value ? `*${label}:* ${value}` : '';
+    };
+
+    const parts = [
+      "Hi Auravon AI! I'd like to discuss a project.",
+      '',
+      `*Name:* ${get('name')}`,
+      `*Email:* ${get('email')}`,
+      optional('Phone', 'phone'),
+      optional('Company', 'company'),
+      optional('Service Needed', 'projectType'),
+      optional('Budget', 'budget'),
+      optional('Timeline', 'timeline'),
+      '',
+      '*Details:*',
+      get('message'),
+    ].filter(Boolean);
+
+    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(parts.join('\n'))}`;
+
+    window.open(url, '_blank', 'noopener,noreferrer');
+
+    form.hidden = true;
+    if (success) success.hidden = false;
+  });
+</script>

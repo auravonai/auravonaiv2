@@ -1,0 +1,98 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+import AboutHero from '@/components/about/AboutHero.astro';
+import AboutWhatWeDo from '@/components/about/AboutWhatWeDo.astro';
+import AboutPractice from '@/components/about/AboutPractice.astro';
+import AboutTeam from '@/components/about/AboutTeam.astro';
+import AboutPrinciples from '@/components/about/AboutPrinciples.astro';
+import AboutTrust from '@/components/about/AboutTrust.astro';
+import AboutTimeline from '@/components/about/AboutTimeline.astro';
+import AboutFAQ from '@/components/about/AboutFAQ.astro';
+import AboutCTA from '@/components/about/AboutCTA.astro';
+
+import { breadcrumbSchema, faqPageSchema, webPageSchema, ORG_ID } from '@/lib/seo';
+import { ABOUT_SEO, ABOUT_INTRO, ABOUT_PATH, aboutFaqs } from '@/lib/about-seo';
+
+/**
+ * `/about` — the trust and E-E-A-T page for Auravon AI.
+ *
+ * Section order follows how someone actually evaluates a company: who they
+ * are → what they do (and where to go next) → how they work → who does the
+ * work → what they believe → what they commit to and refuse → how long they
+ * have been doing it → objections → conversion. A visitor who leaves at any
+ * point has still seen everything above it in the order that matters most for
+ * a trust decision.
+ *
+ * Positioning: primary keyword is "AI development company", but this page is
+ * built to *support* the homepage rather than compete with it. It owns
+ * about-intent and vetting-intent queries and routes commercial intent to
+ * `/services`. See `docs/about-seo.md`.
+ *
+ * Structured data: Organization and WebSite are emitted site-wide by
+ * BaseLayout. This page adds only the nodes specific to it. The AboutPage
+ * node carries `mainEntity → #organization`, and `organizationSchema` in
+ * `seo.ts` carries the reciprocal `mainEntityOfPage → /about#webpage`. That
+ * pair is what nominates this URL as the entity's own page instead of one
+ * more document that mentions the company.
+ */
+
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: 'Home', path: '/' },
+    { name: 'About', path: ABOUT_PATH },
+  ],
+  ABOUT_PATH,
+);
+
+const webPage = webPageSchema({
+  path: ABOUT_PATH,
+  name: 'About Auravon AI',
+  // Quotes the hero paragraph verbatim rather than paraphrasing it — see the
+  // one-definition rule at the top of `about-seo.ts`.
+  description: ABOUT_INTRO,
+  hasBreadcrumb: true,
+  type: 'AboutPage',
+  mainEntityId: ORG_ID,
+});
+
+const faqPage = faqPageSchema(aboutFaqs, ABOUT_PATH);
+---
+
+<BaseLayout
+  title={ABOUT_SEO.title}
+  description={ABOUT_SEO.description}
+  canonical={ABOUT_SEO.canonical}
+  ogTitle={ABOUT_SEO.ogTitle}
+  ogDescription={ABOUT_SEO.ogDescription}
+  twitterTitle={ABOUT_SEO.twitterTitle}
+  twitterDescription={ABOUT_SEO.twitterDescription}
+>
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(webPage)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(breadcrumbs)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(faqPage)}
+    />
+  </Fragment>
+
+  <AboutHero />
+  <AboutWhatWeDo />
+  <AboutPractice />
+  <AboutTeam />
+  <AboutPrinciples />
+  <AboutTrust />
+  <AboutTimeline />
+  <AboutFAQ />
+  <AboutCTA />
+</BaseLayout>

@@ -1,0 +1,60 @@
+---
+import Eyebrow from './Eyebrow.astro';
+import Reveal from './Reveal.astro';
+
+/**
+ * The eyebrow → headline → lead stack that opens almost every band.
+ *
+ * Centralising it is what keeps section rhythm identical across ~20 pages:
+ * one gap scale, one headline step, one lead measure.
+ */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  align?: 'center' | 'left';
+  /** `lg` is the default section headline; `xl` is for page heroes. */
+  size?: 'lg' | 'xl';
+  as?: string;
+  class?: string;
+}
+
+const {
+  eyebrow,
+  title,
+  lead,
+  align = 'center',
+  size = 'lg',
+  as: Tag = 'h2',
+  class: className,
+} = Astro.props;
+---
+
+<Reveal
+  class:list={[
+    'flex flex-col',
+    align === 'center' ? 'items-center text-center' : 'items-start text-left',
+    className,
+  ]}
+>
+  {eyebrow && <Eyebrow class="mb-4">{eyebrow}</Eyebrow>}
+
+  <Tag class={size === 'xl' ? 'text-display-xl' : 'text-display-lg'}>
+    {title}
+  </Tag>
+
+  {
+    lead && (
+      <p
+        class:list={[
+          'mt-4 text-body-lg text-body',
+          align === 'center' ? 'max-w-2xl' : 'max-w-2xl',
+        ]}
+      >
+        {lead}
+      </p>
+    )
+  }
+
+  <slot />
+</Reveal>

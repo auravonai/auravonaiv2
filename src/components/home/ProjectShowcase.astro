@@ -1,0 +1,159 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+import BarChart3 from 'lucide-astro/BarChart3';
+import Brain from 'lucide-astro/Brain';
+import Users from 'lucide-astro/Users';
+import Database from 'lucide-astro/Database';
+import TrendingUp from 'lucide-astro/TrendingUp';
+import PieChart from 'lucide-astro/PieChart';
+import MessageSquare from 'lucide-astro/MessageSquare';
+import Bot from 'lucide-astro/Bot';
+import Sparkles from 'lucide-astro/Sparkles';
+import ShoppingCart from 'lucide-astro/ShoppingCart';
+import Zap from 'lucide-astro/Zap';
+import CreditCard from 'lucide-astro/CreditCard';
+import ClipboardList from 'lucide-astro/ClipboardList';
+import CalendarDays from 'lucide-astro/CalendarDays';
+import UtensilsCrossed from 'lucide-astro/UtensilsCrossed';
+import Smartphone from 'lucide-astro/Smartphone';
+import MapPin from 'lucide-astro/MapPin';
+
+import Section from '@/components/ui/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Card from '@/components/ui/Card.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Badge from '@/components/ui/Badge.astro';
+import Button from '@/components/ui/Button.astro';
+
+const projects = [
+  {
+    title: 'AI CRM Dashboard',
+    category: 'AI Solutions',
+    description:
+      'CRM with GPT-4 call summaries, lead scoring, and pipeline forecasting — built for a B2B sales team that outgrew spreadsheets.',
+    outcome: 'Shipped in 6 weeks',
+    tags: ['Next.js', 'OpenAI', 'PostgreSQL'],
+    icons: [BarChart3, Brain, Users],
+  },
+  {
+    title: 'SaaS Analytics Platform',
+    category: 'SaaS Product',
+    description:
+      'Multi-tenant analytics dashboard aggregating data from multiple sources, with AI-generated summaries for non-technical users.',
+    outcome: 'Multi-tenant, production-ready',
+    tags: ['React', 'ClickHouse', 'Kafka'],
+    icons: [Database, TrendingUp, PieChart],
+  },
+  {
+    title: 'AI Support Assistant',
+    category: 'AI Automation',
+    description:
+      'RAG-based chatbot trained on a product knowledge base, deployed across web chat and WhatsApp for a growing SaaS company.',
+    outcome: 'Web + WhatsApp channels',
+    tags: ['LangChain', 'Pinecone', 'FastAPI'],
+    icons: [MessageSquare, Bot, Sparkles],
+  },
+  {
+    title: 'E-Commerce Rebuild',
+    category: 'Web Development',
+    description:
+      "Custom Next.js storefront with server components, edge caching, and Stripe — replacing a sluggish Shopify setup that couldn't be customized.",
+    outcome: 'Faster, fully custom',
+    tags: ['Next.js', 'Stripe', 'Cloudflare'],
+    icons: [ShoppingCart, Zap, CreditCard],
+  },
+  {
+    title: 'HR Management System',
+    category: 'Custom Software',
+    description:
+      'Internal tool covering recruitment pipeline, payroll processing, attendance tracking, and compliance reports for a mid-size services company.',
+    outcome: 'Replaced 4 separate tools',
+    tags: ['Next.js', 'MongoDB', 'Razorpay'],
+    icons: [Users, ClipboardList, CalendarDays],
+  },
+  {
+    title: 'Food Delivery App',
+    category: 'Mobile App',
+    description:
+      'Three-app system — customer ordering, driver tracking, and restaurant dashboard — with real-time GPS and order management built in React Native.',
+    outcome: '3-app system, live GPS',
+    tags: ['React Native', 'Socket.io', 'Maps API'],
+    icons: [UtensilsCrossed, Smartphone, MapPin],
+  },
+];
+---
+
+<Section surface="soft" divided>
+  <SectionHeader
+    eyebrow="Work"
+    title="AI Systems and Software We've Built"
+    lead="A sample of the AI products, platforms, and internal systems we've designed, engineered, and put in front of real users."
+    class="mb-16 md:mb-20"
+  />
+
+  <ul class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+    {
+      projects.map(({ title, category, description, outcome, tags, icons }, i) => {
+        const [IconLeft, IconCenter, IconRight] = icons as any[];
+        return (
+          <Reveal as="li" delay={i * 80} class="flex">
+            <Card
+              as="article"
+              surface="canvas"
+              elevation={2}
+              padding="lg"
+              interactive
+              class="flex flex-1 flex-col"
+            >
+              <p class="mb-5 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+                {category}
+              </p>
+
+              <div
+                class="mb-5 flex h-28 w-full items-center justify-center gap-5 rounded-md bg-canvas-soft text-ink"
+                role="img"
+                aria-label={`${title} — ${category} project`}
+              >
+                <IconLeft size={24} class="text-mute" aria-hidden="true" />
+                <IconCenter size={40} aria-hidden="true" />
+                <IconRight size={24} class="text-mute" aria-hidden="true" />
+              </div>
+
+              <h3 class="text-display-sm">{title}</h3>
+              <p class="mt-2 flex-1 text-body-sm text-body">{description}</p>
+
+              <ul class="mt-5 flex flex-wrap gap-1.5">
+                {tags.map((t) => (
+                  <li>
+                    <Badge variant="outline">{t}</Badge>
+                  </li>
+                ))}
+              </ul>
+
+              <div class="mt-5 flex items-center justify-between border-t border-hairline pt-4">
+                <div>
+                  <p class="text-body-sm font-medium text-ink">{outcome}</p>
+                  <p class="mt-0.5 text-caption text-mute">Project highlight</p>
+                </div>
+                <a
+                  href="/projects"
+                  class="inline-flex items-center gap-1 text-body-sm text-link transition-colors hover:text-link-deep"
+                >
+                  Details
+                  <ArrowRight size={12} aria-hidden="true" />
+                </a>
+              </div>
+            </Card>
+          </Reveal>
+        );
+      })
+    }
+  </ul>
+
+  <Reveal delay={200} class="mt-14 text-center">
+    <Button href="/projects" variant="secondary" size="lg">
+      View All Projects
+      <ArrowRight size={16} aria-hidden="true" />
+    </Button>
+  </Reveal>
+</Section>

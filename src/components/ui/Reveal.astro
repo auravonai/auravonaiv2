@@ -1,0 +1,36 @@
+---
+/**
+ * Scroll-reveal wrapper — the Astro replacement for the reference's
+ * framer-motion `AnimatedSection`.
+ *
+ * Renders no runtime JS of its own. It only marks the element; a single
+ * shared IntersectionObserver in src/scripts/reveal.ts drives every
+ * instance on the page.
+ */
+interface Props {
+  /** Stagger in milliseconds. Matches the reference's `delay` prop (seconds). */
+  delay?: number;
+  /** `up` slides in from below; `fade` only fades. */
+  direction?: 'up' | 'fade';
+  /** Element to render. Use `li`/`article` etc. to keep semantics intact. */
+  as?: string;
+  class?: string;
+}
+
+const {
+  delay = 0,
+  direction = 'up',
+  as: Tag = 'div',
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+<Tag
+  data-reveal={direction}
+  style={delay ? `--reveal-delay:${delay}ms` : undefined}
+  class:list={['min-w-0', className]}
+  {...rest}
+>
+  <slot />
+</Tag>

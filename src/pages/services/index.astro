@@ -1,0 +1,111 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+import ServicesHubHero from '@/components/services/ServicesHubHero.astro';
+import ServicesGrid from '@/components/services/ServicesGrid.astro';
+import ServicesHubTrust from '@/components/services/ServicesHubTrust.astro';
+import ServicesHubFAQ from '@/components/services/ServicesHubFAQ.astro';
+import ServicesHubCTA from '@/components/services/ServicesHubCTA.astro';
+
+import { breadcrumbSchema, faqPageSchema, webPageSchema } from '@/lib/seo';
+import {
+  SERVICES_SEO,
+  primaryServiceSchema,
+  servicesItemListSchema,
+  servicesFaqs,
+} from '@/lib/services-seo';
+
+/**
+ * `/services` — the navigation hub.
+ *
+ * What this page is now
+ * ---------------------
+ * Hero → card grid → why choose us → FAQ → CTA. Nothing else. It exists to
+ * route a visitor to one of fifteen service pages in as few seconds as
+ * possible, and to rank for the catalog-intent query "AI development
+ * services".
+ *
+ * What it was
+ * -----------
+ * Fifteen full service sections, ~6,000 words, navigated by an in-page table
+ * of contents — a documentation page wearing a services page's URL. Every one
+ * of those sections is now its own page at `/services/<slug>`, which is
+ * better for the reader (scan, click, read one thing) and better for search
+ * (fifteen focused pages each owning one keyword, rather than one page trying
+ * to own fifteen).
+ *
+ * Removed with it: `ServicesHubIntro`, `ServicesHubCatalog`, and
+ * `ServicesHubProcess`. The process content moved into each spoke, where it
+ * is specific to the service rather than generic across all of them.
+ *
+ * Structured data: Organization and WebSite come from BaseLayout. This page
+ * adds the WebPage, its breadcrumb, its FAQ, the umbrella Service node, and
+ * an ItemList enumerating the fifteen destinations — which is the node that
+ * actually says "this is a hub". Each spoke owns its own Service node; see
+ * the note above `spokeServiceSchema` in `src/lib/services-seo.ts`.
+ */
+
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: 'Home', path: '/' },
+    { name: 'Services', path: '/services' },
+  ],
+  '/services',
+);
+
+const webPage = webPageSchema({
+  path: '/services',
+  name: 'AI Development Services',
+  description: SERVICES_SEO.description,
+  hasBreadcrumb: true,
+  type: 'CollectionPage',
+});
+
+const faqPage = faqPageSchema(servicesFaqs, '/services');
+const primaryService = primaryServiceSchema();
+const itemList = servicesItemListSchema();
+---
+
+<BaseLayout
+  title={SERVICES_SEO.title}
+  description={SERVICES_SEO.description}
+  canonical={SERVICES_SEO.canonical}
+  ogTitle={SERVICES_SEO.ogTitle}
+  ogDescription={SERVICES_SEO.ogDescription}
+  twitterTitle={SERVICES_SEO.twitterTitle}
+  twitterDescription={SERVICES_SEO.twitterDescription}
+>
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(webPage)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(breadcrumbs)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(primaryService)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(itemList)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(faqPage)}
+    />
+  </Fragment>
+
+  <ServicesHubHero />
+  <ServicesGrid />
+  <ServicesHubTrust />
+  <ServicesHubFAQ />
+  <ServicesHubCTA />
+</BaseLayout>

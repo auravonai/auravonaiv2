@@ -1,0 +1,81 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+import ChevronRight from 'lucide-astro/ChevronRight';
+
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Button from '@/components/ui/Button.astro';
+import { ABOUT_INTRO, ABOUT_LEDE } from '@/lib/about-seo';
+
+/**
+ * `/about` hero.
+ *
+ * H1 decision: the primary keyword ("AI development company") leads, and the
+ * qualifier that follows is the page's actual thesis rather than a second
+ * keyword. The word "About" is carried by the eyebrow, the breadcrumb, the
+ * title tag, and the URL — spending H1 characters on it would push the
+ * keyword out of the strongest position on the page for no gain.
+ *
+ * The visible breadcrumb is not decoration: Google requires BreadcrumbList
+ * markup to match a hierarchy the visitor can see, and this page emits that
+ * markup. The trail here and the schema in `src/pages/about.astro` must stay
+ * in step.
+ *
+ * REMOVED: a `companyFacts` definition list ("Building software since 2019",
+ * "Registered in Vadodara, Gujarat, India", "Clients: Remote, worldwide",
+ * "Team shape: Small and senior"). Those values were inferred from the old
+ * page's timeline and from the Organization schema rather than confirmed with
+ * anyone, and at least one was wrong. Do not reintroduce a facts strip here
+ * unless every value has been checked against reality — the About page is
+ * exactly where a buyer verifies claims, so a wrong one costs more here than
+ * anywhere else on the site.
+ */
+---
+
+<section class="border-b border-hairline bg-canvas-soft band-tight">
+  <div class="container-page">
+    <nav aria-label="Breadcrumb" class="mb-10">
+      <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
+        <li><a href="/" class="transition-colors hover:text-ink">Home</a></li>
+        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
+        <li><span class="text-body" aria-current="page">About</span></li>
+      </ol>
+    </nav>
+
+    <div class="max-w-3xl">
+      <Reveal>
+        <Eyebrow class="mb-4">About Auravon AI</Eyebrow>
+
+        {/*
+          `{' '}` is load-bearing, not a formatting accident. Astro's
+          compressHTML strips template whitespace between a text node and an
+          element, so the natural two-line form renders as
+          "…CompanyRun by the Engineers…" — visibly, and in the extracted
+          heading text. An explicit expression emits a real space the
+          compressor leaves alone.
+        */}
+        <h1 class="text-display-xl">
+          An AI Development Company{' '}
+          <span class="text-mute">Run by the Engineers Who Build It</span>
+        </h1>
+
+        <p class="mt-5 text-body-lg text-body">{ABOUT_INTRO}</p>
+        <p class="mt-4 text-body-md text-body">{ABOUT_LEDE}</p>
+
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+          <Button href="/contact" variant="primary" size="lg">
+            Talk to an Engineer
+            <ArrowRight
+              size={16}
+              class="transition-transform duration-150 group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
+          </Button>
+          <Button href="/projects" variant="secondary" size="lg">
+            See What We Have Built
+          </Button>
+        </div>
+      </Reveal>
+    </div>
+  </div>
+</section>

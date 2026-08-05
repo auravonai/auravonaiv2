@@ -1,0 +1,88 @@
+---
+import ShieldCheck from 'lucide-astro/ShieldCheck';
+import Minus from 'lucide-astro/Minus';
+
+import Section from '@/components/ui/Section.astro';
+import Card from '@/components/ui/Card.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import { commitments, honestLimits } from '@/lib/about-seo';
+
+/**
+ * Transparency band — the trust half of the page.
+ *
+ * Two halves that have to sit together to work: what we commit to, and what
+ * we will talk you out of. A page of commitments alone reads like every other
+ * agency page; the second list is what makes the first one credible, because
+ * a firm willing to name the revenue it turns down is making a claim that
+ * costs something.
+ *
+ * The final limit ("we do not publish client counts, star ratings, or logos
+ * we cannot substantiate") is load-bearing. It converts the deliberate
+ * absence of those numbers — which a competitor's About page will have — from
+ * a gap into a position. If real, attributable case studies and reviews are
+ * added later, that line must be revisited, not quietly left standing.
+ */
+---
+
+<Section surface="canvas" spacing="tight" as="section" divided>
+  <div class="grid gap-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-16">
+    <div>
+      <Reveal class="max-w-2xl">
+        <Eyebrow class="mb-4">Transparency</Eyebrow>
+        <h2 class="text-display-lg">What you can hold us to</h2>
+        <p class="mt-4 text-body-md text-body">
+          Written as commitments rather than statistics, because a commitment is
+          something you can enforce and a statistic is something you have to
+          take on faith.
+        </p>
+      </Reveal>
+
+      <ul class="mt-10 grid gap-5 sm:grid-cols-2">
+        {
+          commitments.map((item, i) => (
+            <Reveal as="li" delay={i * 60} class="flex">
+              <Card surface="soft" elevation={1} class="flex-1">
+                <ShieldCheck size={18} class="mb-4 text-mute" aria-hidden="true" />
+                <h3 class="text-display-sm">{item.title}</h3>
+                <p class="mt-2 text-body-sm text-body">{item.description}</p>
+              </Card>
+            </Reveal>
+          ))
+        }
+      </ul>
+    </div>
+
+    <Reveal delay={140} class="flex">
+      <Card surface="soft" elevation={1} padding="lg" class="flex flex-1 flex-col">
+        <h3 class="text-display-sm">Things we will tell you before you hire us</h3>
+        <p class="mt-2 text-body-sm text-body">
+          The advice that costs us work more often than it wins it.
+        </p>
+
+        <ul class="mt-6 space-y-4">
+          {
+            honestLimits.map((limit) => (
+              <li class="flex gap-3">
+                <Minus
+                  size={14}
+                  class="mt-1.5 shrink-0 text-mute"
+                  aria-hidden="true"
+                />
+                <p class="text-body-sm text-body">{limit}</p>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="mt-auto pt-6 text-body-sm text-body">
+          We would rather lose a line item than ship something you regret
+          maintaining. If that changes what you want to build, the
+          <a href="/blog" class="text-link underline-offset-2 hover:underline">
+            engineering blog
+          </a> covers the reasoning in more depth.
+        </p>
+      </Card>
+    </Reveal>
+  </div>
+</Section>

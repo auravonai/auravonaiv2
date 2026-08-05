@@ -1,0 +1,403 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+import ChevronRight from 'lucide-astro/ChevronRight';
+import CheckCircle2 from 'lucide-astro/CheckCircle2';
+import CircleAlert from 'lucide-astro/CircleAlert';
+
+import Section from '@/components/ui/Section.astro';
+import Card from '@/components/ui/Card.astro';
+import Badge from '@/components/ui/Badge.astro';
+import Button from '@/components/ui/Button.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Accordion from '@/components/ui/Accordion.astro';
+import ServiceIcon from '@/components/services/ServiceIcon.astro';
+
+import { serviceCategories, getServicePages, type ServicePage } from '@/lib/services';
+import { getIndustriesForService, industryPath } from '@/lib/industries';
+
+/**
+ * The spoke template. One component renders all 15 service pages.
+ *
+ * Section order is the buyer's own sequence: what this is → why it is hard →
+ * how we do it → what you get → what we build with → who it is for →
+ * objections → further reading → adjacent services → conversion. Someone who
+ * leaves at any point has read everything above it in the order that matters.
+ *
+ * Heading discipline: one `h1` (the service), `h2` per section, `h3` per item
+ * inside a section. The commercial term is in the `h1` and in the first `h2`,
+ * and nowhere else for its own sake — this is a landing page, not a keyword
+ * list.
+ *
+ * Design: alternating `canvas` / `soft` bands are the depth cue between
+ * sections (DESIGN.md), with generous vertical rhythm and a measure capped
+ * around 65 characters on prose blocks. No section carries more than one idea.
+ */
+interface Props {
+  page: ServicePage;
+}
+
+const { page } = Astro.props;
+
+const category = serviceCategories.find((c) => c.id === page.category)!;
+const related = getServicePages(page.relatedServices);
+
+/**
+ * The reverse of the industry pages' "related services" block. Without it the
+ * industry → service link is one-directional, and the sector pages accumulate
+ * no internal links from the fifteen pages that get the most attention.
+ * Derived from `industries.ts`, so a service can never claim a sector that
+ * does not list it.
+ */
+const industries = getIndustriesForService(page.slug);
+---
+
+{/* ── Hero ─────────────────────────────────────────────────────────── */}
+<section class="border-b border-hairline bg-canvas-soft band-tight">
+  <div class="container-page">
+    <nav aria-label="Breadcrumb" class="mb-10">
+      <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
+        <li><a href="/" class="transition-colors hover:text-ink">Home</a></li>
+        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
+        <li>
+          <a href="/services" class="transition-colors hover:text-ink">Services</a>
+        </li>
+        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
+        <li><span class="text-body" aria-current="page">{page.cardTitle}</span></li>
+      </ol>
+    </nav>
+
+    <Reveal class="max-w-3xl">
+      <div class="mb-5 flex items-center gap-3">
+        <span
+          class="flex size-10 items-center justify-center rounded-md bg-canvas text-ink shadow-level-1"
+        >
+          <ServiceIcon name={page.icon} size={18} />
+        </span>
+        <Eyebrow>{category.label}</Eyebrow>
+      </div>
+
+      <h1 class="text-display-xl">
+        {page.h1}{' '}
+        <span class="text-mute">{page.h1Tail}</span>
+      </h1>
+
+      <p class="mt-5 max-w-2xl text-body-lg text-body">{page.summary}</p>
+
+      <ul
+        class="mt-8 mb-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-body-sm text-body"
+      >
+        {
+          page.assurances.map((item) => (
+            <li class="flex items-center gap-1.5">
+              <CheckCircle2 size={14} class="text-mute" aria-hidden="true" />
+              {item}
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <Button href="/contact" variant="primary" size="lg">
+          {page.ctaLabel}
+          <ArrowRight
+            size={16}
+            class="transition-transform duration-150 group-hover:translate-x-0.5"
+            aria-hidden="true"
+          />
+        </Button>
+        <Button href="/services" variant="secondary" size="lg">
+          All Services
+        </Button>
+      </div>
+    </Reveal>
+  </div>
+</section>
+
+{/* ── Introduction ─────────────────────────────────────────────────── */}
+<Section surface="canvas" spacing="tight" as="section">
+  <Reveal class="max-w-2xl">
+    <h2 class="text-display-lg">{page.introHeading}</h2>
+    {
+      page.intro.map((paragraph) => (
+        <p class="mt-4 text-body-md text-body">{paragraph}</p>
+      ))
+    }
+  </Reveal>
+</Section>
+
+{/* ── Problems we solve ────────────────────────────────────────────── */}
+<Section surface="soft" spacing="tight" as="section" divided>
+  <Reveal class="max-w-2xl">
+    <Eyebrow class="mb-4">The Problem</Eyebrow>
+    <h2 class="text-display-lg">What this usually fixes</h2>
+  </Reveal>
+
+  <ul class="mt-12 grid gap-5 md:grid-cols-2">
+    {
+      page.problems.map((problem, i) => (
+        <Reveal as="li" delay={i * 60} class="flex">
+          <Card surface="canvas" elevation={2} class="flex-1">
+            <CircleAlert size={18} class="mb-4 text-mute" aria-hidden="true" />
+            <h3 class="text-display-sm">{problem.title}</h3>
+            <p class="mt-2 text-body-sm text-body">{problem.description}</p>
+          </Card>
+        </Reveal>
+      ))
+    }
+  </ul>
+</Section>
+
+{/* ── Process ──────────────────────────────────────────────────────── */}
+<Section surface="canvas" spacing="tight" as="section" divided>
+  <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] lg:gap-20">
+    <Reveal>
+      <Eyebrow class="mb-4">How We Work</Eyebrow>
+      <h2 class="text-display-lg">The process</h2>
+      <p class="mt-4 text-body-md text-body">
+        Each step produces something you can review — a document, an
+        environment, or working software — rather than a percentage in a status
+        report.
+      </p>
+    </Reveal>
+
+    <Reveal delay={120}>
+      <ol class="divide-y divide-hairline border-y border-hairline">
+        {
+          page.process.map((step) => (
+            <li class="flex gap-5 py-6">
+              <span
+                class="mt-0.5 shrink-0 font-mono text-caption text-mute"
+                aria-hidden="true"
+              >
+                {step.step}
+              </span>
+              <div class="min-w-0">
+                <h3 class="text-body-md font-medium text-ink">{step.title}</h3>
+                <p class="mt-1.5 text-body-sm text-body">{step.description}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </Reveal>
+  </div>
+</Section>
+
+{/* ── Benefits ─────────────────────────────────────────────────────── */}
+<Section surface="soft" spacing="tight" as="section" divided>
+  <Reveal class="max-w-2xl">
+    <Eyebrow class="mb-4">What You Get</Eyebrow>
+    <h2 class="text-display-lg">Why teams choose this</h2>
+  </Reveal>
+
+  <ul class="mt-12 grid gap-5 md:grid-cols-2">
+    {
+      page.benefits.map((benefit, i) => (
+        <Reveal as="li" delay={i * 60} class="flex">
+          <Card surface="canvas" elevation={2} class="flex-1">
+            <CheckCircle2 size={18} class="mb-4 text-mute" aria-hidden="true" />
+            <h3 class="text-display-sm">{benefit.title}</h3>
+            <p class="mt-2 text-body-sm text-body">{benefit.description}</p>
+          </Card>
+        </Reveal>
+      ))
+    }
+  </ul>
+</Section>
+
+{/* ── Technologies ─────────────────────────────────────────────────── */}
+<Section surface="canvas" spacing="tight" as="section" divided>
+  <Reveal class="max-w-2xl">
+    <Eyebrow class="mb-4">Stack</Eyebrow>
+    <h2 class="text-display-lg">Technologies we build with</h2>
+    <p class="mt-4 text-body-md text-body">
+      Tools we have delivered production work on, not a capability matrix. We
+      pick per project and will explain the trade-off behind each choice.
+    </p>
+  </Reveal>
+
+  <Reveal delay={100} class="mt-12">
+    <dl class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        page.technologies.map((group) => (
+          <div>
+            <dt class="mb-4 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+              {group.label}
+            </dt>
+            <dd>
+              <ul class="flex flex-wrap gap-2">
+                {group.items.map((item) => (
+                  <li>
+                    <Badge variant="outline">{item}</Badge>
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </Reveal>
+</Section>
+
+{/* ── Industries ───────────────────────────────────────────────────── */}
+<Section surface="soft" spacing="tight" as="section" divided>
+  <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-20">
+    <Reveal>
+      <Eyebrow class="mb-4">Industries</Eyebrow>
+      <h2 class="text-display-lg">Who this is for</h2>
+      <p class="mt-4 text-body-md text-body">{page.industriesLead}</p>
+    </Reveal>
+
+    <Reveal delay={120} class="flex items-start">
+      <ul class="flex flex-wrap gap-2.5">
+        {
+          page.industries.map((industry) => (
+            <li>
+              <span class="inline-flex items-center rounded-pill bg-canvas px-3.5 py-1.5 text-body-sm text-body shadow-level-1">
+                {industry}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </Reveal>
+  </div>
+</Section>
+
+{/* ── FAQ ──────────────────────────────────────────────────────────── */}
+<Section surface="canvas" spacing="tight" as="section" id="faq" divided>
+  <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-20">
+    <Reveal>
+      <Eyebrow class="mb-4">Questions</Eyebrow>
+      <h2 class="text-display-lg">{page.cardTitle}: common questions</h2>
+
+      {
+        page.relatedArticles.length > 0 && (
+          <div class="mt-8 border-t border-hairline pt-8">
+            <p class="mb-4 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+              Related reading
+            </p>
+            <ul class="space-y-2.5">
+              {page.relatedArticles.map((article) => (
+                <li>
+                  <a
+                    href={article.href}
+                    class="text-body-sm text-link underline-offset-2 hover:underline"
+                  >
+                    {article.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </Reveal>
+
+    <Reveal delay={120}>
+      {
+        page.faqs.map((faq) => (
+          <Accordion question={faq.question} headingLevel="h3">
+            {faq.answer}
+          </Accordion>
+        ))
+      }
+    </Reveal>
+  </div>
+</Section>
+
+{/* ── Sectors ──────────────────────────────────────────────────────── */}
+{
+  industries.length > 0 && (
+    <Section surface="canvas" spacing="tight" as="section" divided>
+      <Reveal class="max-w-2xl">
+        <Eyebrow class="mb-4">Sectors</Eyebrow>
+        <h2 class="text-display-lg">Where we apply this</h2>
+        <p class="mt-4 text-body-md text-body">
+          The same work looks different depending on the constraints it has to
+          hold. These cover what changes.
+        </p>
+      </Reveal>
+      <ul class="mt-8 flex flex-wrap gap-2">
+        {industries.map((sector) => (
+          <li>
+            <a
+              href={industryPath(sector.slug)}
+              class="inline-flex rounded-full border border-hairline px-3.5 py-1.5 text-body-sm text-body transition-colors hover:border-ink hover:text-ink"
+            >
+              {sector.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  )
+}
+
+{/* ── Related services ─────────────────────────────────────────────── */}
+{
+  related.length > 0 && (
+    <Section surface="soft" spacing="tight" as="section" divided>
+      <Reveal class="max-w-2xl">
+        <Eyebrow class="mb-4">Related</Eyebrow>
+        <h2 class="text-display-lg">Services that pair with this</h2>
+      </Reveal>
+
+      <ul class="mt-10 grid gap-5 md:grid-cols-3">
+        {related.map((service, i) => (
+          <Reveal as="li" delay={i * 70} class="flex">
+            <a
+              href={`/services/${service.slug}`}
+              class="group flex flex-1 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              <Card
+                surface="canvas"
+                elevation={2}
+                interactive
+                class="flex flex-1 flex-col"
+              >
+                <span class="mb-4 flex size-10 items-center justify-center rounded-md bg-canvas-soft text-ink">
+                  <ServiceIcon name={service.icon} size={18} />
+                </span>
+                <h3 class="text-display-sm">{service.cardTitle}</h3>
+                <p class="mt-2 mb-5 text-body-sm text-body">
+                  {service.cardDescription}
+                </p>
+                <span class="mt-auto inline-flex items-center gap-1.5 text-body-sm font-medium text-link">
+                  Learn more
+                  <ArrowRight
+                    size={14}
+                    class="transition-transform duration-150 group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  />
+                </span>
+              </Card>
+            </a>
+          </Reveal>
+        ))}
+      </ul>
+    </Section>
+  )
+}
+
+{/* ── CTA ──────────────────────────────────────────────────────────── */}
+<Section surface="canvas" spacing="tight" as="section" divided>
+  <Reveal class="mx-auto max-w-2xl text-center">
+    <h2 class="text-display-xl">{page.ctaHeading}</h2>
+    <p class="mt-4 mb-8 text-body-md text-body">{page.ctaBody}</p>
+
+    <div class="flex flex-col items-center justify-center gap-3 sm:flex-row">
+      <Button href="/contact" variant="primary" size="lg">
+        {page.ctaLabel}
+        <ArrowRight
+          size={16}
+          class="transition-transform duration-150 group-hover:translate-x-0.5"
+          aria-hidden="true"
+        />
+      </Button>
+      <Button href="/projects" variant="secondary" size="lg">See Our Work</Button>
+    </div>
+  </Reveal>
+</Section>

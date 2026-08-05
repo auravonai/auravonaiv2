@@ -1,0 +1,89 @@
+---
+import Accordion from '@/components/ui/Accordion.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Section from '@/components/ui/Section.astro';
+import { servicesFaqs } from '@/lib/services-seo';
+
+/**
+ * FAQ block.
+ *
+ * The array comes from `services-seo.ts` and feeds BOTH this component and
+ * the FAQPage JSON-LD in `src/pages/services/index.astro`, so the rendered
+ * answers and the marked-up answers cannot drift. Marked-up answers a visitor
+ * cannot read are a manual-action risk, not a technicality.
+ *
+ * `headingLevel="h3"` matters: an unheaded `<summary>` is still extractable
+ * but carries no outline weight, and question-shaped headings are what
+ * featured snippets and People Also Ask are matched against.
+ *
+ * Rows are grouped by intent so a reader scanning for pricing is not walking
+ * through definitions first — but the underlying array order is preserved for
+ * the schema, which lists them in a single sequence.
+ */
+
+const relatedReading = [
+  {
+    label: 'What AI app development really costs',
+    href: '/blog/ai-app-development-cost-guide',
+  },
+  {
+    label: 'What an MVP should cost — and where agencies overcharge',
+    href: '/blog/mvp-cost-agency-overcharging-2026',
+  },
+  {
+    label: 'Measuring the ROI of AI automation',
+    href: '/blog/ai-automations-roi-business-2026',
+  },
+  {
+    label: 'Choosing a startup tech stack',
+    href: '/blog/startup-tech-stack-2025',
+  },
+];
+---
+
+<Section surface="canvas" spacing="tight" as="section" id="faq" divided>
+  <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-20">
+    <Reveal>
+      <Eyebrow class="mb-4">Questions</Eyebrow>
+      <h2 class="text-display-lg">
+        AI development services: frequently asked questions
+      </h2>
+      <p class="mt-4 text-body-md text-body">
+        The questions buyers actually search before hiring an AI development
+        services company — answered directly, including the ones where the
+        honest answer is that you may not need us.
+      </p>
+
+      <div class="mt-8 border-t border-hairline pt-8">
+        <p class="mb-4 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+          Related reading
+        </p>
+        <ul class="space-y-2.5">
+          {
+            relatedReading.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="text-body-sm text-link underline-offset-2 hover:underline"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </Reveal>
+
+    <Reveal delay={120}>
+      {
+        servicesFaqs.map((faq) => (
+          <Accordion question={faq.question} headingLevel="h3">
+            {faq.answer}
+          </Accordion>
+        ))
+      }
+    </Reveal>
+  </div>
+</Section>

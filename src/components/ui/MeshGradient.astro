@@ -1,0 +1,75 @@
+---
+/**
+ * The brand mesh gradient.
+ *
+ * DESIGN.md is unusually strict about this element: it is the ENTIRE
+ * decorative system, it lives at hero scale only, the stops are never
+ * reordered, and it is never miniaturised to a swatch or reduced to a
+ * single colour. It is used exactly once on this site — behind the home
+ * hero — and should stay that way.
+ *
+ * All three brand gradient pairs (develop / preview / ship) are present,
+ * layered as soft radial stops so they read as one atmospheric backdrop
+ * rather than three separate washes.
+ */
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<div
+  class:list={['pointer-events-none absolute inset-x-0 top-0 h-[520px]', className]}
+  aria-hidden="true"
+>
+  <div class="mesh"></div>
+  {/* Fades the gradient into the canvas so it never ends on a hard edge. */}
+  <div
+    class="absolute inset-x-0 bottom-0 h-40 bg-linear-to-b from-transparent to-canvas"
+  >
+  </div>
+</div>
+
+<style>
+  .mesh {
+    position: absolute;
+    inset: 0;
+    /* Dialled back on dark, where the same stops read far hotter against a
+       near-black canvas. Set per theme in global.css. */
+    opacity: var(--mesh-opacity, 0.5);
+    background-image:
+      radial-gradient(
+        ellipse 45% 60% at 18% 8%,
+        var(--color-gradient-develop-start) 0%,
+        transparent 62%
+      ),
+      radial-gradient(
+        ellipse 40% 55% at 38% 0%,
+        var(--color-gradient-develop-end) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 42% 58% at 60% 4%,
+        var(--color-gradient-preview-start) 0%,
+        transparent 62%
+      ),
+      radial-gradient(
+        ellipse 38% 52% at 76% 0%,
+        var(--color-gradient-preview-end) 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        ellipse 40% 55% at 90% 10%,
+        var(--color-gradient-ship-start) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 45% 60% at 100% 0%,
+        var(--color-gradient-ship-end) 0%,
+        transparent 62%
+      );
+    /* Keeps the stops luminous against white instead of muddying where they
+       overlap, which is what makes this read as one mesh. */
+    filter: blur(56px) saturate(1.15);
+  }
+</style>

@@ -1,0 +1,91 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ServiceSpoke from '@/components/services/ServiceSpoke.astro';
+
+import { breadcrumbSchema, faqPageSchema, webPageSchema } from '@/lib/seo';
+import { spokeServiceSchema } from '@/lib/services-seo';
+import { serviceCategories, type ServicePage } from '@/lib/services';
+
+/**
+ * A service spoke route — one of the fifteen pages under `/services/<slug>`.
+ *
+ * Structured data emitted here, and why each node exists:
+ *
+ *   WebPage        the page itself, linked into the site graph by @id
+ *   BreadcrumbList Home › Services › <service>, matching the visible trail
+ *   Service        THIS page's service, owned here rather than on the hub
+ *   FAQPage        the rendered accordion, same array, no second copy
+ *
+ * Organization and WebSite come from BaseLayout site-wide and are not
+ * repeated — a second Organization node reads to a parser as a second
+ * company.
+ *
+ * Deliberately NOT emitted: the `LocalBusiness` node with its Vadodara /
+ * Ahmedabad / Surat city list that the 34 marketing pages carry. Those pages
+ * sell local services; these sell remote engineering worldwide, and claiming
+ * a city-level service area on them would contradict
+ * `organizationSchema.areaServed: 'Worldwide'`.
+ */
+interface Props {
+  page: ServicePage;
+}
+
+const { page } = Astro.props;
+
+const path = `/services/${page.slug}`;
+const category = serviceCategories.find((c) => c.id === page.category)!;
+
+const webPage = webPageSchema({
+  path,
+  name: page.cardTitle,
+  // Quotes the hero paragraph verbatim rather than paraphrasing it.
+  description: page.summary,
+  hasBreadcrumb: true,
+});
+
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: 'Home', path: '/' },
+    { name: 'Services', path: '/services' },
+    { name: page.cardTitle, path },
+  ],
+  path,
+);
+
+const serviceNode = spokeServiceSchema(page);
+const faqPage = faqPageSchema(page.faqs, path);
+---
+
+<BaseLayout
+  title={page.metaTitle}
+  description={page.metaDescription}
+  canonical={path}
+  ogTitle={page.ogTitle}
+  ogDescription={page.ogDescription}
+>
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(webPage)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(breadcrumbs)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(serviceNode)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(faqPage)}
+    />
+    <meta name="category" content={category.label} />
+  </Fragment>
+
+  <ServiceSpoke page={page} />
+</BaseLayout>

@@ -1,0 +1,70 @@
+---
+import Brain from 'lucide-astro/Brain';
+import Blocks from 'lucide-astro/Blocks';
+import Cloud from 'lucide-astro/Cloud';
+import Palette from 'lucide-astro/Palette';
+
+import Section from '@/components/ui/Section.astro';
+import Card from '@/components/ui/Card.astro';
+import Badge from '@/components/ui/Badge.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import { disciplines } from '@/lib/about-seo';
+
+/**
+ * "The engineering team" — the Expertise half of E-E-A-T.
+ *
+ * Capabilities are stated as disciplines with the actual stack attached,
+ * because "world-class AI experts" is unfalsifiable and therefore worthless
+ * as a trust signal. A named discipline with named tools can be checked in a
+ * fifteen-minute technical call, which is exactly what a serious buyer will
+ * do next.
+ *
+ * Outstanding E-E-A-T gap, recorded in docs/about-seo.md: named engineers
+ * with real bios and links to their public work. Author-level identity is the
+ * strongest signal this page could carry and it is the one thing here that
+ * cannot be written without the people's consent and details.
+ */
+
+const iconMap: Record<string, unknown> = { Brain, Blocks, Cloud, Palette };
+---
+
+<Section surface="canvas" spacing="tight" as="section" divided>
+  <Reveal class="max-w-3xl">
+    <Eyebrow class="mb-4">The Team</Eyebrow>
+    <h2 class="text-display-lg">The engineering team behind the work</h2>
+    <p class="mt-4 text-body-md text-body">
+      Four disciplines under one team, so an AI system does not arrive as three
+      subcontracted halves that never quite meet. The stack listed under each
+      is what we have actually delivered on — not a capability matrix.
+    </p>
+  </Reveal>
+
+  <ul class="mt-12 grid gap-5 md:grid-cols-2">
+    {
+      disciplines.map((discipline, i) => {
+        const Icon = iconMap[discipline.icon] as any;
+        return (
+          <Reveal as="li" delay={i * 70} class="flex">
+            <Card surface="canvas" elevation={2} padding="lg" class="flex flex-1 flex-col">
+              <span class="mb-4 flex size-11 items-center justify-center rounded-md bg-canvas-soft text-ink">
+                <Icon size={20} aria-hidden="true" />
+              </span>
+              <h3 class="text-display-sm">{discipline.title}</h3>
+              <p class="mt-2 mb-5 text-body-sm text-body">
+                {discipline.description}
+              </p>
+              <ul class="mt-auto flex flex-wrap gap-2">
+                {discipline.stack.map((tool) => (
+                  <li>
+                    <Badge>{tool}</Badge>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          </Reveal>
+        );
+      })
+    }
+  </ul>
+</Section>

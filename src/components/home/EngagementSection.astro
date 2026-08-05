@@ -1,0 +1,157 @@
+---
+import Compass from 'lucide-astro/Compass';
+import Package from 'lucide-astro/Package';
+import Users from 'lucide-astro/Users';
+import ArrowRight from 'lucide-astro/ArrowRight';
+
+import Section from '@/components/ui/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Card from '@/components/ui/Card.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Badge from '@/components/ui/Badge.astro';
+import Button from '@/components/ui/Button.astro';
+
+/**
+ * Commercial-intent block. Visitors searching "AI development company" are
+ * mid-purchase: they want to know how an engagement is structured, what the
+ * first step costs, and what they are committing to. Answering that on the
+ * page — rather than making them fill in a form to find out — is both the
+ * conversion play and the "how to hire a software development company"
+ * keyword cluster.
+ *
+ * No prices are stated. We have no verified rate card to publish here and
+ * inventing one would misrepresent the business; the engagement shapes are
+ * real and useful on their own.
+ */
+const models = [
+  {
+    icon: Compass,
+    title: 'Discovery Sprint',
+    duration: '1–2 weeks',
+    description:
+      'A paid, fixed-scope investigation for teams who are not yet sure what to build. You get an architecture proposal, a feasibility read on the AI component, a phased plan, and a cost range.',
+    points: [
+      'Data and use-case assessment',
+      'Written technical proposal',
+      'Yours to take anywhere',
+    ],
+    best: 'Best when the problem is clear but the solution is not',
+  },
+  {
+    icon: Package,
+    title: 'Fixed-Scope Build',
+    duration: '4–14 weeks',
+    description:
+      'A defined system delivered against milestones — an AI agent, a RAG assistant, an internal platform, or a SaaS MVP. Scope, deliverables, and acceptance criteria are agreed before we start.',
+    points: [
+      'Milestone-based payments',
+      'Weekly demos on working software',
+      'Documentation and handover included',
+    ],
+    best: 'Best when requirements are settled enough to price',
+  },
+  {
+    icon: Users,
+    title: 'Embedded Team',
+    duration: 'Monthly',
+    description:
+      'Senior engineers working alongside your in-house team on a rolling basis — for continuous AI development, ongoing evaluation work, or capacity you need to add without hiring.',
+    points: [
+      'Your tools, your board, your standups',
+      'Scale up or down monthly',
+      'No long lock-in contracts',
+    ],
+    best: 'Best for evolving roadmaps and long-running work',
+  },
+];
+
+const expectations = [
+  { step: 'You send a brief', detail: 'A paragraph is enough to start.' },
+  { step: 'We reply within a day', detail: 'A real engineer, not an auto-responder.' },
+  { step: 'Free scoping call', detail: '30–45 minutes, no commitment.' },
+  { step: 'Written proposal', detail: 'Scope and cost range in 3 business days.' },
+];
+---
+
+<Section surface="soft" divided>
+  <SectionHeader
+    eyebrow="Working together"
+    title="How to Start an AI Project With Us"
+    lead="Three ways to engage, depending on how well defined your project already is. Every one of them starts with the same free scoping conversation."
+    class="mb-16 md:mb-20"
+  />
+
+  <ul class="grid gap-5 lg:grid-cols-3">
+    {
+      models.map(({ icon, title, duration, description, points, best }, i) => {
+        const Icon = icon as any;
+        return (
+          <Reveal as="li" delay={i * 90} class="flex">
+            <Card
+              as="article"
+              surface="canvas"
+              elevation={2}
+              padding="lg"
+              class="flex flex-1 flex-col"
+            >
+              <div class="mb-5 flex items-center justify-between gap-3">
+                <span class="flex size-10 items-center justify-center rounded-md bg-canvas-soft text-ink">
+                  <Icon size={20} aria-hidden="true" />
+                </span>
+                <Badge variant="outline">{duration}</Badge>
+              </div>
+
+              <h3 class="text-display-sm">{title}</h3>
+              <p class="mt-2.5 text-body-sm text-body">{description}</p>
+
+              <ul class="mt-5 flex flex-col gap-2 border-t border-hairline pt-5">
+                {points.map((point) => (
+                  <li class="flex items-start gap-2 text-body-sm text-body">
+                    <span
+                      class="mt-2 size-1.5 shrink-0 rounded-full bg-link"
+                      aria-hidden="true"
+                    />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+
+              <p class="mt-auto pt-5 font-mono text-caption text-mute">{best}</p>
+            </Card>
+          </Reveal>
+        );
+      })
+    }
+  </ul>
+
+  <Reveal delay={200} class="mt-14">
+    <div class="rounded-lg bg-canvas p-7 shadow-level-2 md:p-9">
+      <h3 class="mb-6 text-display-sm">What happens after you get in touch</h3>
+
+      <ol class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          expectations.map(({ step, detail }, i) => (
+            <li>
+              <p class="mb-2 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+                0{i + 1}
+              </p>
+              <p class="text-body-md font-medium text-ink">{step}</p>
+              <p class="mt-1 text-body-sm text-body">{detail}</p>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="mt-8 border-t border-hairline pt-7">
+        <Button href="/contact" variant="primary" size="lg">
+          Book Your Free Scoping Call
+          <ArrowRight
+            size={16}
+            class="transition-transform duration-150 group-hover:translate-x-0.5"
+            aria-hidden="true"
+          />
+        </Button>
+      </div>
+    </div>
+  </Reveal>
+</Section>

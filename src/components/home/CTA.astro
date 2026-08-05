@@ -1,0 +1,87 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+import MessageCircle from 'lucide-astro/MessageCircle';
+
+import Reveal from '@/components/ui/Reveal.astro';
+import Button from '@/components/ui/Button.astro';
+import { WHATSAPP_URL } from '@/lib/site';
+
+/**
+ * Closing conversion band.
+ *
+ * Rendered as the polarity-flipped ink surface — DESIGN.md treats the dark
+ * band as the page's chief depth cue, and putting it on the final CTA gives
+ * the long scroll a definite endpoint.
+ */
+
+const trustPoints = [
+  'No commitment required',
+  'Free initial consultation',
+  'Proposal within 3 business days',
+];
+---
+
+<section class="bg-canvas band">
+  <div class="container-page">
+    <Reveal
+      class="overflow-hidden rounded-xl bg-invert px-6 py-16 text-center text-on-invert sm:px-8 md:px-16 md:py-24"
+    >
+      <p
+        class="mb-6 inline-flex items-center gap-2 text-body-sm text-on-invert/70"
+      >
+        <span class="size-1.5 rounded-full bg-cyan-deep" aria-hidden="true"></span>
+        Taking on new projects · We typically respond within a day
+      </p>
+
+      <h2 class="text-display-xl">
+        Ready to Build With AI? <span class="text-on-invert/60">Let's Talk.</span>
+      </h2>
+
+      <p class="mx-auto mt-5 mb-10 max-w-xl text-body-lg text-on-invert/70">
+        Tell us the problem you're trying to solve and we'll map out the
+        technical approach, the AI that's genuinely worth using, and a realistic
+        scope and timeline — no sales pitch, just an honest conversation with an
+        engineer.
+      </p>
+
+      <div class="flex flex-col items-center justify-center gap-3 sm:flex-row">
+        {/* On the inverted band the polarity flips: the canvas-coloured
+             pill becomes the primary action. */}
+        <Button href="/contact" variant="secondary" size="lg">
+          Start the Conversation
+          <ArrowRight
+            size={16}
+            class="transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
+        </Button>
+        <Button
+          href={WHATSAPP_URL}
+          external
+          size="lg"
+          variant="ghost"
+          class="text-on-invert shadow-[inset_0_0_0_1px_var(--color-invert-line)] hover:bg-on-invert/10 hover:text-on-invert"
+        >
+          <MessageCircle size={16} aria-hidden="true" />
+          WhatsApp Us
+        </Button>
+      </div>
+
+      <ul
+        class="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-caption text-on-invert/60"
+      >
+        {
+          trustPoints.map((t) => (
+            <li class="flex items-center gap-1.5">
+              <span
+                class="flex size-3.5 shrink-0 items-center justify-center rounded-full bg-on-invert/15"
+                aria-hidden="true"
+              >
+                <span class="size-1.5 rounded-full bg-cyan-deep" />
+              </span>
+              {t}
+            </li>
+          ))
+        }
+      </ul>
+    </Reveal>
+  </div>
+</section>

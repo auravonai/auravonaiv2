@@ -1,0 +1,298 @@
+---
+import { Font } from 'astro:assets';
+
+import Navbar from '@/components/layout/Navbar.astro';
+import Footer from '@/components/layout/Footer.astro';
+import WhatsAppFloat from '@/components/layout/WhatsAppFloat.astro';
+
+import { OG_IMAGE, organizationSchema, websiteSchema } from '@/lib/seo';
+import { REMOTE_IMAGE_ORIGIN } from '@/lib/images';
+
+import '@/styles/global.css';
+
+/**
+ * The site shell. Every route renders through this.
+ *
+ * Metadata is driven from `src/lib/seo.ts`. Social titles and descriptions
+ * default to the page title and meta description, so existing callers keep
+ * working; pages that want distinct social copy (the homepage does — a meta
+ * description written for a SERP and one written for a link preview are not
+ * the same job) override them per prop.
+ */
+interface Props {
+  title: string;
+  description: string;
+  /** Path only, e.g. "/about". Resolved against the configured site. */
+  canonical?: string;
+  ogType?: 'website' | 'article';
+  /** Social overrides. Each falls back to the page title/description. */
+  ogTitle?: string;
+  ogDescription?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  /** Keep a page out of the index without removing it from the site. */
+  noindex?: boolean;
+  /**
+   * Set by routes that render the remote Unsplash article covers, so the head
+   * can open that connection early. Explicit rather than inferred from the
+   * path: `/blog/category/*` is under `/blog` but renders no covers, and a
+   * preconnect to an unused origin is itself a Lighthouse finding.
+   */
+  remoteImages?: boolean;
+}
+
+const SITE_NAME = 'Auravon AI';
+const DEFAULT_TITLE =
+  'Auravon AI — AI Development Company & Custom Software Studio';
+
+const {
+  title,
+  description,
+  canonical = Astro.url.pathname,
+  ogType = 'website',
+  ogTitle,
+  ogDescription,
+  twitterTitle,
+  twitterDescription,
+  noindex = false,
+  remoteImages = false,
+} = Astro.props;
+
+// The reference used a Next.js title template of "%s | Auravon AI". Several
+// pages (and every service `metaTitle`) already end with the brand, so only
+// append when it isn't there already — otherwise titles read
+// "… | Auravon AI | Auravon AI".
+const fullTitle =
+  title === DEFAULT_TITLE || title.endsWith(SITE_NAME)
+    ? title
+    : `${title} | ${SITE_NAME}`;
+const canonicalUrl = new URL(canonical, Astro.site ?? Astro.url).href;
+
+const socialTitle = ogTitle ?? fullTitle;
+const socialDescription = ogDescription ?? description;
+const xTitle = twitterTitle ?? socialTitle;
+const xDescription = twitterDescription ?? socialDescription;
+
+// `max-image-preview:large` is what lets a page qualify for large image
+// previews and AI Overview thumbnails; `max-snippet:-1` removes Google's
+// self-imposed snippet length cap, which matters for the FAQ answers.
+const robots = noindex
+  ? 'noindex, nofollow'
+  : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    {/* Deliberately no scale locking here — pinch-zoom stays available. */}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#ffffff" />
+
+    {/* Fonts are self-hosted by the Fonts API, so the only third-party
+         origins are analytics and — on pages with article covers — the
+         Unsplash CDN. */}
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+
+    {
+      /* The article covers are remote, so the LCP image on a blog page cannot
+         start downloading until a DNS lookup and TLS handshake to a brand-new
+         origin have completed. Opening that connection in the head removes
+         that round-trip from the critical path.
+
+         Gated on the route rather than emitted site-wide: a preconnect to an
+         origin a page never uses wastes a connection and is itself a
+         Lighthouse finding. */
+      remoteImages && (
+        <>
+          <link rel="preconnect" href={REMOTE_IMAGE_ORIGIN} crossorigin />
+          <link rel="dns-prefetch" href={REMOTE_IMAGE_ORIGIN} />
+        </>
+      )
+    }
+
+    {/* Runs before first paint. Marks the document as JS-capable (so the
+         scroll-reveal system can hide elements without ever trapping content
+         for no-JS visitors) and applies the saved theme, which is what stops
+         a light flash on dark-theme loads. Must stay inline and un-deferred. */}
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
+        var theme;
+        try {
+          theme = localStorage.getItem('auravon-theme');
+        } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+        }
+        root.dataset.theme = theme;
+        if (theme === 'dark') {
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', '#0a0a0a');
+        }
+      })();
+    </script>
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {/* No canonical on a noindex page. The two directives contradict each
+        other: `rel=canonical` nominates this URL as the preferred version of
+        a piece of content, while `noindex` says the content should not be in
+        the index at all. Google's guidance is to use one or the other, and
+        for error pages the correct one is `noindex` alone. */}
+    {!noindex && <link rel="canonical" href={canonicalUrl} />}
+    <meta name="robots" content={robots} />
+    <meta name="googlebot" content={robots} />
+
+    {/* International targeting.
+
+        One English site serving every market, so there is exactly one
+        alternate: `x-default`, self-referencing. That is the correct signal
+        for "this page serves all regions" — it tells Google there is no
+        region-specific variant it should prefer instead, which is what stops
+        a `.com` with an Indian-registered business behind it from being
+        treated as India-only.
+
+        Do NOT add `en-us` / `en-gb` / `en-au` variants pointing at these same
+        URLs. hreflang describes alternates that actually exist; declaring
+        four locales for one page is self-contradictory and Google ignores the
+        whole set. If genuinely localised pages are ever built, add them then. */}
+    {
+      /* Also gated on `noindex`, for the same reason as the canonical: an
+         hreflang cluster describes indexable alternates of one another, so
+         nominating an error page as the `x-default` for the whole site is
+         both wrong and, on a page Google is told to drop, pointless. */
+      !noindex && (
+        <>
+          <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+          <link rel="alternate" hreflang="en" href={canonicalUrl} />
+        </>
+      )
+    }
+
+    {/* Site-wide so feed readers and aggregators can discover the blog from
+         any page, which is the whole point of autodiscovery. */}
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Auravon AI — Blog"
+      href={new URL('/rss.xml', Astro.site ?? Astro.url).href}
+    />
+
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Auravonai" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta name="generator" content={Astro.generator} />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={socialTitle} />
+    <meta property="og:description" content={socialDescription} />
+    <meta property="og:image" content={OG_IMAGE.url} />
+    <meta property="og:image:width" content={String(OG_IMAGE.width)} />
+    <meta property="og:image:height" content={String(OG_IMAGE.height)} />
+    <meta property="og:image:alt" content={OG_IMAGE.alt} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@auravonai" />
+    <meta name="twitter:creator" content="@auravonai" />
+    <meta name="twitter:title" content={xTitle} />
+    <meta name="twitter:description" content={xDescription} />
+    <meta name="twitter:image" content={OG_IMAGE.url} />
+    <meta name="twitter:image:alt" content={OG_IMAGE.alt} />
+
+    <Font cssVariable="--font-geist" preload />
+    <Font cssVariable="--font-geist-mono" />
+
+    {/* Site-wide entity nodes. Both carry stable @ids so per-page nodes
+         (WebPage, Service, FAQPage) can reference them by @id instead of
+         restating the company on every route. Page-specific structured data
+         goes through the `head` slot below. */}
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(organizationSchema)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(websiteSchema)}
+    />
+
+    <slot name="head" />
+  </head>
+
+  <body class="bg-canvas text-ink">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:rounded-sm focus:bg-ink focus:px-4 focus:py-2 focus:text-button-md focus:text-on-primary"
+    >
+      Skip to content
+    </a>
+
+    <Navbar />
+
+    <main id="main" class="w-full min-w-0">
+      <slot />
+    </main>
+
+    <Footer />
+    <WhatsAppFloat />
+
+    <script>
+      import { initReveal } from '@/scripts/reveal';
+      import { initTheme } from '@/scripts/theme';
+
+      initTheme();
+      initReveal();
+    </script>
+
+    {/* Google Analytics 4.
+
+        Two properties are configured:
+          G-EVP96J4Z76 — current, supplied 2026-08-05
+          G-10N63FS2SB — inherited from the Next.js reference site
+
+        gtag.js is loaded ONCE and both properties are configured against it.
+        The snippet Google hands you includes its own `<script src>`, so
+        pasting it verbatim next to an existing tag loads the library twice —
+        which double-counts nothing but does cost a second request and a
+        second parse for no benefit. One loader, two `config` calls is the
+        documented multi-property setup.
+
+        If the old property is dead, delete its `config` line. It is kept for
+        now because removing a live tag silently ends data collection on a
+        property someone may still be reading.
+
+        The IDs are written out literally rather than looped from a
+        `define:vars` array: Astro wraps a `define:vars` script in an IIFE,
+        which would scope `gtag` locally. Pageviews would still register (the
+        library drains the global `dataLayer`), but any later `gtag(...)` call
+        — an event, a Google Ads conversion snippet — would throw
+        "gtag is not defined". `gtag` has to stay global. */}
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'G-EVP96J4Z76');
+      gtag('config', 'G-10N63FS2SB');
+    </script>
+    <script
+      is:inline
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-EVP96J4Z76"></script>
+  </body>
+</html>

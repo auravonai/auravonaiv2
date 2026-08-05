@@ -1,0 +1,63 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+
+import Reveal from '@/components/ui/Reveal.astro';
+import Button from '@/components/ui/Button.astro';
+import { WHATSAPP_URL } from '@/lib/site';
+
+/**
+ * Closing conversion band.
+ *
+ * Deliberately concrete about what happens next. "Get in touch" converts
+ * worse than a stated agenda, because the reader's real hesitation at the
+ * bottom of a 6,000-word page is not interest — it is not knowing what the
+ * call will be like.
+ */
+---
+
+<section class="bg-canvas pb-20">
+  <div class="container-page">
+    <Reveal
+      class="rounded-xl bg-invert px-8 py-14 text-center text-on-invert md:p-16"
+    >
+      <h2 class="text-display-lg">Get a costed plan for your project</h2>
+
+      <p class="mx-auto mt-4 max-w-xl text-body-md text-on-invert/70">
+        Book a free 30-minute call with an engineer. We will talk through the
+        problem, tell you whether AI is the right tool for it, and follow up
+        with a written scope and a cost range — with no obligation to build
+        anything with us.
+      </p>
+
+      <ul
+        class="mx-auto mt-8 mb-9 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-body-sm text-on-invert/70"
+      >
+        <li>Reply within one business day</li>
+        <li aria-hidden="true">·</li>
+        <li>No sales team, no pitch deck</li>
+        <li aria-hidden="true">·</li>
+        <li>NDA on request</li>
+      </ul>
+
+      <div class="flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <Button href="/contact" variant="secondary" size="lg">
+          Request a Free Consultation
+          <ArrowRight
+            size={16}
+            class="transition-transform duration-150 group-hover:translate-x-0.5"
+            aria-hidden="true"
+          />
+        </Button>
+        <Button
+          href={WHATSAPP_URL}
+          variant="ghost"
+          size="lg"
+          external
+          class="text-on-invert shadow-[inset_0_0_0_1px_var(--color-invert-line)] hover:bg-on-invert/10 hover:text-on-invert"
+        >
+          Chat on WhatsApp
+        </Button>
+      </div>
+    </Reveal>
+  </div>
+</section>

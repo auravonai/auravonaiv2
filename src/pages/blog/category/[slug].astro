@@ -1,0 +1,263 @@
+---
+import type { GetStaticPaths } from 'astro';
+
+import ArrowRight from 'lucide-astro/ArrowRight';
+import ChevronRight from 'lucide-astro/ChevronRight';
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Section from '@/components/ui/Section.astro';
+import Card from '@/components/ui/Card.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Button from '@/components/ui/Button.astro';
+
+import { breadcrumbSchema, webPageSchema } from '@/lib/seo';
+import { SITE_URL } from '@/lib/site';
+import {
+  blogCategories,
+  blogCategoryPath,
+  getArticlesInCategory,
+  type BlogCategory,
+} from '@/lib/blog';
+import { getServicePages } from '@/lib/services';
+import type { Article } from '@/lib/articles';
+
+/**
+ * `/blog/category/<slug>` — the cluster middle tier.
+ *
+ * Three jobs, in order of how much they matter:
+ *
+ *   1. Be a real page about one topic, so something on the site is actually
+ *      *about* AI agents or SaaS rather than merely containing posts on them.
+ *   2. Collect every post on that topic in one place, which is what makes the
+ *      posts read as a body of work instead of sixteen loose documents.
+ *   3. Link the service spokes the topic supports. This is the step usually
+ *      skipped, and it is the one that turns informational traffic into
+ *      something commercial — a reader who just finished an article on agent
+ *      architectures is one click from the page that sells building one.
+ *
+ * `/blog/category/` rather than `/blog/<category>/`: the latter would share a
+ * segment with `/blog/<post-slug>` and need a dispatcher plus a collision
+ * guard, which is precisely the arrangement just removed from `/services`.
+ */
+export const getStaticPaths = (() =>
+  blogCategories.map((category) => ({
+    params: { slug: category.slug },
+    props: {
+      category,
+      posts: getArticlesInCategory(category.slug),
+    },
+  }))) satisfies GetStaticPaths;
+
+interface Props {
+  category: BlogCategory;
+  posts: Article[];
+}
+
+const { category, posts } = Astro.props;
+const path = blogCategoryPath(category.slug);
+const relatedServices = getServicePages(category.relatedServices);
+
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: 'Home', path: '/' },
+    { name: 'Blog', path: '/blog' },
+    { name: category.heading, path },
+  ],
+  path,
+);
+
+const webPage = webPageSchema({
+  path,
+  name: category.heading,
+  description: category.metaDescription,
+  hasBreadcrumb: true,
+  type: 'CollectionPage',
+});
+
+/**
+ * `Blog` rather than a bare `ItemList`: this page is a topical section of a
+ * publication, and `blogPost` states what the listed items are. The posts
+ * themselves carry their own `BlogPosting` nodes on their own pages, so these
+ * entries reference them by URL rather than restating their content.
+ */
+const blogSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  '@id': `${SITE_URL}${path}#blog`,
+  name: `${category.heading} — Auravon AI`,
+  description: category.metaDescription,
+  url: `${SITE_URL}${path}`,
+  isPartOf: { '@id': `${SITE_URL}${path}#webpage` },
+  blogPost: posts.map((post) => ({
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt,
+    url: `${SITE_URL}/blog/${post.slug}`,
+    datePublished: post.date,
+    author: { '@type': 'Person', name: post.author },
+  })),
+};
+
+const dateFormat = new Intl.DateTimeFormat('en', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+const formatDate = (value: string) => {
+  const parsed = Date.parse(value);
+  return Number.isNaN(parsed) ? value : dateFormat.format(parsed);
+};
+---
+
+<BaseLayout
+  title={category.metaTitle}
+  description={category.metaDescription}
+  canonical={path}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(webPage)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbs)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(blogSchema)} />
+  </Fragment>
+
+  {/* ══════════════ HERO ══════════════ */}
+  <Section surface="soft" as="section">
+    <nav aria-label="Breadcrumb" class="mb-10">
+      <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
+        <li><a href="/" class="transition-colors hover:text-ink">Home</a></li>
+        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
+        <li><a href="/blog" class="transition-colors hover:text-ink">Blog</a></li>
+        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
+        <li><span class="text-body" aria-current="page">{category.heading}</span></li>
+      </ol>
+    </nav>
+
+    <Reveal>
+      <Eyebrow class="mb-4">
+        {posts.length} {posts.length === 1 ? 'article' : 'articles'}
+      </Eyebrow>
+      <h1 class="max-w-3xl text-display-xl">{category.heading}</h1>
+      <p class="mt-6 max-w-2xl text-body-lg text-body">{category.intro}</p>
+    </Reveal>
+  </Section>
+
+  {/* ══════════════ POSTS ══════════════ */}
+  <Section surface="canvas" as="section" divided>
+    <h2 class="sr-only">Articles on {category.heading}</h2>
+    <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {
+        posts.map((post, i) => (
+          <Reveal as="li" delay={i * 60} class="flex">
+            <Card
+              surface="soft"
+              elevation={2}
+              padding="md"
+              class="flex w-full flex-col"
+            >
+              <p class="font-mono text-caption uppercase tracking-[0.08em] text-mute">
+                <time datetime={post.date}>{formatDate(post.date)}</time>
+                <span aria-hidden="true"> · </span>
+                {post.readTime}
+              </p>
+              <h3 class="mt-3 text-heading-md">
+                <a
+                  href={`/blog/${post.slug}`}
+                  class="text-ink transition-colors hover:text-link"
+                >
+                  {post.title}
+                </a>
+              </h3>
+              <p class="mt-2 grow text-body-sm text-body">{post.excerpt}</p>
+            </Card>
+          </Reveal>
+        ))
+      }
+    </ul>
+  </Section>
+
+  {/* ══════════════ RELATED SERVICES ══════════════
+       The commercial half of the cluster. Omitted rather than faked when a
+       category has no honest service to point at — "Search & marketing" is
+       covered by the marketing practice, not the engineering spokes. */}
+  {
+    relatedServices.length > 0 && (
+      <Section surface="canvas" spacing="tight" as="section" divided>
+        <Reveal>
+          <Eyebrow class="mb-4">Related services</Eyebrow>
+          <h2 class="max-w-2xl text-display-lg">
+            What we build in this area
+          </h2>
+        </Reveal>
+        <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {relatedServices.map((service, i) => (
+            <Reveal as="li" delay={i * 60} class="flex">
+              <Card
+                as="a"
+                href={`/services/${service.slug}`}
+                surface="soft"
+                elevation={2}
+                padding="sm"
+                interactive
+                class="flex w-full flex-col"
+              >
+                <span class="text-body-sm font-medium text-ink">
+                  {service.cardTitle}
+                </span>
+                <span class="mt-1.5 text-caption text-mute">
+                  {service.cardDescription}
+                </span>
+              </Card>
+            </Reveal>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+
+  {/* ══════════════ OTHER CATEGORIES ══════════════ */}
+  <Section surface="canvas" spacing="tight" as="section" divided>
+    <Eyebrow class="mb-4">More topics</Eyebrow>
+    <ul class="flex flex-wrap gap-2">
+      {
+        blogCategories
+          .filter((other) => other.slug !== category.slug)
+          .map((other) => (
+            <li>
+              <a
+                href={blogCategoryPath(other.slug)}
+                class="inline-flex rounded-full border border-hairline px-3.5 py-1.5 text-body-sm text-body transition-colors hover:border-ink hover:text-ink"
+              >
+                {other.heading}
+              </a>
+            </li>
+          ))
+      }
+      <li>
+        <a
+          href="/blog"
+          class="inline-flex rounded-full border border-hairline px-3.5 py-1.5 text-body-sm text-link transition-colors hover:border-link"
+        >
+          All articles
+        </a>
+      </li>
+    </ul>
+  </Section>
+
+  {/* ══════════════ CTA ══════════════ */}
+  <Section surface="invert" spacing="tight" as="section">
+    <Reveal class="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h2 class="text-display-md">Working on something in this area?</h2>
+        <p class="mt-3 max-w-xl text-body-md opacity-80">
+          Tell us what you are building. If we are not the right people for it,
+          we will say so.
+        </p>
+      </div>
+      <Button href="/contact" variant="primary" size="lg" class="shrink-0">
+        Start a conversation
+        <ArrowRight size={16} aria-hidden="true" />
+      </Button>
+    </Reveal>
+  </Section>
+</BaseLayout>

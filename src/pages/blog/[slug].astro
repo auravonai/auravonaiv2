@@ -1,0 +1,79 @@
+---
+import type { GetStaticPaths } from 'astro';
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ArticlePage from '@/components/blog/ArticlePage.astro';
+import { articles, getRelatedArticles, type Article } from '@/lib/articles';
+
+export const getStaticPaths = (() => {
+  return articles.map((article) => ({
+    params: { slug: article.slug },
+    props: { article, related: getRelatedArticles(article.slug, 3) },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  article: Article;
+  related: Article[];
+}
+
+const { article, related } = Astro.props;
+const { slug } = Astro.params;
+
+const url = `https://auravonai.com/blog/${slug}`;
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: article.title,
+  description: article.excerpt,
+  author: {
+    '@type': 'Organization',
+    name: 'Auravon AI',
+    url: 'https://auravonai.com',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Auravon AI',
+    url: 'https://auravonai.com',
+    logo: { '@type': 'ImageObject', url: 'https://auravonai.com/logo.png' },
+  },
+  datePublished: article.date,
+  dateModified: article.date,
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  keywords: article.tags.join(', '),
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://auravonai.com' },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://auravonai.com/blog' },
+    { '@type': 'ListItem', position: 3, name: article.title, item: url },
+  ],
+};
+---
+
+<BaseLayout
+  remoteImages
+  title={`${article.title} — Auravon AI Blog`}
+  description={article.excerpt}
+  canonical={`/blog/${slug}`}
+  ogType="article"
+>
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(articleSchema)}
+  />
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(breadcrumbSchema)}
+  />
+
+  <ArticlePage article={article} related={related} />
+</BaseLayout>

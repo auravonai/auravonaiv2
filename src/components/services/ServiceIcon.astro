@@ -1,0 +1,55 @@
+---
+import Brain from 'lucide-astro/Brain';
+import Code2 from 'lucide-astro/Code2';
+import Compass from 'lucide-astro/Compass';
+import Bot from 'lucide-astro/Bot';
+import Sparkles from 'lucide-astro/Sparkles';
+import Puzzle from 'lucide-astro/Puzzle';
+import Blocks from 'lucide-astro/Blocks';
+import Layers from 'lucide-astro/Layers';
+import Globe from 'lucide-astro/Globe';
+import Smartphone from 'lucide-astro/Smartphone';
+import Plug from 'lucide-astro/Plug';
+import Cloud from 'lucide-astro/Cloud';
+import LifeBuoy from 'lucide-astro/LifeBuoy';
+import Palette from 'lucide-astro/Palette';
+import MapIcon from 'lucide-astro/Map';
+
+/**
+ * One icon map for the whole services system.
+ *
+ * `ServicePage.icon` is a string key rather than a component so the data
+ * modules stay free of imports and can be edited by anyone. This component is
+ * the single place that resolves those keys, which means a typo shows up once
+ * here rather than as a blank square on the hub and again on the spoke.
+ */
+interface Props {
+  name: string;
+  size?: number;
+  class?: string;
+}
+
+const { name, size = 20, class: className } = Astro.props;
+
+const icons: Record<string, unknown> = {
+  Brain,
+  Code2,
+  Compass,
+  Bot,
+  Sparkles,
+  Puzzle,
+  Blocks,
+  Layers,
+  Globe,
+  Smartphone,
+  Plug,
+  Cloud,
+  LifeBuoy,
+  Palette,
+  Map: MapIcon,
+};
+
+const Icon = (icons[name] ?? Blocks) as any;
+---
+
+<Icon size={size} class={className} aria-hidden="true" />

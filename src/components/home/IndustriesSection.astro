@@ -1,0 +1,110 @@
+---
+import Stethoscope from 'lucide-astro/Stethoscope';
+import Landmark from 'lucide-astro/Landmark';
+import ShoppingBag from 'lucide-astro/ShoppingBag';
+import Truck from 'lucide-astro/Truck';
+import Scale from 'lucide-astro/Scale';
+import GraduationCap from 'lucide-astro/GraduationCap';
+import Building2 from 'lucide-astro/Building2';
+import Factory from 'lucide-astro/Factory';
+import ArrowRight from 'lucide-astro/ArrowRight';
+
+import Section from '@/components/ui/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+
+/**
+ * Twelve one-word industry labels were twelve words of content. Each entry
+ * now names the specific AI use case that actually pays off in that vertical,
+ * which is what makes this section rank for "AI solutions for <industry>"
+ * queries and gives an AI Overview something concrete to cite.
+ *
+ * The list is shorter than the old one on purpose: eight verticals we can
+ * speak to beats twelve we cannot.
+ */
+const industries = [
+  {
+    icon: Stethoscope,
+    label: 'Healthcare & Wellness',
+    use: 'Clinical note summarisation, patient intake triage, and document extraction from scanned records.',
+  },
+  {
+    icon: Landmark,
+    label: 'Finance & Insurance',
+    use: 'Claims and statement processing, risk-signal extraction, and audit-trailed decision support.',
+  },
+  {
+    icon: ShoppingBag,
+    label: 'E-commerce & Retail',
+    use: 'Product data enrichment, semantic search, personalised recommendations, and support deflection.',
+  },
+  {
+    icon: Truck,
+    label: 'Logistics & Supply Chain',
+    use: 'Shipping document parsing, exception triage, and demand signals pulled from messy operational data.',
+  },
+  {
+    icon: Scale,
+    label: 'Legal & Professional Services',
+    use: 'Contract review assistants, clause extraction, and retrieval over precedent and matter archives.',
+  },
+  {
+    icon: GraduationCap,
+    label: 'Education & EdTech',
+    use: 'Adaptive learning paths, automated assessment feedback, and course content generation.',
+  },
+  {
+    icon: Building2,
+    label: 'Real Estate & Property',
+    use: 'Listing generation, lead qualification agents, and tenant or buyer enquiry handling at volume.',
+  },
+  {
+    icon: Factory,
+    label: 'Manufacturing & Industrial',
+    use: 'Visual quality inspection, maintenance-log analysis, and machine-data anomaly detection.',
+  },
+];
+---
+
+<Section surface="soft">
+  <SectionHeader
+    eyebrow="Industries we serve"
+    title="Industries We Build AI Solutions For"
+    lead="AI pays off fastest where there is high document volume, repetitive decision-making, or heavy customer contact. These are the sectors where we see the clearest returns."
+    class="mb-12 md:mb-16"
+  />
+
+  <ul class="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    {
+      industries.map(({ icon, label, use }, i) => {
+        const Icon = icon as any;
+        return (
+          <Reveal as="li" delay={i * 50} class="flex">
+            <div class="flex flex-1 flex-col rounded-md bg-canvas p-5 shadow-level-2 transition-shadow duration-200 hover:shadow-level-3">
+              <span class="mb-4 flex size-9 items-center justify-center rounded-md bg-canvas-soft text-ink">
+                <Icon size={18} aria-hidden="true" />
+              </span>
+              <h3 class="text-body-md font-medium text-ink">{label}</h3>
+              <p class="mt-1.5 text-body-sm text-body">{use}</p>
+            </div>
+          </Reveal>
+        );
+      })
+    }
+  </ul>
+
+  <Reveal class="text-center">
+    <p class="mb-4 text-body-sm text-body">
+      Not seeing your industry? The underlying patterns — retrieval, extraction,
+      classification, and automation — transfer across sectors more than most
+      people expect.
+    </p>
+    <a
+      href="/contact"
+      class="inline-flex items-center gap-1.5 text-body-md text-link transition-colors hover:text-link-deep"
+    >
+      Tell us about your use case
+      <ArrowRight size={14} aria-hidden="true" />
+    </a>
+  </Reveal>
+</Section>

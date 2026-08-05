@@ -1,0 +1,84 @@
+---
+import MessageCircle from 'lucide-astro/MessageCircle';
+import ArrowRight from 'lucide-astro/ArrowRight';
+import X from 'lucide-astro/X';
+
+import { SERVICE_ENQUIRY_URL } from '@/lib/site';
+
+/**
+ * Mobile-only sticky conversion bar on service pages.
+ *
+ * Slides up past 700px of scroll and can be dismissed. Hidden from the
+ * a11y tree and tab order while off-screen via `inert`.
+ */
+interface Props {
+  serviceTitle: string;
+}
+const { serviceTitle } = Astro.props;
+---
+
+<div
+  id="service-bar"
+  data-visible="false"
+  class="fixed inset-x-0 bottom-0 z-40 translate-y-full opacity-0 transition-[transform,opacity] duration-300 ease-[var(--ease-brand)] data-[visible=true]:translate-y-0 data-[visible=true]:opacity-100 motion-reduce:transition-none lg:hidden"
+>
+  <div
+    class="flex items-center gap-2.5 border-t border-hairline bg-canvas/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-xl"
+  >
+    <p class="min-w-0 flex-1 text-body-sm text-body">
+      <span class="font-medium text-ink">Free consultation</span> on {serviceTitle}
+    </p>
+
+    <a
+      href={SERVICE_ENQUIRY_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="flex shrink-0 items-center gap-1.5 rounded-pill bg-ink px-3 py-2 text-button-md text-on-primary"
+    >
+      <MessageCircle size={14} aria-hidden="true" />
+      WhatsApp
+    </a>
+
+    <a
+      href="/contact"
+      class="flex shrink-0 items-center gap-1 rounded-pill bg-canvas px-3 py-2 text-button-md text-ink shadow-level-2"
+    >
+      Enquire
+      <ArrowRight size={12} aria-hidden="true" />
+    </a>
+
+    <button
+      id="service-bar-dismiss"
+      type="button"
+      aria-label="Dismiss"
+      class="shrink-0 p-1 text-mute transition-colors hover:text-ink"
+    >
+      <X size={16} aria-hidden="true" />
+    </button>
+  </div>
+</div>
+
+<script>
+  const SHOW_AFTER = 700;
+
+  const bar = document.getElementById('service-bar');
+  const dismiss = document.getElementById('service-bar-dismiss');
+
+  if (bar) {
+    const setVisible = (visible: boolean) => {
+      bar.dataset.visible = String(visible);
+      bar.inert = !visible;
+    };
+
+    setVisible(false);
+
+    const onScroll = () => setVisible(window.scrollY > SHOW_AFTER);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    dismiss?.addEventListener('click', () => {
+      window.removeEventListener('scroll', onScroll);
+      bar.remove();
+    });
+  }
+</script>

@@ -1,0 +1,159 @@
+---
+import Globe from 'lucide-astro/Globe';
+import Smartphone from 'lucide-astro/Smartphone';
+import Brain from 'lucide-astro/Brain';
+import Code2 from 'lucide-astro/Code2';
+import Palette from 'lucide-astro/Palette';
+import Workflow from 'lucide-astro/Workflow';
+import CheckCircle2 from 'lucide-astro/CheckCircle2';
+import ArrowRight from 'lucide-astro/ArrowRight';
+
+import Card from '@/components/ui/Card.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Button from '@/components/ui/Button.astro';
+import Badge from '@/components/ui/Badge.astro';
+import Accordion from '@/components/ui/Accordion.astro';
+import Section from '@/components/ui/Section.astro';
+import { servicesData } from '@/lib/services-data';
+
+const iconMap: Record<string, unknown> = {
+  web: Globe,
+  mobile: Smartphone,
+  ai: Brain,
+  custom: Code2,
+  design: Palette,
+  automation: Workflow,
+};
+
+const panelHeading =
+  'mb-4 font-mono text-caption uppercase tracking-[0.08em] text-mute';
+---
+
+{/* ── Page hero ── */}
+<section class="border-b border-hairline bg-canvas-soft band-tight">
+  <div class="container-page text-center">
+    <Reveal>
+      <Eyebrow class="mb-4">What We Build</Eyebrow>
+      <h1 class="text-display-xl">
+        Software Built for <span class="text-mute">the Long Run</span>
+      </h1>
+      <p class="mx-auto mt-5 mb-8 max-w-2xl text-body-lg text-body">
+        We work with founders and engineering teams to build web apps, mobile
+        products, AI integrations, and internal tools — without the agency
+        overhead.
+      </p>
+      <ul class="flex flex-wrap items-center justify-center gap-2">
+        {
+          servicesData.map((s) => (
+            <li>
+              <a
+                href={`#${s.id}`}
+                class="inline-block rounded-pill-sm bg-canvas px-4 py-2 text-body-sm text-body shadow-level-2 transition-[color,box-shadow] hover:text-ink hover:shadow-level-3"
+              >
+                {s.title}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </Reveal>
+  </div>
+</section>
+
+{/* ── Service sections ── */}
+{
+  servicesData.map((svc, i) => {
+    const Icon = (iconMap[svc.id] ?? Globe) as any;
+    // Alternating surfaces give the long scroll a readable rhythm.
+    const surface = i % 2 === 1 ? 'soft' : 'canvas';
+    return (
+      <Section surface={surface} spacing="tight" id={svc.id} class="border-b border-hairline">
+        <div class="grid items-start gap-12 lg:grid-cols-2 lg:gap-16">
+          <Reveal>
+            <p class="mb-5 inline-flex items-center gap-2 rounded-full bg-canvas px-3 py-1.5 font-mono text-caption uppercase tracking-[0.08em] text-body shadow-level-1">
+              <Icon size={14} aria-hidden="true" />
+              {svc.title}
+            </p>
+
+            <h2 class="text-display-lg">{svc.headline}</h2>
+
+            <p class="mt-4 mb-7 text-body-md text-body">{svc.description}</p>
+
+            <ul class="mb-8 space-y-3">
+              {svc.benefits.map((b) => (
+                <li class="flex items-start gap-2.5">
+                  <CheckCircle2 size={16} class="mt-0.5 shrink-0 text-mute" aria-hidden="true" />
+                  <span class="text-body-sm text-ink">{b}</span>
+                </li>
+              ))}
+            </ul>
+
+            <Button href="/contact" variant="primary" size="lg">
+              {svc.cta}
+              <ArrowRight size={16} class="transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
+            </Button>
+          </Reveal>
+
+          <Reveal delay={120} class="space-y-4">
+            <Card surface="canvas" elevation={2}>
+              <h3 class={panelHeading}>Technologies</h3>
+              <ul class="flex flex-wrap gap-2">
+                {svc.technologies.map((t) => (
+                  <li>
+                    <Badge variant="outline">{t}</Badge>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+
+            <Card surface="canvas" elevation={2}>
+              <h3 class={panelHeading}>How It Works</h3>
+              <ol class="grid grid-cols-2 gap-2.5">
+                {svc.process.map(({ step, desc }, j) => (
+                  <li class="rounded-md bg-canvas-soft p-3">
+                    <p class="mb-1 text-body-sm font-medium text-ink">
+                      {j + 1}. {step}
+                    </p>
+                    <p class="text-caption text-body">{desc}</p>
+                  </li>
+                ))}
+              </ol>
+            </Card>
+
+            <Card surface="canvas" elevation={2}>
+              <h3 class={panelHeading}>Common Questions</h3>
+              {svc.faq.map((item) => (
+                <Accordion question={item.q} name={`faq-${svc.id}`}>
+                  {item.a}
+                </Accordion>
+              ))}
+            </Card>
+          </Reveal>
+        </div>
+      </Section>
+    );
+  })
+}
+
+{/* ── Bottom CTA ── */}
+<Section surface="canvas" spacing="tight">
+  <Reveal class="mx-auto max-w-2xl text-center">
+    <p class="mb-6 inline-flex items-center gap-2 text-body-sm text-body">
+      <span class="size-1.5 rounded-full bg-link" aria-hidden="true"></span>
+      Taking on new projects · Response within a day
+    </p>
+    <h2 class="text-display-xl">Not Sure Where to Start?</h2>
+    <p class="mt-4 mb-8 text-body-md text-body">
+      Share what you're building and we'll help you figure out the right
+      technical approach — no commitment needed, just an honest conversation.
+    </p>
+    <div class="flex flex-col items-center justify-center gap-3 sm:flex-row">
+      <Button href="/contact" variant="primary" size="lg">
+        Discuss Your Project
+        <ArrowRight size={16} class="transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
+      </Button>
+      <Button href="/payment" variant="secondary" size="lg">View Pricing</Button>
+    </div>
+  </Reveal>
+</Section>

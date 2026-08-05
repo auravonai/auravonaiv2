@@ -1,0 +1,121 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+import ArrowUpRight from 'lucide-astro/ArrowUpRight';
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Button from '@/components/ui/Button.astro';
+
+/**
+ * Shared shell for /404 and /500.
+ *
+ * Two rules govern everything here.
+ *
+ * **Never indexable.** Both pages pass `noindex` through to BaseLayout, and
+ * neither declares a canonical. The previous 404 did the opposite — it set
+ * `canonical="/404"` with no robots directive, which is an explicit request to
+ * index the error page. An indexed 404 competes with real pages and is the
+ * usual cause of "soft 404" reports in Search Console. Neither page is in the
+ * sitemap either.
+ *
+ * **Recovery over apology.** A dead end is only useful if it offers a way
+ * out, so the destinations below are real links rather than a lone "go home"
+ * button. That is UX value, not SEO value — `noindex` means these links pass
+ * nothing — which is exactly why they are chosen for where a lost visitor
+ * actually wants to go rather than for anchor text.
+ */
+interface Props {
+  /** Rendered as the large ghosted numeral and the mono eyebrow. */
+  code: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  /** Meta title. Kept short; nobody searches for these. */
+  metaTitle: string;
+  primary: { label: string; href: string };
+  secondary: { label: string; href: string };
+  /** Shown under a "Try one of these" heading. */
+  destinations: { label: string; description: string; href: string }[];
+}
+
+const {
+  code,
+  eyebrow,
+  title,
+  description,
+  metaTitle,
+  primary,
+  secondary,
+  destinations,
+} = Astro.props;
+---
+
+<BaseLayout title={metaTitle} description={description} noindex>
+  <section class="relative overflow-hidden bg-canvas-soft">
+    {/* The numeral is decoration, not content: it is aria-hidden and the real
+        code is announced by the eyebrow. Clipped rather than scaled down on
+        small screens so it never forces a horizontal scrollbar. */}
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -top-8 -right-4 select-none font-mono text-[9rem] leading-none font-medium text-ink/[0.04] sm:-top-12 sm:text-[14rem] lg:-top-16 lg:right-8 lg:text-[20rem]"
+    >
+      {code}
+    </div>
+
+    <div class="container-page relative py-24 md:py-32">
+      <div class="max-w-2xl">
+        <p class="mb-5 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+          {eyebrow}
+        </p>
+        <h1 class="text-display-xl">{title}</h1>
+        <p class="mt-5 max-w-[52ch] text-body-lg text-body">{description}</p>
+
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+          <Button href={primary.href} variant="primary" size="lg">
+            {primary.label}
+            <ArrowRight
+              size={16}
+              class="transition-transform duration-150 group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
+          </Button>
+          <Button href={secondary.href} variant="secondary" size="lg">
+            {secondary.label}
+          </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-hairline bg-canvas py-16 md:py-20">
+    <div class="container-page">
+      <h2 class="mb-8 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+        Try one of these
+      </h2>
+
+      <ul class="grid gap-px overflow-hidden rounded-lg bg-hairline sm:grid-cols-2 lg:grid-cols-4">
+        {
+          destinations.map((item) => (
+            <li class="flex">
+              <a
+                href={item.href}
+                class="group flex w-full flex-col bg-canvas p-6 transition-colors hover:bg-canvas-soft"
+              >
+                <span class="flex items-center gap-1.5 text-body-md font-medium text-ink">
+                  {item.label}
+                  <ArrowUpRight
+                    size={13}
+                    class="opacity-0 transition-opacity group-hover:opacity-60"
+                    aria-hidden="true"
+                  />
+                </span>
+                <span class="mt-1.5 text-body-sm text-body">
+                  {item.description}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

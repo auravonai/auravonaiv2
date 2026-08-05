@@ -1,0 +1,72 @@
+---
+/**
+ * Canonical card chrome — DESIGN.md `card-marketing` / `card-marketing-large`
+ * / `card-soft`.
+ *
+ * Elevation is always a stacked shadow plus an inset hairline ring; never a
+ * single heavy drop shadow.
+ */
+interface Props {
+  /** `soft` sits on canvas-soft, for cards inside a white band. */
+  surface?: 'canvas' | 'soft';
+  /** Maps to the DESIGN.md elevation ladder. */
+  elevation?: 1 | 2 | 3 | 4;
+  padding?: 'sm' | 'md' | 'lg';
+  radius?: 'md' | 'lg' | 'xl';
+  /** Adds the lift-on-hover treatment used by interactive cards. */
+  interactive?: boolean;
+  as?: string;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  surface = 'canvas',
+  elevation = 2,
+  padding = 'md',
+  radius = 'lg',
+  interactive = false,
+  as: Tag = 'div',
+  class: className,
+  ...rest
+} = Astro.props;
+
+const surfaces = {
+  canvas: 'bg-canvas',
+  soft: 'bg-canvas-soft',
+} as const;
+
+const elevations = {
+  1: 'shadow-level-1',
+  2: 'shadow-level-2',
+  3: 'shadow-level-3',
+  4: 'shadow-level-4',
+} as const;
+
+const paddings = {
+  sm: 'p-4',
+  md: 'p-6',
+  lg: 'p-8',
+} as const;
+
+const radii = {
+  md: 'rounded-md',
+  lg: 'rounded-lg',
+  xl: 'rounded-xl',
+} as const;
+---
+
+<Tag
+  class:list={[
+    'min-w-0 transition-[box-shadow,transform] duration-200 ease-out',
+    surfaces[surface],
+    elevations[elevation],
+    paddings[padding],
+    radii[radius],
+    interactive && 'hover:-translate-y-0.5 hover:shadow-level-4',
+    className,
+  ]}
+  {...rest}
+>
+  <slot />
+</Tag>

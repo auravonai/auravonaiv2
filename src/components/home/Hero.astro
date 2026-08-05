@@ -1,0 +1,190 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+import Bot from 'lucide-astro/Bot';
+import Sparkles from 'lucide-astro/Sparkles';
+import Workflow from 'lucide-astro/Workflow';
+import Database from 'lucide-astro/Database';
+import CheckCircle2 from 'lucide-astro/CheckCircle2';
+
+import Button from '@/components/ui/Button.astro';
+import MeshGradient from '@/components/ui/MeshGradient.astro';
+
+/**
+ * The page's only <h1>. It carries the primary keyword ("AI development
+ * company") in a sentence a human would actually say — the keyword is the
+ * subject of the headline, not an appendage bolted onto it.
+ *
+ * The panel below shows capability, not client metrics. The previous version
+ * advertised "+342% Organic Traffic" and "3.8x ROAS" with nothing on the site
+ * substantiating either. Unverifiable performance claims on a homepage are a
+ * direct E-E-A-T liability; capabilities we can demonstrate are not. Put
+ * numbers back only when there is a case study behind them.
+ */
+
+const pillars = [
+  { value: '50+', label: 'Projects Shipped' },
+  { value: '6', label: 'Core Practices' },
+  { value: 'Global', label: 'Client Base' },
+];
+
+const capabilityCards = [
+  {
+    icon: Bot,
+    layer: 'Agents',
+    title: 'Tool-using AI agents',
+    detail: 'Scoped permissions, audit logs',
+  },
+  {
+    icon: Database,
+    layer: 'Retrieval',
+    title: 'RAG on your own data',
+    detail: 'Grounded, source-cited answers',
+  },
+  {
+    icon: Sparkles,
+    layer: 'Models',
+    title: 'GPT, Claude, open-weight',
+    detail: 'Chosen per task and budget',
+  },
+  {
+    icon: Workflow,
+    layer: 'Automation',
+    title: 'Workflows that run alone',
+    detail: 'Retries, alerts, fallbacks',
+  },
+];
+
+const footerPoints = ['You own the code', 'Free scoping call', 'Global clients'];
+---
+
+<section class="relative overflow-hidden bg-canvas pt-16 pb-20 md:pt-24 md:pb-28">
+  {/* The mesh gradient is the brand's entire decorative system and DESIGN.md
+       permits it at hero scale only. It appears exactly once on the site. */}
+  <MeshGradient />
+
+  <div class="relative container-page">
+    <div class="mx-auto mb-12 max-w-3xl text-center md:mb-16">
+      <p
+        class="mb-7 inline-flex items-center gap-2 rounded-full bg-canvas px-3 py-1.5 text-body-sm text-body shadow-level-2"
+      >
+        <span class="size-1.5 rounded-full bg-link" aria-hidden="true"></span>
+        AI Development Company · Custom Software Studio
+      </p>
+
+      <h1 class="text-display-2xl">
+        AI Development Company<br class="hidden sm:block" /> Building <span
+          class="text-mute">Production AI</span
+        >
+      </h1>
+
+      <p class="mx-auto mt-7 max-w-2xl text-body-lg text-body">
+        Auravon AI builds custom AI software, AI agents, LLM applications, and
+        automation systems — plus the SaaS platforms, web apps, and internal
+        tools they run inside. You work directly with the engineers writing the
+        code, and you own everything we ship.
+      </p>
+
+      <div
+        class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"
+      >
+        <Button href="/contact" variant="primary" size="lg">
+          Get a Free Project Scope
+          <ArrowRight
+            size={16}
+            class="transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
+        </Button>
+        <Button href="#services" variant="secondary" size="lg">
+          Explore AI Development Services
+        </Button>
+      </div>
+
+      {/* Pillars */}
+      <dl class="mt-11 flex items-center justify-center">
+        {
+          pillars.map(({ value, label }, i) => (
+            <div class="flex items-center">
+              <div class="px-5 text-center md:px-8">
+                <dt class="sr-only">{label}</dt>
+                <dd>
+                  <span class="block text-display-sm">{value}</span>
+                  <span
+                    class="mt-1 block font-mono text-caption uppercase tracking-[0.08em] text-mute"
+                    aria-hidden="true"
+                  >
+                    {label}
+                  </span>
+                </dd>
+              </div>
+              {i < pillars.length - 1 && (
+                <span class="h-8 w-px bg-hairline" aria-hidden="true" />
+              )}
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+
+    {/* ── Capability panel ── */}
+    <div class="mx-auto max-w-2xl">
+      <div class="overflow-hidden rounded-lg bg-canvas shadow-level-5">
+        {/* Window chrome */}
+        <div class="flex items-center border-b border-hairline px-5 py-3.5">
+          <div class="flex gap-1.5" aria-hidden="true">
+            <span class="size-3 rounded-full bg-canvas-soft-2"></span>
+            <span class="size-3 rounded-full bg-canvas-soft-2"></span>
+            <span class="size-3 rounded-full bg-canvas-soft-2"></span>
+          </div>
+          <div class="flex flex-1 justify-center">
+            <span class="font-mono text-caption text-mute">
+              ai-system.architecture
+            </span>
+          </div>
+          <div class="w-[52px]" aria-hidden="true"></div>
+        </div>
+
+        {/* Capability grid */}
+        <ul class="grid grid-cols-2 gap-3 p-5">
+          {
+            capabilityCards.map((card) => {
+              const Icon = card.icon as any;
+              return (
+                <li class="rounded-md bg-canvas-soft p-4 shadow-level-1">
+                  <div class="mb-3 flex items-center gap-2">
+                    <span class="flex size-6 items-center justify-center rounded-xs bg-canvas text-ink shadow-level-1">
+                      <Icon size={12} aria-hidden="true" />
+                    </span>
+                    <span class="font-mono text-caption uppercase tracking-[0.08em] text-mute">
+                      {card.layer}
+                    </span>
+                  </div>
+                  <p class="text-body-md font-medium text-ink">{card.title}</p>
+                  <p class="mt-0.5 text-caption text-mute">{card.detail}</p>
+                </li>
+              );
+            })
+          }
+        </ul>
+
+        {/* Footer */}
+        <div
+          class="flex items-center justify-between border-t border-hairline px-5 py-3"
+        >
+          <p class="flex items-center gap-1.5 text-caption text-mute">
+            <span class="size-1.5 rounded-full bg-link" aria-hidden="true"></span>
+            Built for production, not demos
+          </p>
+          <ul class="hidden items-center gap-5 sm:flex">
+            {
+              footerPoints.map((label) => (
+                <li class="flex items-center gap-1.5 text-caption text-body">
+                  <CheckCircle2 size={12} class="text-mute" aria-hidden="true" />
+                  {label}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

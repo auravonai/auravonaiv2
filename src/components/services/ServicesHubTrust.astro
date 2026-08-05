@@ -1,0 +1,73 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+import ShieldCheck from 'lucide-astro/ShieldCheck';
+
+import Card from '@/components/ui/Card.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Button from '@/components/ui/Button.astro';
+import Section from '@/components/ui/Section.astro';
+import { trustSignals } from '@/lib/services-seo';
+
+/**
+ * Trust / E-E-A-T band.
+ *
+ * Every claim in `trustSignals` is a commitment we can be held to, not a
+ * statistic. There are deliberately no client counts, project totals, or
+ * satisfaction percentages here — the reference site carried a "50+ projects"
+ * figure that nothing on the site substantiated, and an unverifiable number
+ * on a commercial page is the first thing a serious buyer checks.
+ *
+ * See `docs/services-seo.md` for the E-E-A-T work that is still outstanding
+ * (named engineers, written case studies, attributable testimonials). Those
+ * are the items that would make this section materially stronger.
+ */
+---
+
+<Section surface="soft" spacing="tight" as="section" divided>
+  <Reveal class="max-w-2xl">
+    <Eyebrow class="mb-4">Why Auravon AI</Eyebrow>
+    <h2 class="text-display-lg">
+      Why companies choose Auravon AI for AI development services
+    </h2>
+    <p class="mt-4 text-body-md text-body">
+      Six commitments that hold on every engagement. They are written as
+      commitments rather than statistics because you can hold us to a
+      commitment.
+    </p>
+  </Reveal>
+
+  <ul class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+    {
+      trustSignals.map((signal, i) => (
+        <Reveal as="li" delay={i * 60} class="flex">
+          <Card surface="canvas" elevation={2} class="flex-1">
+            <ShieldCheck size={18} class="mb-4 text-mute" aria-hidden="true" />
+            <h3 class="text-display-sm">{signal.title}</h3>
+            <p class="mt-2 text-body-sm text-body">{signal.description}</p>
+          </Card>
+        </Reveal>
+      ))
+    }
+  </ul>
+
+  <Reveal class="mt-12">
+    <p class="mb-6 max-w-2xl text-body-sm text-body">
+      Want to see the work rather than read the claims? The
+      <a href="/projects" class="text-link underline-offset-2 hover:underline">
+        projects page
+      </a> covers systems we have shipped, and
+      <a href="/about" class="text-link underline-offset-2 hover:underline">
+        about Auravon AI
+      </a> explains how the team is put together.
+    </p>
+    <Button href="/contact" variant="primary" size="lg">
+      Book a Free Scoping Call
+      <ArrowRight
+        size={16}
+        class="transition-transform duration-150 group-hover:translate-x-0.5"
+        aria-hidden="true"
+      />
+    </Button>
+  </Reveal>
+</Section>

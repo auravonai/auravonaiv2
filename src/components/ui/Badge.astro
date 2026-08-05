@@ -1,0 +1,26 @@
+---
+/**
+ * Small inline metadata pill — DESIGN.md `badge-secondary`.
+ * Used for tags, chips, and "Live"/"New"-style markers.
+ */
+interface Props {
+  variant?: 'default' | 'outline';
+  class?: string;
+}
+const { variant = 'default', class: className } = Astro.props;
+
+const variants = {
+  default: 'bg-canvas-soft text-body',
+  outline: 'bg-canvas text-body ring-1 ring-hairline ring-inset',
+} as const;
+---
+
+<span
+  class:list={[
+    'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-caption',
+    variants[variant],
+    className,
+  ]}
+>
+  <slot />
+</span>

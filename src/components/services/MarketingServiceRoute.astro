@@ -1,0 +1,229 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ServicePageTemplate from '@/components/services/ServicePageTemplate.astro';
+import {
+  serviceCategories,
+  type ServicePageData,
+} from '@/lib/digital-agency-data';
+import { MARKETING_LABEL, marketingPath } from '@/lib/marketing';
+import { ORG_ID, webPageSchema } from '@/lib/seo';
+
+/**
+ * The 34 digital-marketing service pages under `/digital-marketing/[slug]`.
+ *
+ * These moved out of `/services/*` when the two business lines were given
+ * separate namespaces — see `src/lib/marketing.ts` for why. The move is a
+ * pure re-parenting: markup and structured data are unchanged apart from the
+ * URLs and the breadcrumb trail, which now says "Digital Marketing" where it
+ * used to say "Services".
+ *
+ * The `LocalBusiness` node stays. It is correct here and only here: these are
+ * genuinely local-intent marketing services, whereas the AI spokes sell remote
+ * engineering worldwide and deliberately omit it (see `AiServiceRoute.astro`).
+ */
+interface Props {
+  service: ServicePageData;
+}
+
+const { service } = Astro.props;
+const slug = service.slug;
+
+const BASE_URL = 'https://auravonai.com';
+const path = marketingPath(slug);
+const url = `${BASE_URL}${path}`;
+
+const category = serviceCategories.find((c) => c.slug === service.categorySlug);
+const description = service.metaDescription || service.tagline;
+
+/**
+ * `provider` references the site-wide Organization by `@id` rather than
+ * declaring a second one inline.
+ *
+ * The previous version defined a full `ProfessionalService` node here — name,
+ * URL, phone, email, and address — on all 33 pages. To a parser that is a
+ * second company at the same domain competing with the `Organization` node
+ * BaseLayout emits site-wide, which is the fastest way to make an entity
+ * graph ambiguous. One organisation, defined once, referenced everywhere.
+ */
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': `${url}#service`,
+  name: service.title,
+  description,
+  url,
+  provider: { '@id': ORG_ID },
+  serviceType: category?.label ?? service.title,
+  areaServed: service.locations.map((l) => ({ '@type': 'Place', name: l })),
+  isPartOf: { '@id': `${url}#webpage` },
+};
+
+/**
+ * These pages had every node except the one describing the document itself.
+ * `WebPage` is what carries the breadcrumb reference and ties the page into
+ * the site graph; without it the `Service` and `BreadcrumbList` nodes were
+ * floating free of any page entity.
+ */
+const webPage = webPageSchema({
+  path,
+  name: service.title,
+  description,
+  hasBreadcrumb: true,
+});
+
+const breadcrumbItems: Record<string, unknown>[] = [
+  { '@type': 'ListItem', position: 1, name: 'Home', item: BASE_URL },
+  {
+    '@type': 'ListItem',
+    position: 2,
+    name: MARKETING_LABEL,
+    item: `${BASE_URL}${marketingPath()}`,
+  },
+];
+
+if (service.type === 'service' && service.categorySlug !== slug && category) {
+  breadcrumbItems.push({
+    '@type': 'ListItem',
+    position: 3,
+    name: category.label,
+    item: `${BASE_URL}${marketingPath(category.slug)}`,
+  });
+  breadcrumbItems.push({
+    '@type': 'ListItem',
+    position: 4,
+    name: service.title,
+    item: url,
+  });
+} else {
+  breadcrumbItems.push({
+    '@type': 'ListItem',
+    position: 3,
+    name: service.title,
+    item: url,
+  });
+}
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: breadcrumbItems,
+};
+
+const faqSchema = service.faq.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: service.faq.map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: { '@type': 'Answer', text: item.a },
+      })),
+    }
+  : null;
+
+/**
+ * `LocalBusiness` is now scoped to the genuinely local services only.
+ *
+ * It used to be emitted on all 33 marketing pages. That is a strong,
+ * domain-level statement that this entity is a Vadodara business — and it
+ * directly contradicts `organizationSchema.areaServed: 'Worldwide'` and works
+ * against ranking for the engineering practice in the US, UK, and Australia.
+ * A crawler weighing "is this a global software studio or an Indian local
+ * agency" was being handed 33 votes for the latter.
+ *
+ * The services below are the ones where a physical service area is a true and
+ * necessary part of the offering: Google Business Profile work and Maps
+ * listings are inherently local, and local SEO is sold as such. Everything
+ * else — Shopify builds, Meta Ads, marketplace account management — is
+ * delivered remotely and has no business claiming a service radius.
+ *
+ * Add a slug here only if the service genuinely cannot be delivered remotely.
+ */
+const LOCAL_INTENT_SLUGS = new Set([
+  'gmb-optimization',
+  'google-map-listing',
+]);
+const isLocalIntent = LOCAL_INTENT_SLUGS.has(slug);
+
+/**
+ * `postalCode` and `geo` are deliberately absent.
+ *
+ * This node previously asserted `postalCode: '390001'` and the coordinates
+ * `22.3072, 73.1812` — which are the centre of Vadodara, not a verified
+ * business address. Structured data is a factual claim about a real place; a
+ * wrong one is a bad local signal rather than a cosmetic error, and nobody has
+ * confirmed these. City and region are kept because the marketing practice
+ * genuinely operates there.
+ *
+ * Restore both only with an address the business owner has confirmed.
+ */
+const localBusinessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': `${BASE_URL}/#localbusiness`,
+  name: 'Auravon AI',
+  url: BASE_URL,
+  telephone: '+91-8814012395',
+  email: 'support@auravonai.com',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Vadodara',
+    addressRegion: 'Gujarat',
+    addressCountry: 'IN',
+  },
+  areaServed: [
+    { '@type': 'City', name: 'Vadodara' },
+    { '@type': 'City', name: 'Ahmedabad' },
+    { '@type': 'City', name: 'Surat' },
+    { '@type': 'State', name: 'Gujarat' },
+  ],
+  sameAs: [
+    'https://www.linkedin.com/company/auravon-ai-tech/',
+    'https://github.com/auravonai',
+  ],
+};
+---
+
+<BaseLayout
+  title={service.metaTitle || service.title}
+  description={description}
+  canonical={path}
+>
+  <Fragment slot="head">
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(webPage)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(serviceSchema)}
+    />
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(breadcrumbSchema)}
+    />
+    {
+      faqSchema && (
+        <script
+          type="application/ld+json"
+          is:inline
+          set:html={JSON.stringify(faqSchema)}
+        />
+      )
+    }
+    {
+      isLocalIntent && (
+        <script
+          type="application/ld+json"
+          is:inline
+          set:html={JSON.stringify(localBusinessSchema)}
+        />
+      )
+    }
+  </Fragment>
+
+  <ServicePageTemplate service={service} />
+</BaseLayout>

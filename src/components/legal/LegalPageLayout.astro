@@ -1,0 +1,99 @@
+---
+import Calendar from 'lucide-astro/Calendar';
+import ArrowLeft from 'lucide-astro/ArrowLeft';
+import ChevronRight from 'lucide-astro/ChevronRight';
+
+import Card from '@/components/ui/Card.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+
+/**
+ * Shared chrome for the three legal documents.
+ *
+ * The reference's sidebar used buttons with a JS `scrollIntoView` handler;
+ * these are plain anchors instead — same smooth scroll (handled by
+ * `scroll-behavior` in global.css), but they work without JS, can be
+ * opened in a new tab, and are announced correctly as links.
+ */
+interface Props {
+  badge: string;
+  title: string;
+  subtitle: string;
+  lastUpdated: string;
+  sections: { id: string; title: string }[];
+}
+
+const { badge, title, subtitle, lastUpdated, sections } = Astro.props;
+---
+
+{/* ── Hero strip ── */}
+<section class="border-b border-hairline bg-canvas-soft">
+  <div class="container-page py-12 md:py-16">
+    <Reveal>
+      <a
+        href="/"
+        class="mb-6 inline-flex items-center gap-1.5 text-body-sm text-body transition-colors hover:text-ink"
+      >
+        <ArrowLeft size={14} aria-hidden="true" />
+        Back to Home
+      </a>
+
+      <Eyebrow class="mb-3">{badge}</Eyebrow>
+      <h1 class="text-display-xl">{title}</h1>
+      <p class="mt-4 mb-5 max-w-2xl text-body-lg text-body">{subtitle}</p>
+
+      <p class="flex items-center gap-2 text-body-sm text-mute">
+        <Calendar size={14} aria-hidden="true" />
+        Last updated: {lastUpdated}
+      </p>
+    </Reveal>
+  </div>
+</section>
+
+{/* ── Content ── */}
+<div class="container-page py-12 md:py-16">
+  <div class="grid items-start gap-12 lg:grid-cols-[240px_1fr]">
+    {/* Sidebar TOC */}
+    <aside class="sticky top-24 hidden lg:block">
+      <Card surface="soft" elevation={1} padding="sm">
+        <p class="mb-3 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+          Contents
+        </p>
+        <nav aria-label="Document sections">
+          <ul class="space-y-0.5">
+            {
+              sections.map((s) => (
+                <li>
+                  <a
+                    href={`#${s.id}`}
+                    class="group flex items-center gap-2 rounded-sm px-3 py-2 text-body-sm text-body transition-colors hover:bg-canvas hover:text-ink"
+                  >
+                    <ChevronRight
+                      size={12}
+                      class="shrink-0 text-mute opacity-0 transition-opacity group-hover:opacity-100" aria-hidden="true" />
+                    {s.title}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </Card>
+
+      <Card surface="soft" elevation={1} padding="sm" class="mt-3">
+        <p class="mb-2 text-body-sm text-body">Questions about this policy?</p>
+        <a
+          href="/contact"
+          class="text-body-sm text-link transition-colors hover:text-link-deep"
+        >
+          Contact us →
+        </a>
+      </Card>
+    </aside>
+
+    {/* Prose */}
+    <article class="prose-doc min-w-0">
+      <slot />
+    </article>
+  </div>
+</div>

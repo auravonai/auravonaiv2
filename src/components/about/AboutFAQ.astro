@@ -1,0 +1,91 @@
+---
+import Accordion from '@/components/ui/Accordion.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Section from '@/components/ui/Section.astro';
+import { aboutFaqs } from '@/lib/about-seo';
+
+/**
+ * FAQ block.
+ *
+ * The array comes from `about-seo.ts` and feeds BOTH this component and the
+ * FAQPage JSON-LD in `src/pages/about.astro`, so the rendered answers and the
+ * marked-up answers cannot drift. Marked-up answers a visitor cannot read are
+ * a manual-action risk, not a technicality.
+ *
+ * `headingLevel="h3"` matters: an unheaded `<summary>` is still extractable
+ * but carries no outline weight, and question-shaped headings are what
+ * featured snippets and People Also Ask are matched against.
+ *
+ * The first five questions are vetting questions — how to choose and verify
+ * an AI development company. Putting them on the About page is deliberate:
+ * the honest answer to each is a set of criteria the reader can immediately
+ * apply to us, on the page where they are already deciding whether to trust
+ * us. See docs/about-seo.md §7 for the overlap with the homepage FAQ.
+ */
+
+const relatedReading = [
+  {
+    label: 'What AI app development really costs',
+    href: '/blog/ai-app-development-cost-guide',
+  },
+  {
+    label: 'What an MVP should cost — and where agencies overcharge',
+    href: '/blog/mvp-cost-agency-overcharging-2026',
+  },
+  {
+    label: 'AI agents for business, explained',
+    href: '/blog/ai-agents-for-business-2026',
+  },
+  {
+    label: 'Where AI automation actually pays back',
+    href: '/blog/ai-automations-roi-business-2026',
+  },
+];
+---
+
+<Section surface="canvas" spacing="tight" as="section" id="faq" divided>
+  <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-20">
+    <Reveal>
+      <Eyebrow class="mb-4">Questions</Eyebrow>
+      <h2 class="text-display-lg">
+        Choosing an AI development company: common questions
+      </h2>
+      <p class="mt-4 text-body-md text-body">
+        The questions worth asking any AI development company before you sign
+        anything — answered as criteria you can apply to us on this page, not
+        as a pitch.
+      </p>
+
+      <div class="mt-8 border-t border-hairline pt-8">
+        <p class="mb-4 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+          Related reading
+        </p>
+        <ul class="space-y-2.5">
+          {
+            relatedReading.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="text-body-sm text-link underline-offset-2 hover:underline"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </Reveal>
+
+    <Reveal delay={120}>
+      {
+        aboutFaqs.map((faq) => (
+          <Accordion question={faq.question} headingLevel="h3">
+            {faq.answer}
+          </Accordion>
+        ))
+      }
+    </Reveal>
+  </div>
+</Section>

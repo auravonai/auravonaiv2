@@ -1,0 +1,77 @@
+---
+import Layers from 'lucide-astro/Layers';
+import Brain from 'lucide-astro/Brain';
+import Zap from 'lucide-astro/Zap';
+import ShieldCheck from 'lucide-astro/ShieldCheck';
+import GitBranch from 'lucide-astro/GitBranch';
+import Users from 'lucide-astro/Users';
+
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+
+/**
+ * Positioning band, directly under the hero.
+ *
+ * This is the page's first <h2> and the first block of extractable prose, so
+ * it does the definitional work: it states plainly what kind of company this
+ * is. Search engines and AI Overviews both weight early, unambiguous
+ * self-description heavily — burying it below six card grids wastes it.
+ */
+
+const capabilities = [
+  { icon: Brain, label: 'Applied AI & LLMs' },
+  { icon: Layers, label: 'Scalable Architecture' },
+  { icon: ShieldCheck, label: 'Evaluation & Guardrails' },
+  { icon: Zap, label: 'Startup Velocity' },
+  { icon: GitBranch, label: 'Code You Own' },
+  { icon: Users, label: 'Direct Engineer Access' },
+];
+---
+
+<section class="border-y border-hairline bg-canvas-soft band-tight">
+  <div class="container-page">
+    <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-16">
+      <Reveal class="max-w-2xl shrink-0 lg:max-w-md">
+        <Eyebrow class="mb-4">Who we are</Eyebrow>
+
+        <h2 class="text-display-md">
+          An AI development company that ships, not pitches
+        </h2>
+
+        <p class="mt-4 text-body-md text-body">
+          An AI development company designs, builds, and maintains software
+          powered by artificial intelligence. Auravon AI does that as a small,
+          senior engineering team: we take AI systems from first prototype to
+          production, integrate them with the tools your business already runs
+          on, and stay available once they are live.
+        </p>
+
+        <p class="mt-4 text-body-md text-body">
+          We are equally a custom software development company — because most
+          AI features are only useful once the application, data pipeline, and
+          interface around them exist.
+        </p>
+      </Reveal>
+
+      <span class="hidden w-px shrink-0 self-stretch bg-hairline lg:block" aria-hidden="true"></span>
+
+      <ul class="flex flex-1 flex-wrap items-start gap-3">
+        {
+          capabilities.map(({ icon, label }, i) => {
+            const Icon = icon as any;
+            return (
+              <Reveal as="li" delay={i * 70}>
+                <span class="flex items-center gap-2.5 rounded-md bg-canvas px-4 py-2.5 shadow-level-2 transition-shadow duration-200 hover:shadow-level-3">
+                  <span class="flex size-6 shrink-0 items-center justify-center rounded-xs bg-canvas-soft text-ink">
+                    <Icon size={14} aria-hidden="true" />
+                  </span>
+                  <span class="text-body-sm text-ink">{label}</span>
+                </span>
+              </Reveal>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </div>
+</section>

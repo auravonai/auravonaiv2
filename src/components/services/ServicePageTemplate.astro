@@ -1,0 +1,671 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+import CheckCircle2 from 'lucide-astro/CheckCircle2';
+import MessageCircle from 'lucide-astro/MessageCircle';
+import Star from 'lucide-astro/Star';
+import ChevronRight from 'lucide-astro/ChevronRight';
+import Shield from 'lucide-astro/Shield';
+import Clock from 'lucide-astro/Clock';
+import Globe from 'lucide-astro/Globe';
+import Users from 'lucide-astro/Users';
+import TrendingUp from 'lucide-astro/TrendingUp';
+import Phone from 'lucide-astro/Phone';
+
+import Card from '@/components/ui/Card.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Badge from '@/components/ui/Badge.astro';
+import Button from '@/components/ui/Button.astro';
+import Accordion from '@/components/ui/Accordion.astro';
+import StickyServiceBar from '@/components/services/StickyServiceBar.astro';
+import {
+  getRelatedServices,
+  serviceCategories,
+  type ServicePageData,
+} from '@/lib/digital-agency-data';
+import { SERVICE_ENQUIRY_URL, WHATSAPP_DISPLAY } from '@/lib/site';
+import { MARKETING_LABEL, marketingPath } from '@/lib/marketing';
+
+/**
+ * The shared template behind all 34 /digital-marketing/[slug] pages.
+ *
+ * Most sections are conditional — the data file stubs out content for many
+ * slugs, and the reference skipped empty blocks rather than rendering empty
+ * headings. That behaviour is preserved exactly.
+ */
+interface Props {
+  service: ServicePageData;
+}
+
+const { service } = Astro.props;
+const related = getRelatedServices(service.relatedServices);
+
+const category = serviceCategories.find((c) => c.slug === service.categorySlug);
+
+/**
+ * Process commitments, not outcome claims.
+ *
+ * Each of these is checkable against how we actually behave, which is the test
+ * every claim on this page now has to pass. Contrast with the `heroStats`
+ * strip this hero used to open with — see the note above the "at a glance"
+ * card below for why that is gone.
+ */
+const heroAssurances = [
+  { icon: CheckCircle2, text: 'Free consultation' },
+  { icon: Shield, text: 'No lock-in contracts' },
+  { icon: Clock, text: '24 hr response' },
+  { icon: Globe, text: 'Worldwide clients' },
+];
+
+/**
+ * In-page navigation for a page that runs to ten sections.
+ *
+ * The old layout stacked ten full-width bands of near-identical visual weight
+ * with no way to skip, so a visitor looking for pricing or process had to
+ * scroll past everything else to find it. Built from the sections that
+ * actually have content — most services stub several out, and a jump link to
+ * an absent section is worse than no jump link.
+ */
+const sectionNav = [
+  { id: 'overview', label: 'Overview', show: Boolean(service.overview || service.overviewExtra) },
+  { id: 'benefits', label: 'Benefits', show: service.benefits.length > 0 },
+  { id: 'process', label: 'Process', show: service.process.length > 0 },
+  { id: 'features', label: "What's included", show: service.features.length > 0 },
+  { id: 'why-us', label: 'Why us', show: service.whyChooseUs.length > 0 },
+  { id: 'faq', label: 'FAQ', show: service.faq.length > 0 },
+].filter((item) => item.show);
+
+/**
+ * Scope headlines for the hero card. Titles only — the detail is below.
+ *
+ * This replaced the three-tile `heroStats` strip that used to open every one
+ * of these pages. Across the 33 pages that strip carried 102 tiles, 76 of
+ * which asserted an unverified number: multiples of return, percentage growth
+ * figures, uptime commitments, project counts, and search-ranking positions.
+ * None was confirmed by the business owner, and a page cannot honestly
+ * promise a ranking position at all.
+ *
+ * They are gone rather than restyled — a better-looking unverifiable number is
+ * still unverifiable, and it was the first thing a buyer read. What replaces
+ * it is drawn from the page's own content: what the service covers and which
+ * tools it uses. Both are true and specific.
+ *
+ * `heroStats` is left in the data file untouched, so nothing is lost if some
+ * of those figures turn out to be real and sourced.
+ */
+const glance = (service.features.length > 0 ? service.features : service.benefits)
+  .slice(0, 4)
+  .map((item) => item.title);
+
+/**
+ * ⚠️ Case studies are OFF pending verification. Set to `true` to restore.
+ *
+ * `digital-agency-data.ts` carries 34 `caseStudy` records, each with a named
+ * client ("Apparel Retailer, Vadodara", "Multi-Specialty Healthcare Clinic"),
+ * specific outcome figures ("organic traffic grew from under 200 visits a
+ * month to over 2,400 in six months"), and a **quoted testimonial attributed
+ * to that client**. They render under the heading "Results We've Delivered".
+ *
+ * None of it has been confirmed by the business owner, and it appears to have
+ * been generated alongside the rest of the placeholder copy. A fabricated
+ * statistic is a credibility problem; a fabricated testimonial attributed to a
+ * real-sounding client is a consumer-protection problem in most jurisdictions
+ * and is not something to leave live on the assumption it is probably fine.
+ *
+ * The data is untouched — this is one boolean. If these engagements are real
+ * and the quotes are genuine, flip it back and the section returns exactly as
+ * it was. If they are not, delete the `caseStudy` records.
+ */
+const SHOW_CASE_STUDIES = false;
+
+const ctaPromises = [
+  { icon: CheckCircle2, text: 'Free 30-minute discovery call with our specialist team' },
+  { icon: Star, text: 'Clear, scoped proposal within 24–48 hours' },
+  { icon: Shield, text: 'No pressure — a conversation, not a sales pitch' },
+  { icon: Users, text: 'Direct access to the team doing your work' },
+  { icon: TrendingUp, text: 'Honest advice on what will actually drive results' },
+];
+
+const sectionTitle = 'mt-1 mb-10 text-display-lg';
+---
+
+{/* ════════════════ HERO ════════════════ */}
+<section class="border-b border-hairline bg-canvas-soft">
+  <div class="container-page py-16 md:py-20">
+    {/* Breadcrumb */}
+    <nav aria-label="Breadcrumb" class="mb-10">
+      <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
+        <li><a href="/" class="transition-colors hover:text-ink">Home</a></li>
+        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
+        <li>
+          <a href={marketingPath()} class="transition-colors hover:text-ink">
+            {MARKETING_LABEL}
+          </a>
+        </li>
+        {
+          service.type === 'service' && (
+            <>
+              <li aria-hidden="true">
+                <ChevronRight size={12} aria-hidden="true" />
+              </li>
+              <li>
+                <a
+                  href={marketingPath(service.categorySlug)}
+                  class="capitalize transition-colors hover:text-ink"
+                >
+                  {service.categorySlug.replace(/-/g, ' ')}
+                </a>
+              </li>
+            </>
+          )
+        }
+        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
+        <li><span class="text-body" aria-current="page">{service.title}</span></li>
+      </ol>
+    </nav>
+
+    <div class="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-16">
+      {/* Left copy */}
+      <div>
+        {
+          category && (
+            <p class="mb-5 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+              {category.label}
+            </p>
+          )
+        }
+
+        <h1 class="max-w-[16ch] text-display-xl">{service.title}</h1>
+
+        <p class="mt-5 mb-8 max-w-[52ch] text-body-lg text-body">
+          {service.tagline}
+        </p>
+
+        <div class="mb-8 flex flex-wrap gap-3">
+          <Button href="/contact" variant="primary" size="lg">
+            Start a conversation
+            <ArrowRight size={16} class="transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
+          </Button>
+          <Button href={SERVICE_ENQUIRY_URL} variant="secondary" size="lg" external>
+            <MessageCircle size={16} aria-hidden="true" />
+            WhatsApp
+          </Button>
+        </div>
+
+        <ul class="flex flex-wrap gap-x-6 gap-y-3 text-body-sm text-body">
+          {
+            heroAssurances.map(({ icon, text }) => {
+              const Icon = icon as any;
+              return (
+                <li class="flex items-center gap-1.5">
+                  <Icon size={14} class="text-mute" aria-hidden="true" />
+                  {text}
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+
+      {/* "At a glance" card — replaced the heroStats strip. See the note on
+          `glance` in the frontmatter for why those figures are gone. */}
+      <Card surface="canvas" elevation={3} padding="sm" class="!p-0 lg:sticky lg:top-24">
+        {
+          glance.length > 0 && (
+            <div class="p-5">
+              <p class="mb-3.5 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+                What this covers
+              </p>
+              <ul class="space-y-2.5">
+                {glance.map((item) => (
+                  <li class="flex items-start gap-2 text-body-sm text-body">
+                    <CheckCircle2
+                      size={14}
+                      class="mt-0.5 shrink-0 text-mute"
+                      aria-hidden="true"
+                    />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
+
+        {
+          service.tools.length > 0 && (
+            <div class="border-t border-hairline p-5">
+              <p class="mb-3.5 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+                Tools &amp; platforms
+              </p>
+              <ul class="flex flex-wrap gap-1.5">
+                {service.tools.slice(0, 8).map((t) => (
+                  <li>
+                    <Badge>{t}</Badge>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
+
+        <div class="flex items-center justify-between gap-3 border-t border-hairline bg-canvas-soft px-5 py-4">
+          <span class="text-body-sm text-mute">Questions first?</span>
+          <a
+            href="/contact"
+            class="flex items-center gap-1 text-body-sm text-link transition-colors hover:text-link-deep"
+          >
+            Let's talk
+            <ArrowRight size={14} aria-hidden="true" />
+          </a>
+        </div>
+      </Card>
+    </div>
+  </div>
+</section>
+
+{/* Sticky in-page nav. See `sectionNav` in the frontmatter. */}
+{
+  sectionNav.length > 2 && (
+    <nav
+      aria-label="On this page"
+      class="sticky top-16 z-20 border-b border-hairline bg-canvas/90 backdrop-blur-xl"
+    >
+      <div class="container-page">
+        <ul class="-mx-1 flex gap-1 overflow-x-auto py-2.5">
+          {sectionNav.map((item) => (
+            <li>
+              <a
+                href={`#${item.id}`}
+                class="inline-flex whitespace-nowrap rounded-full px-3 py-1.5 text-body-sm text-body transition-colors hover:bg-canvas-soft hover:text-ink"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </nav>
+  )
+}
+
+{/* ════════════════ OVERVIEW ════════════════ */}
+{
+  (service.overview || service.overviewExtra) && (
+    <section id="overview" class="scroll-mt-32 bg-canvas py-16 md:py-20">
+      <div class="container-page">
+        <Reveal>
+          <Eyebrow>Overview</Eyebrow>
+          <div class="mt-4 max-w-[68ch] space-y-5">
+            {service.overview && (
+              <p class="text-body-lg text-body">{service.overview}</p>
+            )}
+            {service.overviewExtra && (
+              <p class="text-body-lg text-body">{service.overviewExtra}</p>
+            )}
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
+{/* ════════════════ BENEFITS ════════════════ */}
+{
+  service.benefits.length > 0 && (
+    <section id="benefits" class="scroll-mt-32 border-y border-hairline bg-canvas-soft py-16 md:py-20">
+      <div class="container-page">
+        <Reveal>
+          <Eyebrow>Key Benefits</Eyebrow>
+          <h2 class={sectionTitle}>What You Get</h2>
+        </Reveal>
+
+        <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {service.benefits.map((b, i) => (
+            <Reveal as="li" delay={i * 60} class="flex">
+              <Card surface="canvas" elevation={2} padding="sm" interactive class="flex-1">
+                <span class="mb-3 block font-mono text-caption tabular-nums text-mute">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <h3 class="text-body-md font-medium text-ink">{b.title}</h3>
+                <p class="mt-2 text-body-sm text-body">{b.description}</p>
+              </Card>
+            </Reveal>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+{/* ════════════════ PROCESS ════════════════ */}
+{
+  service.process.length > 0 && (
+    <section id="process" class="scroll-mt-32 bg-canvas py-16 md:py-20">
+      <div class="container-page">
+        <Reveal>
+          <Eyebrow>Our Process</Eyebrow>
+          <h2 class="mt-1 mb-12 text-display-lg">How We Work</h2>
+        </Reveal>
+
+        {/* Desktop: horizontal stepper */}
+        <ol
+          class="hidden gap-x-6 md:grid"
+          style={`grid-template-columns:repeat(${Math.min(service.process.length, 6)},minmax(0,1fr))`}
+        >
+          {service.process.map((step, i) => (
+            <li class="relative">
+              {i < service.process.length - 1 && (
+                <span
+                  class="absolute top-[18px] right-0 left-[calc(50%+20px)] h-px bg-hairline"
+                  aria-hidden="true"
+                />
+              )}
+              <div class="pr-4">
+                <span class="relative z-10 mb-4 flex size-9 items-center justify-center rounded-full bg-ink font-mono text-caption text-on-primary">
+                  {i + 1}
+                </span>
+                <h3 class="text-body-md font-medium text-ink">{step.title}</h3>
+                <p class="mt-1.5 text-body-sm text-body">{step.description}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        {/* Mobile: vertical stepper */}
+        <ol class="md:hidden">
+          {service.process.map((step, i) => (
+            <li class="flex gap-5">
+              <div class="flex flex-col items-center">
+                <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-ink font-mono text-caption text-on-primary">
+                  {i + 1}
+                </span>
+                {i < service.process.length - 1 && (
+                  <span class="my-1.5 w-px flex-1 bg-hairline" aria-hidden="true" />
+                )}
+              </div>
+              <div class="pb-8">
+                <h3 class="text-body-md font-medium text-ink">{step.title}</h3>
+                <p class="mt-1.5 text-body-sm text-body">{step.description}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  )
+}
+
+{/* ════════════════ FEATURES ════════════════ */}
+{
+  service.features.length > 0 && (
+    <section id="features" class="scroll-mt-32 border-y border-hairline bg-canvas-soft py-16 md:py-20">
+      <div class="container-page">
+        <Reveal>
+          <Eyebrow>What's Included</Eyebrow>
+          <h2 class={sectionTitle}>Service Features</h2>
+        </Reveal>
+
+        <ul class="grid gap-4 sm:grid-cols-2">
+          {service.features.map((f, i) => (
+            <Reveal as="li" delay={(i % 4) * 70} class="flex">
+              <Card surface="canvas" elevation={1} padding="sm" class="flex flex-1 gap-4">
+                <CheckCircle2 size={16} class="mt-0.5 shrink-0 text-mute" aria-hidden="true" />
+                <div>
+                  <p class="text-body-md font-medium text-ink">{f.title}</p>
+                  <p class="mt-1 text-body-sm text-body">{f.description}</p>
+                </div>
+              </Card>
+            </Reveal>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+{/* ════════════════ WHY CHOOSE US ════════════════ */}
+{
+  service.whyChooseUs.length > 0 && (
+    <section id="why-us" class="scroll-mt-32 bg-canvas py-16 md:py-20">
+      <div class="container-page">
+        <Reveal>
+          <Eyebrow>Why Auravon AI</Eyebrow>
+          <h2 class={sectionTitle}>Why We're Different</h2>
+        </Reveal>
+
+        <ul class="grid gap-5 sm:grid-cols-2">
+          {service.whyChooseUs.map((w, i) => (
+            <Reveal as="li" delay={i * 70} class="flex">
+              <Card surface="soft" elevation={1} class="flex flex-1 gap-5">
+                <span class="flex size-8 shrink-0 items-center justify-center rounded-sm bg-canvas font-mono text-caption text-ink shadow-level-1">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <div>
+                  <h3 class="text-display-sm">{w.title}</h3>
+                  <p class="mt-2 text-body-sm text-body">{w.description}</p>
+                </div>
+              </Card>
+            </Reveal>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+{/* ════════════════ CASE STUDY ════════════════ */}
+{
+  SHOW_CASE_STUDIES && service.caseStudy && (
+    <section class="border-y border-hairline bg-canvas-soft py-16 md:py-20">
+      <div class="container-page">
+        <Reveal>
+          <Eyebrow>Case Study</Eyebrow>
+          <h2 class={sectionTitle}>Results We've Delivered</h2>
+        </Reveal>
+
+        {/* `minmax(0,1fr)` rather than a bare `1fr`: a bare fr track resolves
+            to `minmax(auto,1fr)`, so a child whose content will not wrap (a
+            long quote, a URL) refuses to shrink below its min-content width
+            and pushes the whole grid wider than the viewport. This section is
+            currently gated off, but the bug would ship the moment it is
+            re-enabled. */}
+        <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <Reveal class="flex">
+            <Card surface="canvas" elevation={2} padding="sm" class="flex-1 !p-0">
+              <div
+                class="flex flex-wrap items-center gap-3 border-b border-hairline px-7 py-5"
+              >
+                <Badge variant="outline">{service.caseStudy.industry}</Badge>
+                <Badge>{service.caseStudy.client}</Badge>
+              </div>
+              <div class="space-y-6 p-7">
+                <div>
+                  <p class="mb-2.5 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+                    The Challenge
+                  </p>
+                  <p class="text-body-md text-body">{service.caseStudy.challenge}</p>
+                </div>
+                <div>
+                  <p class="mb-2.5 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+                    The Result
+                  </p>
+                  <p class="text-body-md font-medium text-ink">
+                    {service.caseStudy.result}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </Reveal>
+
+          {service.caseStudy.quote && (
+            <Reveal delay={80} class="flex">
+              <Card surface="canvas" elevation={2} padding="lg" class="flex flex-1 flex-col">
+                <Star size={20} class="mb-5 text-mute" aria-hidden="true" />
+                <blockquote class="mb-6 flex-1 text-body-md text-ink italic">
+                  “{service.caseStudy.quote}”
+                </blockquote>
+                <footer class="flex items-center gap-3 border-t border-hairline pt-5">
+                  <span
+                    class="flex size-8 items-center justify-center rounded-full bg-canvas-soft text-body-sm text-ink"
+                    aria-hidden="true"
+                  >
+                    {service.caseStudy.client[0]}
+                  </span>
+                  <div>
+                    <p class="text-body-sm font-medium text-ink">
+                      {service.caseStudy.client}
+                    </p>
+                    <p class="text-caption text-mute">{service.caseStudy.industry}</p>
+                  </div>
+                </footer>
+              </Card>
+            </Reveal>
+          )}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+{/* ════════════════ INDUSTRIES ════════════════ */}
+{
+  service.industries.length > 0 && (
+    <section id="industries" class="scroll-mt-32 bg-canvas py-16 md:py-20">
+      <div class="container-page">
+        <Reveal>
+          <Eyebrow>Industries Served</Eyebrow>
+          <ul class="mt-4 flex flex-wrap gap-2.5">
+            {service.industries.map((ind) => (
+              <li>
+                <span class="inline-block rounded-pill bg-canvas-soft px-4 py-2 text-body-sm text-body transition-colors hover:text-ink">
+                  {ind}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
+{/* ════════════════ FAQ ════════════════ */}
+{
+  service.faq.length > 0 && (
+    <section id="faq" class="scroll-mt-32 border-y border-hairline bg-canvas-soft py-16 md:py-20">
+      <div class="container-page">
+        <Reveal>
+          <Eyebrow>FAQ</Eyebrow>
+          <h2 class={sectionTitle}>Frequently Asked Questions</h2>
+        </Reveal>
+
+        <Reveal class="max-w-3xl">
+          <Card surface="canvas" elevation={1} class="px-6 py-1">
+            {service.faq.map((item) => (
+              <Accordion question={item.q} name="service-faq">
+                {item.a}
+              </Accordion>
+            ))}
+          </Card>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
+{/* ════════════════ CTA ════════════════ */}
+<section class="border-t border-hairline bg-canvas py-20 md:py-28">
+  <div class="container-page">
+    <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+      <Reveal>
+        <Eyebrow>Get Started</Eyebrow>
+        <h2 class="mt-1 mb-4 text-display-lg">{service.cta.heading}</h2>
+        <p class="mb-8 max-w-md text-body-md text-body">{service.cta.subtext}</p>
+
+        <div class="mb-7 flex flex-wrap gap-3">
+          <Button href={SERVICE_ENQUIRY_URL} variant="primary" size="lg" external>
+            <MessageCircle size={16} aria-hidden="true" />
+            Chat on WhatsApp
+          </Button>
+          <Button href="/contact" variant="secondary" size="lg">
+            Book Free Consultation
+            <ArrowRight size={16} class="transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
+          </Button>
+        </div>
+
+        <ul class="flex flex-wrap gap-5 text-body-sm text-mute">
+          <li class="flex items-center gap-1.5">
+            <Phone size={12} aria-hidden="true" />
+            {WHATSAPP_DISPLAY}
+          </li>
+          <li class="flex items-center gap-1.5">
+            <Globe size={12} aria-hidden="true" />
+            India &amp; Worldwide
+          </li>
+        </ul>
+      </Reveal>
+
+      <Reveal delay={100}>
+        <Card surface="soft" elevation={1} padding="lg">
+          <p class="mb-6 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+            When you reach out
+          </p>
+          <ul class="space-y-5">
+            {
+              ctaPromises.map(({ icon, text }) => {
+                const Icon = icon as any;
+                return (
+                  <li class="flex items-start gap-3.5">
+                    <Icon size={16} class="mt-0.5 shrink-0 text-mute" aria-hidden="true" />
+                    <p class="text-body-sm text-ink">{text}</p>
+                  </li>
+                );
+              })
+            }
+          </ul>
+        </Card>
+      </Reveal>
+    </div>
+  </div>
+</section>
+
+{/* ════════════════ RELATED ════════════════ */}
+{
+  related.length > 0 && (
+    <section class="border-t border-hairline bg-canvas-soft py-16 md:py-20">
+      <div class="container-page">
+        <Reveal>
+          <Eyebrow>Related Services</Eyebrow>
+        </Reveal>
+
+        <ul class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {related.map((rel, i) => (
+            <Reveal as="li" delay={i * 60} class="flex">
+              <Card
+                as="a"
+                href={marketingPath(rel.slug)}
+                surface="canvas"
+                elevation={2}
+                padding="sm"
+                interactive
+                class="group flex flex-1 flex-col gap-2.5"
+              >
+                <h3 class="text-body-md font-medium text-ink">{rel.title}</h3>
+                <p class="line-clamp-2 flex-1 text-body-sm text-body">{rel.tagline}</p>
+                <span class="mt-1 flex items-center gap-1 text-body-sm text-link">
+                  Learn more
+                  <ArrowRight
+                    size={14}
+                    class="transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
+                </span>
+              </Card>
+            </Reveal>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<StickyServiceBar serviceTitle={service.title} />

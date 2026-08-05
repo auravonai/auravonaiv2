@@ -1,0 +1,65 @@
+---
+import MessageCircle from 'lucide-astro/MessageCircle';
+import X from 'lucide-astro/X';
+
+import { WHATSAPP_URL } from '@/lib/site';
+
+/**
+ * Floating WhatsApp CTA.
+ *
+ * Appears after 400px of scroll and can be dismissed for the session —
+ * same behaviour as the reference, minus framer-motion.
+ */
+---
+
+<div
+  id="whatsapp-float"
+  data-visible="false"
+  class="fixed right-4 bottom-6 z-40 flex translate-y-3 scale-95 flex-col items-end gap-2 opacity-0 transition-[opacity,transform] duration-300 ease-[var(--ease-brand)] data-[visible=true]:translate-y-0 data-[visible=true]:scale-100 data-[visible=true]:opacity-100 motion-reduce:transition-none"
+>
+  <button
+    id="whatsapp-dismiss"
+    type="button"
+    aria-label="Dismiss WhatsApp button"
+    class="flex size-6 items-center justify-center rounded-full bg-canvas text-mute shadow-level-2 transition-colors hover:text-ink"
+  >
+    <X size={12} aria-hidden="true" />
+  </button>
+
+  <a
+    href={WHATSAPP_URL}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="flex items-center gap-2.5 rounded-pill bg-ink py-3 pr-5 pl-4 text-button-md text-on-primary shadow-level-4 transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
+  >
+    <MessageCircle size={18} aria-hidden="true" />
+    <span class="hidden sm:block">Chat on WhatsApp</span>
+  </a>
+</div>
+
+<script>
+  const SHOW_AFTER = 400;
+
+  const float = document.getElementById('whatsapp-float');
+  const dismiss = document.getElementById('whatsapp-dismiss');
+
+  if (float) {
+    // `inert` keeps the hidden CTA out of the tab order and the a11y tree
+    // while it is faded out.
+    const setVisible = (visible: boolean) => {
+      float.dataset.visible = String(visible);
+      float.inert = !visible;
+    };
+
+    setVisible(false);
+
+    const onScroll = () => setVisible(window.scrollY > SHOW_AFTER);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    dismiss?.addEventListener('click', () => {
+      window.removeEventListener('scroll', onScroll);
+      float.remove();
+    });
+  }
+</script>

@@ -1,0 +1,54 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+
+import Section from '@/components/ui/Section.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Button from '@/components/ui/Button.astro';
+
+/**
+ * Closing CTA.
+ *
+ * About-page conversion is a lower-commitment ask than a services page's:
+ * someone who read this far is evaluating the company, not buying a line
+ * item. The offer is a conversation with an engineer, and the secondary route
+ * goes to `/services` for the visitor who arrived on About first and still
+ * needs the commercial detail — that direction (about → services) is the one
+ * that supports the site's structure rather than competing with it.
+ */
+---
+
+<Section surface="canvas" spacing="tight" as="section" divided>
+  <Reveal class="mx-auto max-w-2xl text-center">
+    <p class="mb-6 inline-flex items-center gap-2 text-body-sm text-body">
+      <span class="size-1.5 rounded-full bg-link" aria-hidden="true"></span>
+      Available for new projects · Remote worldwide
+    </p>
+
+    {/* `{' '}` — see the note in AboutHero.astro. Without it the compressor
+         renders this as "…buildingand we will tell…". */}
+    <h2 class="text-display-xl">
+      Tell us what you are building{' '}
+      <span class="text-mute">and we will tell you what it takes</span>
+    </h2>
+
+    <p class="mt-4 mb-8 text-body-md text-body">
+      A free 30-minute call with an engineer, not a salesperson. We will scope
+      the problem honestly — including whether AI is the right tool for it and
+      whether we are the right team to build it.
+    </p>
+
+    <div class="flex flex-col items-center justify-center gap-3 sm:flex-row">
+      <Button href="/contact" variant="primary" size="lg">
+        Start a Conversation
+        <ArrowRight
+          size={16}
+          class="transition-transform duration-150 group-hover:translate-x-0.5"
+          aria-hidden="true"
+        />
+      </Button>
+      <Button href="/services" variant="secondary" size="lg">
+        Browse AI Development Services
+      </Button>
+    </div>
+  </Reveal>
+</Section>

@@ -1,0 +1,63 @@
+---
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Card from '@/components/ui/Card.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import { milestones } from '@/lib/about-seo';
+
+/**
+ * History — the Experience half of E-E-A-T.
+ *
+ * A dated timeline is the one way a small company can evidence experience
+ * without inventing metrics. Two rules when editing: keep every entry true,
+ * and keep the last entry recent. A history that stops two years short of the
+ * current date is read by visitors — correctly — as an abandoned site, which
+ * costs more trust than the earlier entries earn.
+ *
+ * The year is inside the heading rather than beside it so the outline reads
+ * "2019 — First delivered projects" on its own, which is how it will appear
+ * if a passage from this section is ever extracted. The `sr-only` dash is
+ * what makes that true: Astro's compressHTML strips the whitespace between
+ * the two spans, so without a real separator character the heading extracts
+ * as "2019First delivered projects".
+ */
+---
+
+<section class="border-b border-hairline bg-canvas-soft band-tight">
+  <div class="mx-auto w-full max-w-3xl px-4 sm:px-6">
+    <SectionHeader
+      eyebrow="History"
+      title="How Auravon AI got here"
+      lead="How the work grew from single projects into longer engineering partnerships."
+      align="left"
+      class="mb-14"
+    />
+
+    <ol class="relative space-y-7">
+      {/* Spine: sits behind the markers, aligned to their centre. */}
+      <span
+        class="absolute top-2 bottom-2 left-[18px] w-px bg-hairline"
+        aria-hidden="true"></span>
+
+      {
+        milestones.map(({ year, title, description }, i) => (
+          <Reveal as="li" delay={i * 60} class="relative flex gap-5 pl-14">
+            <span
+              class="absolute top-0 left-0 flex size-9 items-center justify-center rounded-full bg-ink font-mono text-caption text-on-primary ring-4 ring-canvas-soft"
+              aria-hidden="true"
+            >
+              {i + 1}
+            </span>
+            <Card surface="canvas" elevation={2} padding="sm" interactive class="flex-1">
+              <h3 class="text-display-sm">
+                <span class="font-mono text-caption text-mute">{year}</span>
+                <span class="sr-only"> — </span>
+                <span class="mt-1 block">{title}</span>
+              </h3>
+              <p class="mt-1.5 text-body-sm text-body">{description}</p>
+            </Card>
+          </Reveal>
+        ))
+      }
+    </ol>
+  </div>
+</section>

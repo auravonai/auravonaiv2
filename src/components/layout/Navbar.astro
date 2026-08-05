@@ -1,0 +1,509 @@
+---
+import Menu from 'lucide-astro/Menu';
+import X from 'lucide-astro/X';
+import ArrowRight from 'lucide-astro/ArrowRight';
+import ChevronDown from 'lucide-astro/ChevronDown';
+
+import Button from '@/components/ui/Button.astro';
+import ThemeToggle from '@/components/ui/ThemeToggle.astro';
+import Logo from '@/components/layout/Logo.astro';
+import ServiceIcon from '@/components/services/ServiceIcon.astro';
+
+import {
+  serviceCategories,
+  servicesByCategory,
+  servicePages,
+} from '@/lib/services';
+import { MARKETING_BASE, MARKETING_LABEL, marketingPath } from '@/lib/marketing';
+
+/**
+ * Sticky top navigation.
+ *
+ * The only genuinely stateful chrome on the site: scroll shadow, desktop
+ * mega menu with hover intent, and a mobile drawer with nested accordions.
+ * Active-link state is resolved on the server from the request path, so no
+ * JS is needed for it at all.
+ *
+ * What the mega menu lists, and why it changed
+ * -------------------------------------------
+ * It used to be built from `digital-agency-data.ts`, so every page on the
+ * site — including the fifteen AI engineering pages — rendered "Digital
+ * Marketing", "Flipkart", and "Meesho" in its chrome. Navigation is a
+ * site-wide signal: it appears in the internal link graph of every URL, which
+ * made the whole domain read as a marketplace-services agency regardless of
+ * what any individual page said.
+ *
+ * It is now built from `servicePages` — the fifteen AI and software spokes,
+ * grouped by their own four categories. The marketing practice is real and
+ * still sold, so it keeps a top-level entry of its own pointing at
+ * `/digital-marketing`; it is a sibling, not a sub-item, and not the default
+ * meaning of the word "Services" on this domain.
+ *
+ * The old menu also emitted the anchor text "+1 more →" for seven different
+ * destinations. Every link here carries the destination's own name.
+ */
+
+/**
+ * Shown in the left panel. These are the spokes with the clearest commercial
+ * intent rather than the whole list — the panel is a shortcut, and the full
+ * set is one click away in the right panel.
+ */
+const FEATURED_SLUGS = [
+  'ai-agent-development',
+  'ai-development',
+  'generative-ai-development',
+  'custom-software-development',
+  'saas-development',
+  'web-application-development',
+] as const;
+
+const featuredServices = FEATURED_SLUGS.map((slug) => {
+  const page = servicePages.find((service) => service.slug === slug);
+  if (!page) {
+    // A stale slug here would render a link to a 404 on all 80+ pages.
+    throw new Error(`[navbar] featured slug "${slug}" is not a service page`);
+  }
+  return page;
+});
+
+/**
+ * `Marketing` is a plain top-level link rather than a second mega menu.
+ *
+ * It has to be reachable from every page — it is a real practice and the user
+ * confirmed it is still sold — but it must not share the "Services" anchor
+ * with the engineering work. A sibling entry keeps the two families visibly
+ * distinct in the one component that appears on every URL, which is what
+ * stops the internal link graph from blending them.
+ */
+const staticLinks = [
+  { href: '/industries', label: 'Industries' },
+  { href: MARKETING_BASE, label: 'Marketing' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/about', label: 'About' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/contact', label: 'Contact' },
+];
+
+const pathname = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? pathname === '/' : pathname.startsWith(href);
+const isServicesActive = pathname.startsWith('/services');
+
+const navLinkBase =
+  'relative rounded-full px-3 py-1.5 text-body-sm transition-colors duration-150';
+---
+
+<header
+  id="site-header"
+  data-scrolled="false"
+  class="fixed inset-x-0 top-0 z-50 border-b border-transparent bg-canvas/80 backdrop-blur-xl transition-[border-color,box-shadow] duration-300 data-[scrolled=true]:border-hairline data-[scrolled=true]:shadow-level-1"
+>
+  <div class="container-page">
+    <div class="flex h-16 items-center justify-between gap-4">
+      <Logo />
+
+      {/* Desktop nav */}
+      <nav class="hidden flex-1 items-center justify-center gap-1 lg:flex" aria-label="Primary">
+        <div id="mega-trigger-wrap" class="relative">
+          <button
+            id="mega-trigger"
+            type="button"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="mega-menu"
+            class:list={[
+              navLinkBase,
+              'flex items-center gap-1',
+              isServicesActive
+                ? 'bg-canvas-soft text-ink'
+                : 'text-body hover:bg-canvas-soft hover:text-ink',
+            ]}
+          >
+            Services
+            <ChevronDown size={14} class="transition-transform duration-200" data-chevron aria-hidden="true" />
+          </button>
+        </div>
+
+        {
+          staticLinks.map(({ href, label }) => (
+            <a
+              href={href}
+              aria-current={isActive(href) ? 'page' : undefined}
+              class:list={[
+                navLinkBase,
+                isActive(href)
+                  ? 'bg-canvas-soft text-ink'
+                  : 'text-body hover:bg-canvas-soft hover:text-ink',
+              ]}
+            >
+              {label}
+            </a>
+          ))
+        }
+      </nav>
+
+      {/* Desktop CTAs */}
+      <div class="hidden shrink-0 items-center gap-3 lg:flex">
+        <a
+          href="/contact"
+          class="text-body-sm text-body transition-colors hover:text-ink"
+        >
+          Get Quote
+        </a>
+        <ThemeToggle />
+        <Button href="/contact" variant="primary" size="sm">Start a Project</Button>
+      </div>
+
+      {/* Mobile: theme sits outside the drawer so it's reachable without
+           opening the menu. */}
+      <div class="flex shrink-0 items-center gap-1 lg:hidden">
+        <ThemeToggle />
+
+        <button
+          id="mobile-toggle"
+          type="button"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          class="flex size-11 shrink-0 items-center justify-center rounded-sm text-body transition-colors hover:bg-canvas-soft hover:text-ink"
+        >
+          <Menu size={20} data-icon-open aria-hidden="true" />
+          <X size={20} class="hidden" data-icon-close aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {/* ── MEGA MENU ─────────────────────────────────────────────────── */}
+  {/* Visibility is driven by `data-open` rather than the `hidden` attribute:
+       Preflight's `[hidden]` rule is zero-specificity, so a responsive
+       display utility would silently defeat it. */}
+  <div
+    id="mega-menu"
+    data-open="false"
+    class="absolute inset-x-0 top-16 hidden lg:data-[open=true]:block"
+  >
+    <div class="container-page pb-4">
+      <div class="overflow-hidden rounded-lg bg-canvas shadow-level-5">
+        <div class="flex items-center justify-between border-b border-hairline px-6 py-3">
+          <div class="flex items-center gap-2 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+            <span>AI &amp; Software Engineering</span>
+            <span aria-hidden="true">·</span>
+            <span>Remote, worldwide</span>
+          </div>
+          <a
+            href="/services"
+            class="flex items-center gap-1 text-body-sm text-link transition-colors hover:text-link-deep"
+          >
+            View all services
+            <ArrowRight size={12} aria-hidden="true" />
+          </a>
+        </div>
+
+        <div class="flex">
+          {/* Left: featured */}
+          <div class="w-[300px] shrink-0 border-r border-hairline p-4">
+            <p class="mb-3 px-2 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+              Most Requested
+            </p>
+            <ul class="space-y-0.5">
+              {
+                featuredServices.map((fs) => (
+                  <li>
+                    <a
+                      href={`/services/${fs.slug}`}
+                      class="group flex items-center gap-3 rounded-md px-2 py-2.5 transition-colors hover:bg-canvas-soft"
+                    >
+                      <span class="flex size-7 shrink-0 items-center justify-center rounded-sm bg-canvas-soft text-ink shadow-level-1 transition-colors group-hover:bg-canvas">
+                        <ServiceIcon name={fs.icon} size={14} />
+                      </span>
+                      <span class="min-w-0">
+                        <span class="block text-body-sm font-medium text-ink">
+                          {fs.cardTitle}
+                        </span>
+                        <span class="block truncate text-caption text-mute">
+                          {fs.cardDescription}
+                        </span>
+                      </span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+            <div class="mt-3 border-t border-hairline pt-3">
+              <a
+                href="/services"
+                class="flex items-center gap-1.5 rounded-md px-2 py-2 text-body-sm text-link transition-colors hover:bg-canvas-soft"
+              >
+                <ArrowRight size={14} aria-hidden="true" />
+                All {servicePages.length} services
+              </a>
+            </div>
+          </div>
+
+          {/* Right: every spoke, grouped by its own category */}
+          <div class="min-w-0 flex-1 p-4">
+            <p class="mb-3 px-2 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+              All Service Categories
+            </p>
+            <div class="grid grid-cols-2 gap-1 xl:grid-cols-4">
+              {
+                serviceCategories.map((cat) => (
+                  <div class="rounded-md p-2">
+                    <p class="mb-2.5 px-1 text-body-sm font-medium text-ink">
+                      {cat.label}
+                    </p>
+                    <ul class="space-y-0.5">
+                      {servicesByCategory(cat.id).map((service) => (
+                        <li>
+                          <a
+                            href={`/services/${service.slug}`}
+                            class="block truncate rounded-xs px-1 py-1 text-caption text-body transition-colors hover:bg-canvas-soft hover:text-ink"
+                          >
+                            {service.cardTitle}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-4 border-t border-hairline bg-canvas-soft px-6 py-3">
+          <p class="text-body-sm text-body">
+            Looking for marketing instead?
+            <a
+              href={marketingPath()}
+              class="text-link underline-offset-2 hover:underline"
+            >
+              {MARKETING_LABEL} services
+            </a>
+            are a separate practice.
+          </p>
+          <Button href="/contact" variant="primary" size="sm">
+            Book Free Consultation
+            <ArrowRight size={12} aria-hidden="true" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+{/* ── MOBILE MENU ───────────────────────────────────────────────────── */}
+<div
+  id="mobile-menu"
+  hidden
+  class="fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto overscroll-contain bg-canvas px-4 pt-2 pb-8 lg:hidden"
+>
+  <nav aria-label="Mobile">
+    <button
+      id="mobile-services-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="mobile-services-panel"
+      class:list={[
+        'flex w-full items-center justify-between rounded-md px-4 py-3 text-body-md transition-colors',
+        isServicesActive
+          ? 'bg-canvas-soft text-ink'
+          : 'text-body hover:bg-canvas-soft hover:text-ink',
+      ]}
+    >
+      Services
+      <ChevronDown size={16} class="transition-transform duration-200" data-chevron aria-hidden="true" />
+    </button>
+
+    <div id="mobile-services-panel" hidden class="pl-2">
+      {
+        serviceCategories.map((cat) => (
+          <div>
+            <button
+              type="button"
+              data-cat-toggle={cat.id}
+              aria-expanded="false"
+              aria-controls={`mobile-cat-${cat.id}`}
+              class="flex w-full items-center justify-between rounded-md px-4 py-2.5 text-body-sm text-body transition-colors hover:bg-canvas-soft hover:text-ink"
+            >
+              {cat.label}
+              <ChevronDown size={14} class="transition-transform duration-200" data-chevron aria-hidden="true" />
+            </button>
+            <div id={`mobile-cat-${cat.id}`} hidden class="pl-4">
+              <ul class="py-1">
+                {servicesByCategory(cat.id).map((service) => (
+                  <li>
+                    <a
+                      href={`/services/${service.slug}`}
+                      class="flex items-center gap-1.5 rounded-md px-4 py-2 text-body-sm text-body transition-colors hover:bg-canvas-soft hover:text-ink"
+                    >
+                      <ArrowRight size={12} class="text-mute" aria-hidden="true" />
+                      {service.cardTitle}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))
+      }
+      <a
+        href="/services"
+        class="flex items-center gap-1.5 rounded-md px-4 py-2.5 text-body-sm text-link transition-colors hover:bg-canvas-soft"
+      >
+        <ArrowRight size={14} aria-hidden="true" />
+        All Services
+      </a>
+    </div>
+
+    {
+      staticLinks.map(({ href, label }) => (
+        <a
+          href={href}
+          aria-current={isActive(href) ? 'page' : undefined}
+          class:list={[
+            'flex items-center rounded-md px-4 py-3 text-body-md transition-colors',
+            isActive(href)
+              ? 'bg-canvas-soft text-ink'
+              : 'text-body hover:bg-canvas-soft hover:text-ink',
+          ]}
+        >
+          {label}
+        </a>
+      ))
+    }
+  </nav>
+
+  <div class="mt-4 flex flex-col gap-3 border-t border-hairline pt-4">
+    <Button href="/contact" variant="secondary" size="lg" class="w-full">
+      Get Free Quote
+    </Button>
+    <Button href="/contact" variant="primary" size="lg" class="w-full">
+      Start a Project
+      <ArrowRight size={16} aria-hidden="true" />
+    </Button>
+  </div>
+</div>
+
+{/* Spacer so page content clears the fixed header. */}
+<div class="h-16" aria-hidden="true"></div>
+
+<script>
+  const HOVER_CLOSE_DELAY = 120;
+
+  const header = document.getElementById('site-header');
+  const megaTrigger = document.getElementById('mega-trigger');
+  const megaTriggerWrap = document.getElementById('mega-trigger-wrap');
+  const megaMenu = document.getElementById('mega-menu');
+  const mobileToggle = document.getElementById('mobile-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const mobileServicesToggle = document.getElementById('mobile-services-toggle');
+  const mobileServicesPanel = document.getElementById('mobile-services-panel');
+
+  /** Rotate the chevron that lives inside a disclosure trigger. */
+  function setChevron(trigger: HTMLElement | null, open: boolean) {
+    trigger?.querySelector('[data-chevron]')?.classList.toggle('rotate-180', open);
+  }
+
+  // ── Scroll state ──────────────────────────────────────────────────
+  if (header) {
+    const onScroll = () => {
+      header.dataset.scrolled = window.scrollY > 12 ? 'true' : 'false';
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  // ── Desktop mega menu ─────────────────────────────────────────────
+  let closeTimer: ReturnType<typeof setTimeout> | null = null;
+
+  const megaIsOpen = () => megaMenu?.dataset.open === 'true';
+
+  function setMega(open: boolean) {
+    if (!megaMenu || !megaTrigger) return;
+    megaMenu.dataset.open = String(open);
+    megaTrigger.setAttribute('aria-expanded', String(open));
+    setChevron(megaTrigger, open);
+  }
+
+  function openMega() {
+    if (closeTimer) clearTimeout(closeTimer);
+    setMega(true);
+  }
+
+  function scheduleCloseMega() {
+    if (closeTimer) clearTimeout(closeTimer);
+    closeTimer = setTimeout(() => setMega(false), HOVER_CLOSE_DELAY);
+  }
+
+  megaTriggerWrap?.addEventListener('mouseenter', openMega);
+  megaTriggerWrap?.addEventListener('mouseleave', scheduleCloseMega);
+  megaMenu?.addEventListener('mouseenter', openMega);
+  megaMenu?.addEventListener('mouseleave', scheduleCloseMega);
+
+  // Keyboard and touch users get a click toggle rather than hover-only.
+  megaTrigger?.addEventListener('click', () => {
+    setMega(!megaIsOpen());
+  });
+
+  // ── Mobile drawer ─────────────────────────────────────────────────
+  function setMobile(open: boolean) {
+    if (!mobileMenu || !mobileToggle) return;
+    mobileMenu.hidden = !open;
+    mobileToggle.setAttribute('aria-expanded', String(open));
+    mobileToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    mobileToggle
+      .querySelector('[data-icon-open]')
+      ?.classList.toggle('hidden', open);
+    mobileToggle
+      .querySelector('[data-icon-close]')
+      ?.classList.toggle('hidden', !open);
+    // Stop the page behind the drawer from scrolling.
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  mobileToggle?.addEventListener('click', () => {
+    // `hidden` is typed `boolean | string` (it accepts "until-found"), so
+    // compare explicitly rather than coercing.
+    setMobile(mobileMenu?.hidden !== false);
+  });
+
+  /** Toggle a `hidden`-controlled disclosure panel and sync its trigger. */
+  function toggleDisclosure(trigger: HTMLElement, panel: HTMLElement) {
+    const open = panel.hidden !== false;
+    panel.hidden = !open;
+    trigger.setAttribute('aria-expanded', String(open));
+    setChevron(trigger, open);
+  }
+
+  if (mobileServicesToggle && mobileServicesPanel) {
+    mobileServicesToggle.addEventListener('click', () =>
+      toggleDisclosure(mobileServicesToggle, mobileServicesPanel),
+    );
+  }
+
+  for (const btn of document.querySelectorAll<HTMLElement>('[data-cat-toggle]')) {
+    const panel = document.getElementById(`mobile-cat-${btn.dataset.catToggle}`);
+    if (!panel) continue;
+    btn.addEventListener('click', () => toggleDisclosure(btn, panel));
+  }
+
+  // ── Global dismissal ──────────────────────────────────────────────
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    setMega(false);
+    if (mobileMenu && !mobileMenu.hidden) {
+      setMobile(false);
+      mobileToggle?.focus();
+    }
+  });
+
+  // Leaving the desktop breakpoint with the drawer open would otherwise
+  // strand `overflow: hidden` on the body.
+  const desktop = window.matchMedia('(min-width: 64rem)');
+  desktop.addEventListener('change', (event) => {
+    if (event.matches) setMobile(false);
+    else setMega(false);
+  });
+</script>

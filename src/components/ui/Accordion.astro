@@ -1,0 +1,55 @@
+---
+import ChevronDown from 'lucide-astro/ChevronDown';
+
+/**
+ * Disclosure row.
+ *
+ * Built on native <details>/<summary>, so it ships zero JavaScript and gets
+ * correct keyboard handling, screen-reader semantics, and in-page find
+ * (`hidden="until-found"` behaviour) from the browser. The reference used a
+ * React `useState` accordion; this is the same interaction without an island.
+ */
+interface Props {
+  question: string;
+  /** Groups rows so only one can be open at a time. */
+  name?: string;
+  open?: boolean;
+  /**
+   * Wraps the question in a heading *inside* the <summary>, which is the
+   * valid way to do it — a heading may not contain the summary. Set this on
+   * FAQ blocks that are meant to rank: an unheaded <summary> is extractable
+   * but carries no outline weight, and question-shaped headings are what
+   * featured snippets and People Also Ask are matched against. Left unset,
+   * the row renders exactly as before.
+   */
+  headingLevel?: 'h2' | 'h3' | 'h4';
+  class?: string;
+}
+
+const {
+  question,
+  name,
+  open = false,
+  headingLevel: Heading,
+  class: className,
+} = Astro.props;
+---
+
+<details
+  class:list={['group border-b border-hairline last:border-0', className]}
+  name={name}
+  open={open}
+>
+  <summary
+    class="flex w-full cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-body-md font-medium text-ink transition-colors hover:text-link [&::-webkit-details-marker]:hidden"
+  >
+    {Heading ? <Heading class="text-body-md font-medium">{question}</Heading> : question}
+    <ChevronDown
+      size={16}
+      class="shrink-0 text-mute transition-transform duration-200 group-open:rotate-180" aria-hidden="true" />
+  </summary>
+
+  <div class="pb-4 text-body-sm text-body">
+    <slot />
+  </div>
+</details>
