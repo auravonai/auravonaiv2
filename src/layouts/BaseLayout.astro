@@ -239,6 +239,26 @@ const robots = noindex
       set:html={JSON.stringify(websiteSchema)}
     />
 
+    {/* Google AdSense. Publisher ca-pub-2014775010005322.
+
+        Left in the head and loaded eagerly, unlike gtag.js at the end of
+        <body>. The lazy-load trick applied there is wrong here for two
+        reasons: AdSense verification works by fetching a page and looking for
+        this tag in the served HTML, so a script injected later by JS is not
+        found; and Auto ads need the library early enough to place ads before
+        the visitor has scrolled past the slots. Deferring it until first
+        interaction would mean ads appear only after the reader has already
+        moved down the page.
+
+        This is a real cost to the LCP and TBT work done elsewhere in this
+        file — the library is large and it competes with the stylesheet and
+        the preloaded hero font. That trade is inherent to running ads, not
+        something the loading strategy can recover. */}
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2014775010005322"
+      crossorigin="anonymous"></script>
+
     <slot name="head" />
   </head>
 
