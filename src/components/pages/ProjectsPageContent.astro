@@ -11,9 +11,11 @@ import Section from '@/components/ui/Section.astro';
 import SectionHeader from '@/components/ui/SectionHeader.astro';
 import Card from '@/components/ui/Card.astro';
 import Reveal from '@/components/ui/Reveal.astro';
-import Eyebrow from '@/components/ui/Eyebrow.astro';
 import Badge from '@/components/ui/Badge.astro';
 import Button from '@/components/ui/Button.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import HeroPanel from '@/components/ui/HeroPanel.astro';
+import HeroPanelBlock from '@/components/ui/HeroPanelBlock.astro';
 import DashboardMockup from '@/components/projects/DashboardMockup.astro';
 import {
   projects,
@@ -46,23 +48,80 @@ const workingStyle = [
 
 const featured = projects.find((p) => p.featured);
 const regular = projects.filter((p) => !p.featured);
+
+/**
+ * Hero panel counts.
+ *
+ * All three are `projects.length`-style derivations off the records rendered
+ * further down this same page — nothing here asserts a company fact that is
+ * not already visible as a card below. Do not add "years in business",
+ * "clients served", or any figure that cannot be counted from this file.
+ *
+ * `projectCategories` and `projectIndustries` both open with an "All" entry
+ * for the filter bar, which is why each count drops one.
+ */
+const buildCount = projects.length;
+const categoryCount = Math.max(projectCategories.length - 1, 0);
+const industryCount = Math.max(projectIndustries.length - 1, 0);
 ---
 
 {/* ── Hero ── */}
-<section class="border-b border-hairline bg-canvas-soft band-tight">
-  <div class="container-page text-center">
-    <Reveal>
-      <Eyebrow class="mb-4">Portfolio</Eyebrow>
-      <h1 class="text-display-xl">
-        Software We've <span class="text-mute">Designed &amp; Shipped</span>
-      </h1>
-      <p class="mx-auto mt-5 max-w-2xl text-body-lg text-body">
-        A selection of web apps, mobile products, AI integrations, and internal
-        tools built for founders and engineering teams.
-      </p>
-    </Reveal>
-  </div>
-</section>
+<PageHero
+  eyebrow="Portfolio"
+  title="Software We've"
+  titleTail="Designed & Shipped"
+  lead="A selection of web apps, mobile products, AI integrations, and internal tools built for founders and engineering teams."
+  backdrop="grid"
+  asideWidth="sm"
+>
+  <Fragment slot="actions">
+    <Button href="/contact" variant="primary" size="lg">
+      Discuss your project
+      <ArrowRight
+        size={16}
+        class="transition-transform duration-150 group-hover:translate-x-0.5"
+        aria-hidden="true"
+      />
+    </Button>
+    <Button href="/services" variant="secondary" size="lg">
+      What we build
+    </Button>
+  </Fragment>
+
+  <HeroPanel
+    slot="aside"
+    footerLabel="Something similar?"
+    footerHref="/contact"
+    footerCta="Tell us about it"
+  >
+    <HeroPanelBlock label="In this portfolio">
+      <dl class="space-y-3">
+        {
+          [
+            { term: 'Builds documented', value: buildCount },
+            { term: 'Product categories', value: categoryCount },
+            { term: 'Industries served', value: industryCount },
+          ].map(({ term, value }) => (
+            <div class="flex items-baseline justify-between gap-3">
+              <dt class="text-body-sm text-body">{term}</dt>
+              <dd class="font-mono text-body-sm text-ink tabular-nums">
+                {value}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </HeroPanelBlock>
+
+    <HeroPanelBlock label="Every entry lists" surface="soft">
+      <ul class="space-y-2 text-body-sm text-body">
+        <li>The problem it was built to solve</li>
+        <li>The approach taken, and the stack</li>
+        <li>Timeline and team shape</li>
+      </ul>
+    </HeroPanelBlock>
+  </HeroPanel>
+</PageHero>
 
 {/* ── Filter bar ── */}
 <div

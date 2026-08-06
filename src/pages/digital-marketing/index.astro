@@ -9,6 +9,10 @@ import Eyebrow from '@/components/ui/Eyebrow.astro';
 import Reveal from '@/components/ui/Reveal.astro';
 import Button from '@/components/ui/Button.astro';
 import Accordion from '@/components/ui/Accordion.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import HeroPanel from '@/components/ui/HeroPanel.astro';
+import HeroPanelBlock from '@/components/ui/HeroPanelBlock.astro';
+import HeroPanelNav from '@/components/ui/HeroPanelNav.astro';
 
 import { breadcrumbSchema, faqPageSchema, webPageSchema, ORG_ID } from '@/lib/seo';
 import { SITE_URL } from '@/lib/site';
@@ -18,6 +22,7 @@ import {
 } from '@/lib/marketing-seo';
 import {
   MARKETING_LABEL,
+  getAllMarketingSlugs,
   getMarketingCategories,
   hasMarketingPage,
   marketingPath,
@@ -49,6 +54,25 @@ const path = SEO.path;
 const linkedCategories = categories.filter((category) =>
   hasMarketingPage(category.slug),
 );
+
+/**
+ * Hero panel rows. Every family is listed, including the one the hub
+ * absorbed — a visitor still needs to see it in the index. That one points at
+ * the category grid below rather than at a URL, because it has no page of its
+ * own (see HUB_ALIAS_SLUG) and linking it would be a link to a 301.
+ *
+ * `meta` is the sub-service count, so the panel answers "how big is each of
+ * these" before a click rather than after one.
+ */
+const categoryLinks = categories.map((category) => ({
+  label: category.label,
+  href: hasMarketingPage(category.slug)
+    ? marketingPath(category.slug)
+    : '#categories',
+  meta: String(category.subServices.length),
+}));
+
+const totalMarketingPages = getAllMarketingSlugs().length;
 
 const breadcrumbs = breadcrumbSchema(
   [
@@ -128,34 +152,52 @@ const faqPage = faqPageSchema(marketingHubFaqs, path);
   </Fragment>
 
   {/* ══════════════ HERO ══════════════ */}
-  <Section surface="soft" as="section">
-    <nav aria-label="Breadcrumb" class="mb-10">
-      <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
-        <li><a href="/" class="transition-colors hover:text-ink">Home</a></li>
-        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
-        <li><span class="text-body" aria-current="page">{MARKETING_LABEL}</span></li>
-      </ol>
-    </nav>
+  <PageHero
+    eyebrow="Marketing practice"
+    title={SEO.h1}
+    titleTail={SEO.h1Tail}
+    tailLayout="block"
+    lead={SEO.summary}
+    backdrop="preview"
+    asideWidth="sm"
+    breadcrumb={[{ label: 'Home', href: '/' }, { label: MARKETING_LABEL }]}
+  >
+    <Fragment slot="actions">
+      <Button href="/contact" variant="primary" size="lg">
+        Talk to us
+        <ArrowRight size={16} aria-hidden="true" />
+      </Button>
+      <Button href="/services" variant="secondary" size="lg">
+        Looking for AI &amp; software?
+      </Button>
+    </Fragment>
 
-    <Reveal>
-      <Eyebrow class="mb-4">Marketing practice</Eyebrow>
-      <h1 class="max-w-4xl text-display-xl">
-        {SEO.h1}
-        <span class="block text-mute">{SEO.h1Tail}</span>
-      </h1>
-      <p class="mt-6 max-w-2xl text-body-lg text-body">{SEO.summary}</p>
+    <HeroPanel
+      slot="aside"
+      footerLabel="Not sure where to start?"
+      footerHref="/contact"
+      footerCta="Tell us what you sell"
+    >
+      <HeroPanelBlock label={`Service families · ${totalMarketingPages} pages`}>
+        <HeroPanelNav items={categoryLinks} />
+      </HeroPanelBlock>
 
-      <div class="mt-8 flex flex-wrap gap-3">
-        <Button href="/contact" variant="primary" size="lg">
-          Talk to us
-          <ArrowRight size={16} aria-hidden="true" />
-        </Button>
-        <Button href="/services" variant="secondary" size="lg">
-          Looking for AI &amp; software?
-        </Button>
-      </div>
-    </Reveal>
-  </Section>
+      <HeroPanelBlock label="The other practice" surface="soft">
+        <p class="text-body-sm text-body">
+          Auravon AI also builds AI systems and custom software. The two run as
+          separate practices — this one is for businesses that need customers,
+          not a platform.
+        </p>
+        <a
+          href="/services"
+          class="mt-3 inline-flex items-center gap-1.5 text-body-sm text-link transition-colors hover:text-link-deep"
+        >
+          AI &amp; software engineering
+          <ArrowRight size={13} aria-hidden="true" />
+        </a>
+      </HeroPanelBlock>
+    </HeroPanel>
+  </PageHero>
 
   {/* ══════════════ CATEGORIES ══════════════ */}
   <Section surface="canvas" as="section" id="categories" divided>

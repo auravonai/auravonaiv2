@@ -1,0 +1,33 @@
+{
+  // Cloudflare Workers Static Assets — no Worker script.
+  //
+  // There is no `main` here on purpose. Every route in src/pages/ prerenders
+  // (`output: 'static'`, no adapter), so the deploy is 91 files served
+  // straight from Cloudflare's edge. A Worker would only add an invocation
+  // in front of a static file lookup.
+  //
+  // This also means no `compatibility_flags: ["nodejs_compat"]`. That flag
+  // existed for the two Razorpay endpoints — `node:crypto` in
+  // verify-payment.ts, the Node-based `razorpay` SDK in create-order.ts —
+  // and both were deleted with the payment page.
+  "$schema": "node_modules/wrangler/config-schema.json",
+
+  "name": "auravon-ai",
+  "compatibility_date": "2026-04-15",
+
+  "assets": {
+    // ./dist, not ./dist/client — the adapter's two-directory split went away
+    // with the adapter. Astro writes a flat static build here now.
+    "directory": "./dist",
+
+    // Without this, an unknown URL returns Cloudflare's blank 404 and the
+    // custom /404.html is never served. `404-page` also makes the response a
+    // real 404 status rather than a 200, which is what stops every bad URL
+    // becoming a soft 404 in Search Console.
+    "not_found_handling": "404-page"
+  },
+
+  "observability": {
+    "enabled": true
+  }
+}

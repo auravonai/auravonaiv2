@@ -57,7 +57,6 @@ const staticPages: Entry[] = [
   { path: '/projects', priority: 0.9, changefreq: 'monthly' },
   { path: '/about', priority: 0.8, changefreq: 'monthly' },
   { path: '/contact', priority: 0.85, changefreq: 'monthly' },
-  { path: '/payment', priority: 0.7, changefreq: 'monthly' },
   { path: '/blog', priority: 0.8, changefreq: 'daily' },
   { path: '/privacy', priority: 0.3, changefreq: 'yearly' },
   { path: '/terms', priority: 0.3, changefreq: 'yearly' },

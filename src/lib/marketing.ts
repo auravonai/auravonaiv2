@@ -109,3 +109,32 @@ export function marketingRedirects(): Record<string, string> {
     [`/services/${HUB_ALIAS_SLUG}`]: MARKETING_BASE,
   };
 }
+
+/**
+ * Pages that were deleted outright, pointed at their nearest surviving intent.
+ *
+ * Distinct from `marketingRedirects()` above: those are a namespace *move*,
+ * where old and new URL answer the same query. These are retirements, where
+ * the destination is a judgement call about what the visitor wanted.
+ *
+ * `/payment` was a proposal-request form with a Razorpay "Pay an Invoice"
+ * panel bolted on. The panel never worked in production — the endpoints
+ * behind it read their secret from `import.meta.env`, which inlines at build
+ * time, so they compiled down to a hardcoded "not configured" response — and
+ * the whole page was removed rather than repaired. `/contact` is where the
+ * form's traffic was going anyway; the page's own secondary CTA was "Use
+ * Contact Form Instead".
+ *
+ * It was in the sitemap at priority 0.7, so assume it is indexed and keep
+ * this entry until Search Console shows no impressions for it.
+ */
+export function retiredRedirects(): Record<string, string> {
+  return {
+    '/payment': '/contact',
+  };
+}
+
+/** Every redirect the site emits, in both the config and `_redirects` forms. */
+export function allRedirects(): Record<string, string> {
+  return { ...marketingRedirects(), ...retiredRedirects() };
+}

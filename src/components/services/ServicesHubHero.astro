@@ -1,27 +1,38 @@
 ---
 import ArrowRight from 'lucide-astro/ArrowRight';
-import ChevronRight from 'lucide-astro/ChevronRight';
 import CheckCircle2 from 'lucide-astro/CheckCircle2';
 
-import Reveal from '@/components/ui/Reveal.astro';
-import Eyebrow from '@/components/ui/Eyebrow.astro';
 import Button from '@/components/ui/Button.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import HeroPanel from '@/components/ui/HeroPanel.astro';
+import HeroPanelBlock from '@/components/ui/HeroPanelBlock.astro';
+import HeroPanelNav from '@/components/ui/HeroPanelNav.astro';
+
 import { SERVICES_INTRO } from '@/lib/services-seo';
+import {
+  serviceCategories,
+  servicePages,
+  servicesByCategory,
+} from '@/lib/services';
 
 /**
  * `/services` hero.
  *
- * Rewritten for the hub-and-spoke redesign. What was removed and why:
+ * The hub's job is to route, and the panel now does that from inside the
+ * hero band instead of making a visitor scroll to the card grid first. Each
+ * row is a real link to that category's section with its page count beside
+ * it, so the shape of the catalog is legible before any scrolling happens.
  *
- * - The in-page table of contents. It listed fifteen `#anchor` links into
- *   one enormous page. Those destinations are now fifteen separate URLs, so
- *   the card grid below IS the table of contents — and every entry in it is a
- *   crawlable, rankable page rather than a fragment.
- * - The long assurance and positioning copy. A hub's job is to route, and
- *   every extra paragraph above the cards delays that.
+ * Backdrop is the `develop` pair (blue → teal). Each hub takes one DESIGN.md
+ * gradient pair so a visitor can tell which practice they are in from the
+ * band alone; spokes take a neutral texture instead. HeroBackdrop explains
+ * why the line is drawn there.
  *
- * The visible breadcrumb stays: Google requires BreadcrumbList markup to
- * match a hierarchy the visitor can see, and this page emits that markup.
+ * Kept from the previous version, and still true:
+ * - The in-page table of contents is gone. Those fifteen `#anchor` targets
+ *   are fifteen URLs now, and the card grid below is the real index.
+ * - The visible breadcrumb stays, because this page emits BreadcrumbList
+ *   markup and Google requires the two to match.
  */
 
 const assurances = [
@@ -29,54 +40,92 @@ const assurances = [
   'Costed scope before you commit',
   'You own the code and the IP',
 ];
+
+/**
+ * Category rows for the panel. Counts are derived rather than written down,
+ * so adding a service updates the hero without anyone remembering to.
+ */
+const categoryLinks = serviceCategories.map((category) => ({
+  label: category.label,
+  href: `#${category.id}-services`,
+  meta: String(servicesByCategory(category.id).length),
+}));
+
+/**
+ * How an engagement starts. Process commitments, not outcome claims — the
+ * same test every claim on this site has to pass. Each line is checkable
+ * against how we actually behave.
+ */
+const startSteps = [
+  'A 30-minute call about the problem, not the tech',
+  'A written, costed scope — including what is out of it',
+  'Build in reviewable increments you can open',
+];
 ---
 
-<section class="border-b border-hairline bg-canvas-soft band-tight">
-  <div class="container-page">
-    <nav aria-label="Breadcrumb" class="mb-10">
-      <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
-        <li><a href="/" class="transition-colors hover:text-ink">Home</a></li>
-        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
-        <li><span class="text-body" aria-current="page">Services</span></li>
-      </ol>
-    </nav>
+<PageHero
+  eyebrow="What We Build"
+  title="AI Development Services"
+  titleTail="Built for Production"
+  lead={SERVICES_INTRO}
+  backdrop="develop"
+  asideWidth="sm"
+  breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Services' }]}
+>
+  <ul
+    slot="meta"
+    class="flex flex-wrap items-center gap-x-6 gap-y-3 text-body-sm text-body"
+  >
+    {
+      assurances.map((item) => (
+        <li class="flex items-center gap-1.5">
+          <CheckCircle2 size={14} class="text-mute" aria-hidden="true" />
+          {item}
+        </li>
+      ))
+    }
+  </ul>
 
-    <Reveal class="max-w-3xl">
-      <Eyebrow class="mb-4">What We Build</Eyebrow>
+  <Fragment slot="actions">
+    <Button href="/contact" variant="primary" size="lg">
+      Get a Free Project Scope
+      <ArrowRight
+        size={16}
+        class="transition-transform duration-150 group-hover:translate-x-0.5"
+        aria-hidden="true"
+      />
+    </Button>
+    <Button href="#ai-services" variant="secondary" size="lg">
+      Browse Services
+    </Button>
+  </Fragment>
 
-      <h1 class="text-display-xl">
-        AI Development Services{' '}
-        <span class="text-mute">Built for Production</span>
-      </h1>
+  <HeroPanel
+    slot="aside"
+    footerLabel="Not sure which?"
+    footerHref="/contact"
+    footerCta="Talk it through"
+  >
+    <HeroPanelBlock label={`Service index · ${servicePages.length} pages`}>
+      <HeroPanelNav items={categoryLinks} />
+    </HeroPanelBlock>
 
-      <p class="mt-5 max-w-2xl text-body-lg text-body">{SERVICES_INTRO}</p>
-
-      <ul
-        class="mt-8 mb-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-body-sm text-body"
-      >
+    <HeroPanelBlock label="How engagements start" surface="soft">
+      <ol class="space-y-3">
         {
-          assurances.map((item) => (
-            <li class="flex items-center gap-1.5">
-              <CheckCircle2 size={14} class="text-mute" aria-hidden="true" />
-              {item}
+          startSteps.map((step, i) => (
+            <li class="flex gap-3 text-body-sm text-body">
+              <span
+                class="shrink-0 font-mono text-caption text-mute"
+                aria-hidden="true"
+              >
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span>{step}</span>
             </li>
           ))
         }
-      </ul>
-
-      <div class="flex flex-col gap-3 sm:flex-row">
-        <Button href="/contact" variant="primary" size="lg">
-          Get a Free Project Scope
-          <ArrowRight
-            size={16}
-            class="transition-transform duration-150 group-hover:translate-x-0.5"
-            aria-hidden="true"
-          />
-        </Button>
-        <Button href="#ai-services" variant="secondary" size="lg">
-          Browse Services
-        </Button>
-      </div>
-    </Reveal>
-  </div>
-</section>
+      </ol>
+    </HeroPanelBlock>
+  </HeroPanel>
+</PageHero>

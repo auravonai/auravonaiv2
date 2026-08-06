@@ -1,0 +1,210 @@
+---
+/**
+ * Per-family hero backdrop.
+ *
+ * WHY THIS EXISTS
+ * ---------------
+ * Every non-home page opened with the same flat `canvas-soft` band, so once a
+ * visitor left the homepage the whole site read as one undifferentiated
+ * template. This gives each page family its own atmosphere while keeping the
+ * type, spacing, and colour system untouched.
+ *
+ * TWO CLASSES OF VARIANT
+ * ----------------------
+ * `develop` / `preview` / `ship` are the three DESIGN.md brand gradient pairs
+ * rendered as an atmospheric wash. DESIGN.md permits this — see the
+ * `feature-mesh-band` component and "the mesh gradient is used at hero scale
+ * and inside feature-band atmospheric backdrops". The rules that DO bind:
+ * never miniaturise it, never crop to a single colour, never reorder the
+ * stops within a pair. Each variant here is a full pair at hero scale.
+ *
+ * Colour identifies the PRACTICE, intensity identifies the DEPTH:
+ *
+ *   develop (blue → teal)    AI & software      /services + its 15 spokes
+ *   preview (violet → pink)  digital marketing  /digital-marketing + its 34
+ *   ship    (coral → amber)  sectors            /industries + its 6 spokes
+ *
+ * A hub renders its pair at `full`, its spokes at `faint`. So the band tells
+ * a visitor which of the two businesses they are in and whether they are at
+ * the top of it — before they have read a word. That is the information the
+ * old flat `canvas-soft` band carried none of.
+ *
+ * `grid` / `dots` / `rules` are neutral textures drawn only from `--hairline`.
+ * They carry the pages that belong to no practice — /about, /projects, /blog,
+ * /contact. No new colour enters the system for those.
+ *
+ * WHY IT IS NOT THE HOME MeshGradient COMPONENT
+ * ---------------------------------------------
+ * That one layers all three pairs at once and is the homepage's signature.
+ * Reusing it here would make every hub look like the homepage, which is the
+ * opposite of the goal. This renders ONE pair per page, at lower opacity, so
+ * the homepage keeps its full-spectrum mesh as the thing only it does.
+ */
+interface Props {
+  variant?:
+    | 'develop'
+    | 'preview'
+    | 'ship'
+    | 'grid'
+    | 'dots'
+    | 'rules'
+    | 'none';
+  /** `faint` is the spoke level of a brand pair. Ignored by the textures. */
+  intensity?: 'full' | 'faint';
+  class?: string;
+}
+
+const { variant = 'none', intensity = 'full', class: className } = Astro.props;
+
+const isMesh =
+  variant === 'develop' || variant === 'preview' || variant === 'ship';
+const isTexture =
+  variant === 'grid' || variant === 'dots' || variant === 'rules';
+---
+
+{
+  variant !== 'none' && (
+    <div
+      class:list={[
+        'pointer-events-none absolute inset-x-0 top-0 overflow-hidden',
+        isMesh ? 'h-[420px]' : 'h-[300px]',
+        className,
+      ]}
+      aria-hidden="true"
+    >
+      {
+        isMesh && (
+          <div
+            class:list={[
+              'wash',
+              `wash-${variant}`,
+              intensity === 'faint' && 'wash-faint',
+            ]}
+          />
+        )
+      }
+      {isTexture && <div class:list={['texture', `texture-${variant}`]} />}
+
+      {/* Always fade out into the band so the backdrop never ends on a hard
+          edge — the same treatment the home MeshGradient uses. */}
+      <div class="absolute inset-x-0 bottom-0 h-32 bg-linear-to-b from-transparent to-canvas-soft" />
+    </div>
+  )
+}
+
+<style>
+  /* ── Brand gradient washes (hubs) ───────────────────────────────────
+     One pair each, held at hero scale. The blur is what turns two hard
+     radial stops into an atmospheric field rather than a graphic. */
+  .wash {
+    position: absolute;
+    inset: 0;
+    opacity: var(--hero-wash-opacity, 0.4);
+    filter: blur(64px) saturate(1.1);
+  }
+
+  /* Spoke level. Low enough to read as a tint of the parent hub rather than
+     a hero treatment of its own — a spoke should never out-shout its hub. */
+  .wash-faint {
+    --hero-wash-opacity: 0.17;
+  }
+
+  .wash-develop {
+    background-image:
+      radial-gradient(
+        ellipse 46% 62% at 10% 2%,
+        var(--color-gradient-develop-start) 0%,
+        transparent 64%
+      ),
+      radial-gradient(
+        ellipse 40% 55% at 34% 0%,
+        var(--color-gradient-develop-end) 0%,
+        transparent 60%
+      );
+  }
+
+  .wash-preview {
+    background-image:
+      radial-gradient(
+        ellipse 46% 62% at 12% 0%,
+        var(--color-gradient-preview-start) 0%,
+        transparent 64%
+      ),
+      radial-gradient(
+        ellipse 40% 55% at 36% 4%,
+        var(--color-gradient-preview-end) 0%,
+        transparent 60%
+      );
+  }
+
+  .wash-ship {
+    background-image:
+      radial-gradient(
+        ellipse 46% 62% at 10% 4%,
+        var(--color-gradient-ship-start) 0%,
+        transparent 64%
+      ),
+      radial-gradient(
+        ellipse 40% 55% at 34% 0%,
+        var(--color-gradient-ship-end) 0%,
+        transparent 60%
+      );
+  }
+
+  /* ── Neutral textures (spokes) ──────────────────────────────────────
+     Hairline only. These read as engineering drafting marks, which is the
+     register the brand already works in, and they cost no new tokens. */
+  .texture {
+    position: absolute;
+    inset: 0;
+    opacity: 0.9;
+    /* Fades the texture out to the right so it never collides with the
+       hero's aside panel. */
+    -webkit-mask-image: linear-gradient(
+      100deg,
+      #000 0%,
+      #000 34%,
+      transparent 76%
+    );
+    mask-image: linear-gradient(100deg, #000 0%, #000 34%, transparent 76%);
+  }
+
+  .texture-grid {
+    background-image:
+      linear-gradient(to right, var(--color-hairline) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-hairline) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  .texture-dots {
+    background-image: radial-gradient(
+      var(--color-hairline) 1.5px,
+      transparent 1.5px
+    );
+    background-size: 28px 28px;
+  }
+
+  .texture-rules {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      var(--color-hairline) 0px,
+      var(--color-hairline) 1px,
+      transparent 1px,
+      transparent 14px
+    );
+  }
+
+  /* The washes read considerably hotter against a near-black canvas, exactly
+     as the home mesh does. Same correction, same reason. */
+  :global([data-theme='dark']) .wash {
+    --hero-wash-opacity: 0.26;
+  }
+
+  :global([data-theme='dark']) .wash-faint {
+    --hero-wash-opacity: 0.12;
+  }
+
+  :global([data-theme='dark']) .texture {
+    opacity: 0.7;
+  }
+</style>

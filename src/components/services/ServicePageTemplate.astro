@@ -17,6 +17,10 @@ import Eyebrow from '@/components/ui/Eyebrow.astro';
 import Badge from '@/components/ui/Badge.astro';
 import Button from '@/components/ui/Button.astro';
 import Accordion from '@/components/ui/Accordion.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import HeroPanel from '@/components/ui/HeroPanel.astro';
+import HeroPanelBlock from '@/components/ui/HeroPanelBlock.astro';
+import HeroPanelNav from '@/components/ui/HeroPanelNav.astro';
 import StickyServiceBar from '@/components/services/StickyServiceBar.astro';
 import {
   getRelatedServices,
@@ -127,142 +131,152 @@ const ctaPromises = [
 ];
 
 const sectionTitle = 'mt-1 mb-10 text-display-lg';
+
+/**
+ * Visible breadcrumb trail, handed to PageHero.
+ *
+ * A sub-service sits three levels deep (hub → category → service); a category
+ * page sits two. The `BreadcrumbList` node in MarketingServiceRoute.astro
+ * describes the same trail, and Google only honours breadcrumb markup that
+ * matches what the visitor can see — so the middle level's CONDITION and its
+ * LABEL are both copied from there deliberately:
+ *
+ *   condition  service.type === 'service' && categorySlug !== slug && category
+ *   label      category.label
+ *
+ * The previous markup rendered `categorySlug.replace(/-/g, ' ')` with a
+ * `capitalize` class instead, which produced "Digital Marketing" against the
+ * schema's "Core Digital Marketing" — a mismatch on all 26 sub-service pages.
+ * Reading the label off the same record the schema reads makes the two
+ * impossible to drift apart. If the trail changes, change it in both files in
+ * the same commit.
+ */
+const showCategoryCrumb =
+  service.type === 'service' && service.categorySlug !== service.slug && category;
+
+const breadcrumb = [
+  { label: 'Home', href: '/' },
+  { label: MARKETING_LABEL, href: marketingPath() },
+  ...(showCategoryCrumb && category
+    ? [{ label: category.label, href: marketingPath(category.slug) }]
+    : []),
+  { label: service.title },
+];
+
+/**
+ * Sibling services in the same family, for the hero panel.
+ *
+ * The "related services" band already existed, but at the very bottom of a
+ * ten-section page — so a visitor who landed on the wrong one of these 34
+ * pages had to scroll past everything to find the right one. Same records,
+ * surfaced where the decision is actually made.
+ */
+const siblingLinks = related.slice(0, 5).map((sibling) => ({
+  label: sibling.title,
+  href: marketingPath(sibling.slug),
+}));
 ---
 
 {/* ════════════════ HERO ════════════════ */}
-<section class="border-b border-hairline bg-canvas-soft">
-  <div class="container-page py-16 md:py-20">
-    {/* Breadcrumb */}
-    <nav aria-label="Breadcrumb" class="mb-10">
-      <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
-        <li><a href="/" class="transition-colors hover:text-ink">Home</a></li>
-        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
-        <li>
-          <a href={marketingPath()} class="transition-colors hover:text-ink">
-            {MARKETING_LABEL}
-          </a>
-        </li>
-        {
-          service.type === 'service' && (
-            <>
-              <li aria-hidden="true">
-                <ChevronRight size={12} aria-hidden="true" />
+{/*
+  Moved onto the shared PageHero. This hero was already a two-column split
+  with an "at a glance" card — the only one on the site that filled its band —
+  and PageHero is that layout generalised, so the change here is mostly
+  removing markup that now lives in one place. What it gains: the marketing
+  practice's `preview` gradient backdrop at spoke intensity, and a sibling-
+  services block so a visitor on the wrong page can move sideways without
+  scrolling to the bottom.
+*/}
+<PageHero
+  eyebrow={category?.label}
+  title={service.title}
+  lead={service.tagline}
+  backdrop="preview"
+  backdropIntensity="faint"
+  breadcrumb={breadcrumb}
+>
+  <ul
+    slot="meta"
+    class="flex flex-wrap gap-x-6 gap-y-3 text-body-sm text-body"
+  >
+    {
+      heroAssurances.map(({ icon, text }) => {
+        const Icon = icon as any;
+        return (
+          <li class="flex items-center gap-1.5">
+            <Icon size={14} class="text-mute" aria-hidden="true" />
+            {text}
+          </li>
+        );
+      })
+    }
+  </ul>
+
+  <Fragment slot="actions">
+    <Button href="/contact" variant="primary" size="lg">
+      Start a conversation
+      <ArrowRight
+        size={16}
+        class="transition-transform duration-150 group-hover:translate-x-0.5"
+        aria-hidden="true"
+      />
+    </Button>
+    <Button href={SERVICE_ENQUIRY_URL} variant="secondary" size="lg" external>
+      <MessageCircle size={16} aria-hidden="true" />
+      WhatsApp
+    </Button>
+  </Fragment>
+
+  {/* "At a glance" — replaced the heroStats strip. See the note on `glance`
+      in the frontmatter for why those figures are gone. */}
+  <HeroPanel
+    slot="aside"
+    footerLabel="Questions first?"
+    footerHref="/contact"
+    footerCta="Let's talk"
+  >
+    {
+      glance.length > 0 && (
+        <HeroPanelBlock label="What this covers">
+          <ul class="space-y-2.5">
+            {glance.map((item) => (
+              <li class="flex items-start gap-2 text-body-sm text-body">
+                <CheckCircle2
+                  size={14}
+                  class="mt-0.5 shrink-0 text-mute"
+                  aria-hidden="true"
+                />
+                <span>{item}</span>
               </li>
+            ))}
+          </ul>
+        </HeroPanelBlock>
+      )
+    }
+
+    {
+      service.tools.length > 0 && (
+        <HeroPanelBlock label="Tools & platforms">
+          <ul class="flex flex-wrap gap-1.5">
+            {service.tools.slice(0, 8).map((t) => (
               <li>
-                <a
-                  href={marketingPath(service.categorySlug)}
-                  class="capitalize transition-colors hover:text-ink"
-                >
-                  {service.categorySlug.replace(/-/g, ' ')}
-                </a>
+                <Badge>{t}</Badge>
               </li>
-            </>
-          )
-        }
-        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
-        <li><span class="text-body" aria-current="page">{service.title}</span></li>
-      </ol>
-    </nav>
+            ))}
+          </ul>
+        </HeroPanelBlock>
+      )
+    }
 
-    <div class="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-16">
-      {/* Left copy */}
-      <div>
-        {
-          category && (
-            <p class="mb-5 font-mono text-caption uppercase tracking-[0.08em] text-mute">
-              {category.label}
-            </p>
-          )
-        }
-
-        <h1 class="max-w-[16ch] text-display-xl">{service.title}</h1>
-
-        <p class="mt-5 mb-8 max-w-[52ch] text-body-lg text-body">
-          {service.tagline}
-        </p>
-
-        <div class="mb-8 flex flex-wrap gap-3">
-          <Button href="/contact" variant="primary" size="lg">
-            Start a conversation
-            <ArrowRight size={16} class="transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
-          </Button>
-          <Button href={SERVICE_ENQUIRY_URL} variant="secondary" size="lg" external>
-            <MessageCircle size={16} aria-hidden="true" />
-            WhatsApp
-          </Button>
-        </div>
-
-        <ul class="flex flex-wrap gap-x-6 gap-y-3 text-body-sm text-body">
-          {
-            heroAssurances.map(({ icon, text }) => {
-              const Icon = icon as any;
-              return (
-                <li class="flex items-center gap-1.5">
-                  <Icon size={14} class="text-mute" aria-hidden="true" />
-                  {text}
-                </li>
-              );
-            })
-          }
-        </ul>
-      </div>
-
-      {/* "At a glance" card — replaced the heroStats strip. See the note on
-          `glance` in the frontmatter for why those figures are gone. */}
-      <Card surface="canvas" elevation={3} padding="sm" class="!p-0 lg:sticky lg:top-24">
-        {
-          glance.length > 0 && (
-            <div class="p-5">
-              <p class="mb-3.5 font-mono text-caption uppercase tracking-[0.08em] text-mute">
-                What this covers
-              </p>
-              <ul class="space-y-2.5">
-                {glance.map((item) => (
-                  <li class="flex items-start gap-2 text-body-sm text-body">
-                    <CheckCircle2
-                      size={14}
-                      class="mt-0.5 shrink-0 text-mute"
-                      aria-hidden="true"
-                    />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )
-        }
-
-        {
-          service.tools.length > 0 && (
-            <div class="border-t border-hairline p-5">
-              <p class="mb-3.5 font-mono text-caption uppercase tracking-[0.08em] text-mute">
-                Tools &amp; platforms
-              </p>
-              <ul class="flex flex-wrap gap-1.5">
-                {service.tools.slice(0, 8).map((t) => (
-                  <li>
-                    <Badge>{t}</Badge>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )
-        }
-
-        <div class="flex items-center justify-between gap-3 border-t border-hairline bg-canvas-soft px-5 py-4">
-          <span class="text-body-sm text-mute">Questions first?</span>
-          <a
-            href="/contact"
-            class="flex items-center gap-1 text-body-sm text-link transition-colors hover:text-link-deep"
-          >
-            Let's talk
-            <ArrowRight size={14} aria-hidden="true" />
-          </a>
-        </div>
-      </Card>
-    </div>
-  </div>
-</section>
+    {
+      siblingLinks.length > 0 && (
+        <HeroPanelBlock label="Also in this family" surface="soft">
+          <HeroPanelNav items={siblingLinks} />
+        </HeroPanelBlock>
+      )
+    }
+  </HeroPanel>
+</PageHero>
 
 {/* Sticky in-page nav. See `sectionNav` in the frontmatter. */}
 {

@@ -1,13 +1,15 @@
 ---
 import ArrowRight from 'lucide-astro/ArrowRight';
-import ChevronRight from 'lucide-astro/ChevronRight';
 
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Section from '@/components/ui/Section.astro';
 import Card from '@/components/ui/Card.astro';
-import Eyebrow from '@/components/ui/Eyebrow.astro';
 import Reveal from '@/components/ui/Reveal.astro';
 import Button from '@/components/ui/Button.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import HeroPanel from '@/components/ui/HeroPanel.astro';
+import HeroPanelBlock from '@/components/ui/HeroPanelBlock.astro';
+import HeroPanelNav from '@/components/ui/HeroPanelNav.astro';
 
 import { breadcrumbSchema, webPageSchema } from '@/lib/seo';
 import { SITE_URL } from '@/lib/site';
@@ -28,6 +30,17 @@ import { industries, industryPath } from '@/lib/industries';
  */
 
 const path = industryPath();
+
+/**
+ * Hero panel rows. `meta` is the count of documented builds for the sector,
+ * which is the same number the card below shows — derived from the record in
+ * both places so they cannot drift apart.
+ */
+const sectorLinks = industries.map((industry) => ({
+  label: industry.name,
+  href: industryPath(industry.slug),
+  meta: String(industry.applications.length),
+}));
 
 const breadcrumbs = breadcrumbSchema(
   [
@@ -71,29 +84,45 @@ const itemList = {
     <script type="application/ld+json" is:inline set:html={JSON.stringify(itemList)} />
   </Fragment>
 
-  <Section surface="soft" as="section">
-    <nav aria-label="Breadcrumb" class="mb-10">
-      <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
-        <li><a href="/" class="transition-colors hover:text-ink">Home</a></li>
-        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
-        <li><span class="text-body" aria-current="page">Industries</span></li>
-      </ol>
-    </nav>
+  <PageHero
+    eyebrow="Sectors"
+    title="Industries we build for"
+    titleTail="and the constraints each one imposes"
+    tailLayout="block"
+    lead="The same fifteen services look different depending on who they are for. A reconciliation engine in fintech and an inventory sync in retail are both integration work, but what makes them hard is not the same thing. These pages cover what changes."
+    backdrop="ship"
+    asideWidth="sm"
+    breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Industries' }]}
+  >
+    <Fragment slot="actions">
+      <Button href="/contact" variant="primary" size="lg">
+        Tell us about your sector
+        <ArrowRight size={16} aria-hidden="true" />
+      </Button>
+      <Button href="/services" variant="secondary" size="lg">
+        Browse services
+      </Button>
+    </Fragment>
 
-    <Reveal>
-      <Eyebrow class="mb-4">Sectors</Eyebrow>
-      <h1 class="max-w-4xl text-display-xl">
-        Industries we build for
-        <span class="block text-mute">and the constraints each one imposes</span>
-      </h1>
-      <p class="mt-6 max-w-2xl text-body-lg text-body">
-        The same fifteen services look different depending on who they are for.
-        A reconciliation engine in fintech and an inventory sync in retail are
-        both integration work, but what makes them hard is not the same thing.
-        These pages cover what changes.
-      </p>
-    </Reveal>
-  </Section>
+    <HeroPanel
+      slot="aside"
+      footerLabel="Sector not listed?"
+      footerHref="/contact"
+      footerCta="Ask us"
+    >
+      <HeroPanelBlock label={`Sectors · ${industries.length}`}>
+        <HeroPanelNav items={sectorLinks} />
+      </HeroPanelBlock>
+
+      <HeroPanelBlock label="What a sector page covers" surface="soft">
+        <ul class="space-y-2 text-body-sm text-body">
+          <li>Where projects in it actually go wrong</li>
+          <li>The constraints the sector imposes on a build</li>
+          <li>Systems we build for it, and the services involved</li>
+        </ul>
+      </HeroPanelBlock>
+    </HeroPanel>
+  </PageHero>
 
   <Section surface="canvas" as="section" divided>
     <h2 class="sr-only">All industries</h2>

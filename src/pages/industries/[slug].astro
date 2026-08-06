@@ -2,7 +2,6 @@
 import type { GetStaticPaths } from 'astro';
 
 import ArrowRight from 'lucide-astro/ArrowRight';
-import ChevronRight from 'lucide-astro/ChevronRight';
 
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Section from '@/components/ui/Section.astro';
@@ -11,6 +10,10 @@ import Eyebrow from '@/components/ui/Eyebrow.astro';
 import Reveal from '@/components/ui/Reveal.astro';
 import Button from '@/components/ui/Button.astro';
 import Accordion from '@/components/ui/Accordion.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import HeroPanel from '@/components/ui/HeroPanel.astro';
+import HeroPanelBlock from '@/components/ui/HeroPanelBlock.astro';
+import HeroPanelNav from '@/components/ui/HeroPanelNav.astro';
 
 import { breadcrumbSchema, faqPageSchema, webPageSchema, ORG_ID } from '@/lib/seo';
 import { SITE_URL } from '@/lib/site';
@@ -47,6 +50,17 @@ interface Props {
 const { industry } = Astro.props;
 const path = industryPath(industry.slug);
 const relatedServices = getServicePages(industry.relatedServices);
+
+/**
+ * Hero panel rows. Same records as the "related services" band far down the
+ * page — the section that makes this page worth having — but surfaced above
+ * the fold, which is where a visitor arriving on a sector query decides
+ * whether this site sells what they need.
+ */
+const serviceLinks = relatedServices.slice(0, 5).map((service) => ({
+  label: service.cardTitle,
+  href: `/services/${service.slug}`,
+}));
 
 const breadcrumbs = breadcrumbSchema(
   [
@@ -109,34 +123,58 @@ const faqPage = faqPageSchema(industry.faqs, path);
   </Fragment>
 
   {/* ══════════════ HERO ══════════════ */}
-  <Section surface="soft" as="section">
-    <nav aria-label="Breadcrumb" class="mb-10">
-      <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
-        <li><a href="/" class="transition-colors hover:text-ink">Home</a></li>
-        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
-        <li>
-          <a href={industryPath()} class="transition-colors hover:text-ink">
-            Industries
-          </a>
-        </li>
-        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
-        <li><span class="text-body" aria-current="page">{industry.name}</span></li>
-      </ol>
-    </nav>
+  <PageHero
+    eyebrow="Industry"
+    title={industry.h1}
+    lead={industry.summary}
+    backdrop="ship"
+    backdropIntensity="faint"
+    breadcrumb={[
+      { label: 'Home', href: '/' },
+      { label: 'Industries', href: industryPath() },
+      { label: industry.name },
+    ]}
+  >
+    <Fragment slot="actions">
+      <Button href="/contact" variant="primary" size="lg">
+        Discuss a {industry.name.split(' ')[0].toLowerCase()} project
+        <ArrowRight size={16} aria-hidden="true" />
+      </Button>
+      <Button href={industryPath()} variant="secondary" size="lg">
+        All sectors
+      </Button>
+    </Fragment>
 
-    <Reveal>
-      <Eyebrow class="mb-4">Industry</Eyebrow>
-      <h1 class="max-w-4xl text-display-xl">{industry.h1}</h1>
-      <p class="mt-6 max-w-2xl text-body-lg text-body">{industry.summary}</p>
+    <HeroPanel
+      slot="aside"
+      footerLabel="Different constraint?"
+      footerHref="/contact"
+      footerCta="Tell us about it"
+    >
+      {/* Constraint titles only. The descriptions are the band below — this
+          is the shape of the problem, not a second copy of it. */}
+      <HeroPanelBlock label="What makes it hard here">
+        <ul class="space-y-2.5">
+          {
+            industry.constraints.map((constraint) => (
+              <li class="flex gap-2.5 text-body-sm text-body">
+                <span class="mt-2 size-1 shrink-0 rounded-full bg-hairline-strong" aria-hidden="true" />
+                <span>{constraint.title}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </HeroPanelBlock>
 
-      <div class="mt-8">
-        <Button href="/contact" variant="primary" size="lg">
-          Discuss a {industry.name.split(' ')[0].toLowerCase()} project
-          <ArrowRight size={16} aria-hidden="true" />
-        </Button>
-      </div>
-    </Reveal>
-  </Section>
+      {
+        serviceLinks.length > 0 && (
+          <HeroPanelBlock label="Services this involves" surface="soft">
+            <HeroPanelNav items={serviceLinks} />
+          </HeroPanelBlock>
+        )
+      }
+    </HeroPanel>
+  </PageHero>
 
   {/* ══════════════ ORIENTATION ══════════════ */}
   <Section surface="canvas" as="section" divided>

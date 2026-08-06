@@ -1,0 +1,47 @@
+---
+/**
+ * One labelled block inside a `HeroPanel`.
+ *
+ * Blocks stack and separate themselves with a hairline — the scoped-style
+ * sibling rule below means a caller never has to think about which block is
+ * first, so blocks can be conditional without leaving a stray top border.
+ *
+ * The label is mono/uppercase per DESIGN.md ("mono for the technical layer
+ * only"). It is a `<p>`, not a heading: the panel sits beside the h1 and
+ * adding h2s here would put navigation chrome into the page's heading
+ * outline ahead of the real content sections.
+ */
+interface Props {
+  /** Mono label above the block. Omit for an unlabelled block. */
+  label?: string;
+  /** `soft` tints the block — used for the one block that should stand out. */
+  surface?: 'canvas' | 'soft';
+  class?: string;
+}
+
+const { label, surface = 'canvas', class: className } = Astro.props;
+
+const surfaces = {
+  canvas: '',
+  soft: 'bg-canvas-soft',
+} as const;
+---
+
+<div class:list={['hero-panel-block p-5', surfaces[surface], className]}>
+  {
+    label && (
+      <p class="mb-3.5 font-mono text-caption uppercase tracking-[0.08em] text-mute">
+        {label}
+      </p>
+    )
+  }
+  <slot />
+</div>
+
+<style>
+  /* Astro scopes this class to every HeroPanelBlock instance, so adjacent
+     siblings match across separate component invocations. */
+  .hero-panel-block + .hero-panel-block {
+    border-top: 1px solid var(--color-hairline);
+  }
+</style>

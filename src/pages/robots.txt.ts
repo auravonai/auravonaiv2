@@ -5,6 +5,10 @@ import type { APIRoute } from 'astro';
  * dropped because that path no longer exists; Astro's build output lives
  * under `/_astro/`, which is fine to crawl.
  *
+ * `Disallow: /api/` went with the Razorpay endpoints. The site has no
+ * on-demand routes at all now, so there is nothing under `/api/` to keep a
+ * crawler away from, and a disallow for a path that returns 404 is noise.
+ *
  * The `Host:` directive was removed. It was never part of the robots.txt
  * standard — it is a Yandex extension, Yandex itself deprecated it in favour
  * of 301 redirects, and Google has never read it. It was doing nothing for
@@ -22,9 +26,6 @@ export const GET: APIRoute = () =>
 
 User-agent: *
 Allow: /
-
-# The two Razorpay endpoints. POST-only, return JSON, nothing to index.
-Disallow: /api/
 
 Sitemap: https://auravonai.com/sitemap.xml
 `,

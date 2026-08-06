@@ -1,11 +1,11 @@
 ---
 import Calendar from 'lucide-astro/Calendar';
-import ArrowLeft from 'lucide-astro/ArrowLeft';
 import ChevronRight from 'lucide-astro/ChevronRight';
 
 import Card from '@/components/ui/Card.astro';
-import Eyebrow from '@/components/ui/Eyebrow.astro';
-import Reveal from '@/components/ui/Reveal.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import HeroPanel from '@/components/ui/HeroPanel.astro';
+import HeroPanelBlock from '@/components/ui/HeroPanelBlock.astro';
 
 /**
  * Shared chrome for the three legal documents.
@@ -26,29 +26,47 @@ interface Props {
 const { badge, title, subtitle, lastUpdated, sections } = Astro.props;
 ---
 
-{/* ── Hero strip ── */}
-<section class="border-b border-hairline bg-canvas-soft">
-  <div class="container-page py-12 md:py-16">
-    <Reveal>
-      <a
-        href="/"
-        class="mb-6 inline-flex items-center gap-1.5 text-body-sm text-body transition-colors hover:text-ink"
-      >
-        <ArrowLeft size={14} aria-hidden="true" />
-        Back to Home
-      </a>
+{/* ── Hero strip ──────────────────────────────────────────────────────
+    The "Back to Home" link became a real breadcrumb. Same destination, but
+    it now states where the page sits rather than only offering an exit, and
+    it matches the trail every other page on the site shows.
 
-      <Eyebrow class="mb-3">{badge}</Eyebrow>
-      <h1 class="text-display-xl">{title}</h1>
-      <p class="mt-4 mb-5 max-w-2xl text-body-lg text-body">{subtitle}</p>
-
-      <p class="flex items-center gap-2 text-body-sm text-mute">
-        <Calendar size={14} aria-hidden="true" />
-        Last updated: {lastUpdated}
-      </p>
-    </Reveal>
-  </div>
-</section>
+    "Last updated" moved into the panel beside the document facts. On a legal
+    document that date is the single most-checked value on the page, and it
+    was previously the last line of a hero a reader had to scroll past. */}
+<PageHero
+  eyebrow={badge}
+  title={title}
+  lead={subtitle}
+  backdrop="rules"
+  asideWidth="sm"
+  breadcrumb={[{ label: 'Home', href: '/' }, { label: title }]}
+>
+  <HeroPanel
+    slot="aside"
+    footerLabel="Questions about this?"
+    footerHref="/contact"
+    footerCta="Contact us"
+  >
+    <HeroPanelBlock label="This document">
+      <dl class="space-y-3">
+        <div class="flex items-baseline justify-between gap-3">
+          <dt class="flex items-center gap-1.5 text-body-sm text-body">
+            <Calendar size={13} class="text-mute" aria-hidden="true" />
+            Last updated
+          </dt>
+          <dd class="text-body-sm text-ink">{lastUpdated}</dd>
+        </div>
+        <div class="flex items-baseline justify-between gap-3">
+          <dt class="text-body-sm text-body">Sections</dt>
+          <dd class="font-mono text-body-sm text-ink tabular-nums">
+            {sections.length}
+          </dd>
+        </div>
+      </dl>
+    </HeroPanelBlock>
+  </HeroPanel>
+</PageHero>
 
 {/* ── Content ── */}
 <div class="container-page py-12 md:py-16">

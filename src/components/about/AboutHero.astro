@@ -1,11 +1,12 @@
 ---
 import ArrowRight from 'lucide-astro/ArrowRight';
-import ChevronRight from 'lucide-astro/ChevronRight';
 
-import Reveal from '@/components/ui/Reveal.astro';
-import Eyebrow from '@/components/ui/Eyebrow.astro';
 import Button from '@/components/ui/Button.astro';
-import { ABOUT_INTRO, ABOUT_LEDE } from '@/lib/about-seo';
+import PageHero from '@/components/ui/PageHero.astro';
+import HeroPanel from '@/components/ui/HeroPanel.astro';
+import HeroPanelBlock from '@/components/ui/HeroPanelBlock.astro';
+import HeroPanelNav from '@/components/ui/HeroPanelNav.astro';
+import { ABOUT_INTRO, ABOUT_LEDE, whatWeDo, workingPractice } from '@/lib/about-seo';
 
 /**
  * `/about` hero.
@@ -29,53 +30,78 @@ import { ABOUT_INTRO, ABOUT_LEDE } from '@/lib/about-seo';
  * unless every value has been checked against reality — the About page is
  * exactly where a buyer verifies claims, so a wrong one costs more here than
  * anywhere else on the site.
+ *
+ * THE PANEL FOLLOWS THAT SAME RULE. It carries no dates, no headcount, no
+ * location, and no metric. Every line in it is either a link to another page
+ * on this site or a working-practice commitment already stated verbatim in
+ * `about-seo.ts` — things checkable against how we behave, not claims about
+ * a history nobody has confirmed. Do not add a "founded / team size / clients
+ * served" block here.
+ *
+ * Backdrop is a neutral texture rather than a brand gradient pair. The three
+ * gradient pairs are spoken for by the three practice hubs, and /about
+ * belongs to no practice — it is the company behind both.
  */
+
+/** First three working-practice commitments, titles only. Full text is the
+ *  AboutPractice band; this is a summary of it, not a second copy. */
+const practiceTitles = workingPractice.slice(0, 3).map((item) => item.title);
+
+/** The four `whatWeDo` destinations, as panel rows. Same records the
+ *  AboutWhatWeDo band renders, so the two can never disagree. */
+const doLinks = whatWeDo.map((item) => ({
+  label: item.title,
+  href: item.href,
+}));
 ---
 
-<section class="border-b border-hairline bg-canvas-soft band-tight">
-  <div class="container-page">
-    <nav aria-label="Breadcrumb" class="mb-10">
-      <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
-        <li><a href="/" class="transition-colors hover:text-ink">Home</a></li>
-        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
-        <li><span class="text-body" aria-current="page">About</span></li>
-      </ol>
-    </nav>
+<PageHero
+  eyebrow="About Auravon AI"
+  title="An AI Development Company"
+  titleTail="Run by the Engineers Who Build It"
+  lead={ABOUT_INTRO}
+  leads={[ABOUT_LEDE]}
+  backdrop="rules"
+  breadcrumb={[{ label: 'Home', href: '/' }, { label: 'About' }]}
+>
+  <Fragment slot="actions">
+    <Button href="/contact" variant="primary" size="lg">
+      Talk to an Engineer
+      <ArrowRight
+        size={16}
+        class="transition-transform duration-150 group-hover:translate-x-0.5"
+        aria-hidden="true"
+      />
+    </Button>
+    <Button href="/projects" variant="secondary" size="lg">
+      See What We Have Built
+    </Button>
+  </Fragment>
 
-    <div class="max-w-3xl">
-      <Reveal>
-        <Eyebrow class="mb-4">About Auravon AI</Eyebrow>
+  <HeroPanel
+    slot="aside"
+    footerLabel="Prefer to just ask?"
+    footerHref="/contact"
+    footerCta="Start a conversation"
+  >
+    <HeroPanelBlock label="How we work">
+      <ul class="space-y-2.5">
+        {
+          practiceTitles.map((title) => (
+            <li class="flex gap-2.5 text-body-sm text-body">
+              <span
+                class="mt-2 size-1 shrink-0 rounded-full bg-hairline-strong"
+                aria-hidden="true"
+              />
+              <span>{title}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </HeroPanelBlock>
 
-        {/*
-          `{' '}` is load-bearing, not a formatting accident. Astro's
-          compressHTML strips template whitespace between a text node and an
-          element, so the natural two-line form renders as
-          "…CompanyRun by the Engineers…" — visibly, and in the extracted
-          heading text. An explicit expression emits a real space the
-          compressor leaves alone.
-        */}
-        <h1 class="text-display-xl">
-          An AI Development Company{' '}
-          <span class="text-mute">Run by the Engineers Who Build It</span>
-        </h1>
-
-        <p class="mt-5 text-body-lg text-body">{ABOUT_INTRO}</p>
-        <p class="mt-4 text-body-md text-body">{ABOUT_LEDE}</p>
-
-        <div class="mt-9 flex flex-col gap-3 sm:flex-row">
-          <Button href="/contact" variant="primary" size="lg">
-            Talk to an Engineer
-            <ArrowRight
-              size={16}
-              class="transition-transform duration-150 group-hover:translate-x-0.5"
-              aria-hidden="true"
-            />
-          </Button>
-          <Button href="/projects" variant="secondary" size="lg">
-            See What We Have Built
-          </Button>
-        </div>
-      </Reveal>
-    </div>
-  </div>
-</section>
+    <HeroPanelBlock label="What we do" surface="soft">
+      <HeroPanelNav items={doLinks} />
+    </HeroPanelBlock>
+  </HeroPanel>
+</PageHero>

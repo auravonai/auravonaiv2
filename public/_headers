@@ -1,0 +1,19 @@
+# Read by Cloudflare Workers Static Assets (and Netlify) at serve time.
+#
+# This used to be generated: @astrojs/cloudflare injected the rule below on
+# every build ("Injected immutable Cache-Control for /_astro/* into _headers").
+# The adapter was removed along with the payment API routes, and the rule went
+# with it — without this file, hashed assets fall back to the default
+# short-lived caching and repeat visitors re-download the CSS and JS.
+#
+# It lives in `public/` rather than being written into `dist/` by an
+# integration because it is genuinely hand-maintained source, not a build
+# artefact derived from something else. Contrast `_redirects`, which IS
+# generated (see the `auravon:host-redirects` integration in astro.config.mjs)
+# because its content is derived from src/lib/marketing.ts.
+
+# Everything under /_astro/ is content-hashed by Vite, so the filename changes
+# whenever the bytes change. That makes it safe to cache for a year and to
+# mark immutable, which also tells the browser not to revalidate.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable

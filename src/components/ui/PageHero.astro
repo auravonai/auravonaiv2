@@ -1,0 +1,217 @@
+---
+import ChevronRight from 'lucide-astro/ChevronRight';
+
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import HeroBackdrop from '@/components/ui/HeroBackdrop.astro';
+
+/**
+ * The shared page hero — one component behind every hero on the site except
+ * the homepage.
+ *
+ * WHY IT IS A SPLIT
+ * -----------------
+ * DESIGN.md says "the brand doesn't use a split-hero pattern". That rule is
+ * deliberately overridden here, on instruction, because the stacked hero it
+ * describes left roughly 40% of a 1400px band empty on every interior page —
+ * the copy capped at `max-w-3xl` inside a `container-page`. One page already
+ * disagreed with the doc anyway: the 34 marketing spokes have run a
+ * two-column hero with a 340px card since the redesign, and it is the best
+ * hero on the site. This generalises that layout rather than inventing one.
+ *
+ * The `aside` slot is not decoration. Every page fills it with real,
+ * crawlable content drawn from that page's own data — category indexes,
+ * spec summaries, sector lists. That is what makes the fix an SEO gain
+ * rather than a neutral restyle: each hero now emits internal links and
+ * contextual text that previously did not exist above the fold.
+ *
+ * SEO CONTRACT — do not break these
+ * ---------------------------------
+ * - Exactly one `h1`, rendered before the aside in source order.
+ * - The breadcrumb renders the same visible trail the page's
+ *   `BreadcrumbList` node claims. Google requires the two to match; the
+ *   markup here is structurally identical to what each page hand-rolled
+ *   before, so no page's existing schema needed to change.
+ * - The lead paragraph stays the first paragraph in the band, because
+ *   several pages feed the same string to `Service.description`.
+ * - Nothing in the aside is an `h1` or a duplicate of the lead. Aside
+ *   headings start at `h2` and are passed in by the caller.
+ */
+interface Props {
+  /** Mono label above the headline. */
+  eyebrow?: string;
+  /** The h1's leading clause. Carries the primary keyword. */
+  title: string;
+  /** Muted continuation of the h1. Same heading, second voice. */
+  titleTail?: string;
+  /** `block` puts the tail on its own line — matches the old per-page markup. */
+  tailLayout?: 'inline' | 'block';
+  /** Opening paragraph. Often also the page's `Service.description`. */
+  lead?: string;
+  /** Additional paragraphs under the lead. */
+  leads?: string[];
+  /**
+   * Visible trail. The last entry is the current page and renders unlinked
+   * with `aria-current`. Omit to render no breadcrumb.
+   */
+  breadcrumb?: { label: string; href?: string }[];
+  /** See HeroBackdrop. Hubs take a brand pair, spokes take a texture. */
+  backdrop?:
+    | 'develop'
+    | 'preview'
+    | 'ship'
+    | 'grid'
+    | 'dots'
+    | 'rules'
+    | 'none';
+  /** `faint` marks a spoke carrying its hub's colour. See HeroBackdrop. */
+  backdropIntensity?: 'full' | 'faint';
+  /** Aside column width at `lg`. `sm` suits a list, `md` a spec card. */
+  asideWidth?: 'sm' | 'md';
+  surface?: 'soft' | 'canvas';
+  class?: string;
+}
+
+const {
+  eyebrow,
+  title,
+  titleTail,
+  tailLayout = 'inline',
+  lead,
+  leads = [],
+  breadcrumb = [],
+  backdrop = 'none',
+  backdropIntensity = 'full',
+  asideWidth = 'md',
+  surface = 'soft',
+  class: className,
+} = Astro.props;
+
+const hasAside = Astro.slots.has('aside');
+const hasIcon = Astro.slots.has('icon');
+
+/* Both strings are written out in full so Tailwind's source scanner sees
+   them. Do not build these by concatenation. */
+const gridCols = hasAside
+  ? asideWidth === 'sm'
+    ? 'lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-x-16'
+    : 'lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-x-16'
+  : '';
+
+const surfaces = {
+  soft: 'bg-canvas-soft',
+  canvas: 'bg-canvas',
+} as const;
+---
+
+<section
+  class:list={[
+    'relative overflow-hidden border-b border-hairline band-tight',
+    surfaces[surface],
+    className,
+  ]}
+>
+  <HeroBackdrop variant={backdrop} intensity={backdropIntensity} />
+
+  <div class="relative container-page">
+    {
+      breadcrumb.length > 0 && (
+        <nav aria-label="Breadcrumb" class="mb-10">
+          <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
+            {breadcrumb.map((crumb, i) => (
+              <Fragment>
+                {i > 0 && (
+                  <li aria-hidden="true">
+                    <ChevronRight size={12} aria-hidden="true" />
+                  </li>
+                )}
+                <li>
+                  {crumb.href ? (
+                    <a href={crumb.href} class="transition-colors hover:text-ink">
+                      {crumb.label}
+                    </a>
+                  ) : (
+                    <span class="text-body" aria-current="page">
+                      {crumb.label}
+                    </span>
+                  )}
+                </li>
+              </Fragment>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    <div class:list={['grid items-start gap-y-12', gridCols]}>
+      {/* ── Copy column ────────────────────────────────────────────── */}
+      <Reveal class:list={[!hasAside && 'max-w-3xl']}>
+        {
+          hasIcon && (
+            <div class="mb-5 flex items-center gap-3">
+              <slot name="icon" />
+              {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+            </div>
+          )
+        }
+
+        {!hasIcon && eyebrow && <Eyebrow class="mb-4">{eyebrow}</Eyebrow>}
+
+        {/*
+          `{' '}` is load-bearing. Astro's compressHTML strips template
+          whitespace between a text node and an element, so the inline form
+          renders as "…CompanyRun by the…" without an explicit expression.
+          Lifted verbatim from the note in the old AboutHero.
+        */}
+        <h1 class="text-display-xl">
+          {title}
+          {
+            titleTail &&
+              (tailLayout === 'block' ? (
+                <span class="block text-mute">{titleTail}</span>
+              ) : (
+                <Fragment>
+                  {' '}
+                  <span class="text-mute">{titleTail}</span>
+                </Fragment>
+              ))
+          }
+        </h1>
+
+        {lead && <p class="mt-5 max-w-2xl text-body-lg text-body">{lead}</p>}
+        {
+          leads.map((paragraph) => (
+            <p class="mt-4 max-w-2xl text-body-md text-body">{paragraph}</p>
+          ))
+        }
+
+        {
+          Astro.slots.has('meta') && (
+            <div class="mt-8">
+              <slot name="meta" />
+            </div>
+          )
+        }
+
+        {
+          Astro.slots.has('actions') && (
+            <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+              <slot name="actions" />
+            </div>
+          )
+        }
+
+        <slot />
+      </Reveal>
+
+      {/* ── Aside column ───────────────────────────────────────────── */}
+      {
+        hasAside && (
+          <Reveal delay={120} class="w-full">
+            <slot name="aside" />
+          </Reveal>
+        )
+      }
+    </div>
+  </div>
+</section>

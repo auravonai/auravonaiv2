@@ -1,6 +1,5 @@
 ---
 import ArrowRight from 'lucide-astro/ArrowRight';
-import ChevronRight from 'lucide-astro/ChevronRight';
 import CheckCircle2 from 'lucide-astro/CheckCircle2';
 import CircleAlert from 'lucide-astro/CircleAlert';
 
@@ -11,9 +10,18 @@ import Button from '@/components/ui/Button.astro';
 import Reveal from '@/components/ui/Reveal.astro';
 import Eyebrow from '@/components/ui/Eyebrow.astro';
 import Accordion from '@/components/ui/Accordion.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import HeroPanel from '@/components/ui/HeroPanel.astro';
+import HeroPanelBlock from '@/components/ui/HeroPanelBlock.astro';
+import HeroPanelNav from '@/components/ui/HeroPanelNav.astro';
 import ServiceIcon from '@/components/services/ServiceIcon.astro';
 
-import { serviceCategories, getServicePages, type ServicePage } from '@/lib/services';
+import {
+  serviceCategories,
+  getServicePages,
+  servicesByCategory,
+  type ServicePage,
+} from '@/lib/services';
 import { getIndustriesForService, industryPath } from '@/lib/industries';
 
 /**
@@ -50,69 +58,129 @@ const related = getServicePages(page.relatedServices);
  * does not list it.
  */
 const industries = getIndustriesForService(page.slug);
+
+/**
+ * Hero panel content — the spoke's "at a glance" card.
+ *
+ * Everything here is derived from the page's own record, never written twice.
+ * The point is that a buyer landing cold on a spoke can answer "what is in
+ * this, how does it run, and what is it built with" without scrolling, and
+ * every fact they see is the same string the section below will repeat.
+ *
+ * `siblings` links the other services in the same category. That is the
+ * lateral movement the spokes previously only offered at the very bottom of
+ * the page, in the "Related services" band — a visitor who decided this was
+ * the wrong service had to scroll past the whole page to find the right one.
+ */
+const siblings = servicesByCategory(page.category)
+  .filter((sibling) => sibling.slug !== page.slug)
+  .slice(0, 5)
+  .map((sibling) => ({
+    label: sibling.cardTitle,
+    href: `/services/${sibling.slug}`,
+  }));
+
+/** Flattened stack chips. Capped — the full grouping is its own section. */
+const stackChips = page.technologies.flatMap((group) => group.items).slice(0, 8);
 ---
 
 {/* ── Hero ─────────────────────────────────────────────────────────── */}
-<section class="border-b border-hairline bg-canvas-soft band-tight">
-  <div class="container-page">
-    <nav aria-label="Breadcrumb" class="mb-10">
-      <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
-        <li><a href="/" class="transition-colors hover:text-ink">Home</a></li>
-        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
-        <li>
-          <a href="/services" class="transition-colors hover:text-ink">Services</a>
+<PageHero
+  eyebrow={category.label}
+  title={page.h1}
+  titleTail={page.h1Tail}
+  lead={page.summary}
+  backdrop="develop"
+  backdropIntensity="faint"
+  breadcrumb={[
+    { label: 'Home', href: '/' },
+    { label: 'Services', href: '/services' },
+    { label: page.cardTitle },
+  ]}
+>
+  <span
+    slot="icon"
+    class="flex size-10 items-center justify-center rounded-md bg-canvas text-ink shadow-level-1"
+  >
+    <ServiceIcon name={page.icon} size={18} />
+  </span>
+
+  <ul
+    slot="meta"
+    class="flex flex-wrap items-center gap-x-6 gap-y-3 text-body-sm text-body"
+  >
+    {
+      page.assurances.map((item) => (
+        <li class="flex items-center gap-1.5">
+          <CheckCircle2 size={14} class="text-mute" aria-hidden="true" />
+          {item}
         </li>
-        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
-        <li><span class="text-body" aria-current="page">{page.cardTitle}</span></li>
-      </ol>
-    </nav>
+      ))
+    }
+  </ul>
 
-    <Reveal class="max-w-3xl">
-      <div class="mb-5 flex items-center gap-3">
-        <span
-          class="flex size-10 items-center justify-center rounded-md bg-canvas text-ink shadow-level-1"
-        >
-          <ServiceIcon name={page.icon} size={18} />
-        </span>
-        <Eyebrow>{category.label}</Eyebrow>
-      </div>
+  <Fragment slot="actions">
+    <Button href="/contact" variant="primary" size="lg">
+      {page.ctaLabel}
+      <ArrowRight
+        size={16}
+        class="transition-transform duration-150 group-hover:translate-x-0.5"
+        aria-hidden="true"
+      />
+    </Button>
+    <Button href="/services" variant="secondary" size="lg">All Services</Button>
+  </Fragment>
 
-      <h1 class="text-display-xl">
-        {page.h1}{' '}
-        <span class="text-mute">{page.h1Tail}</span>
-      </h1>
-
-      <p class="mt-5 max-w-2xl text-body-lg text-body">{page.summary}</p>
-
-      <ul
-        class="mt-8 mb-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-body-sm text-body"
-      >
+  <HeroPanel
+    slot="aside"
+    footerLabel="Questions first?"
+    footerHref="/contact"
+    footerCta="Talk to an engineer"
+  >
+    {/* The process, compressed to its step titles. The full descriptions are
+        the "How We Work" band below — this is the shape of the engagement,
+        not a second copy of it. */}
+    <HeroPanelBlock label={`How it runs · ${page.process.length} steps`}>
+      <ol class="space-y-2.5">
         {
-          page.assurances.map((item) => (
-            <li class="flex items-center gap-1.5">
-              <CheckCircle2 size={14} class="text-mute" aria-hidden="true" />
-              {item}
+          page.process.map((step) => (
+            <li class="flex gap-3 text-body-sm">
+              <span
+                class="shrink-0 font-mono text-caption text-mute"
+                aria-hidden="true"
+              >
+                {step.step}
+              </span>
+              <span class="text-body">{step.title}</span>
             </li>
           ))
         }
-      </ul>
+      </ol>
+    </HeroPanelBlock>
 
-      <div class="flex flex-col gap-3 sm:flex-row">
-        <Button href="/contact" variant="primary" size="lg">
-          {page.ctaLabel}
-          <ArrowRight
-            size={16}
-            class="transition-transform duration-150 group-hover:translate-x-0.5"
-            aria-hidden="true"
-          />
-        </Button>
-        <Button href="/services" variant="secondary" size="lg">
-          All Services
-        </Button>
-      </div>
-    </Reveal>
-  </div>
-</section>
+    {
+      stackChips.length > 0 && (
+        <HeroPanelBlock label="Built with">
+          <ul class="flex flex-wrap gap-1.5">
+            {stackChips.map((chip) => (
+              <li>
+                <Badge>{chip}</Badge>
+              </li>
+            ))}
+          </ul>
+        </HeroPanelBlock>
+      )
+    }
+
+    {
+      siblings.length > 0 && (
+        <HeroPanelBlock label={`More in ${category.label}`} surface="soft">
+          <HeroPanelNav items={siblings} />
+        </HeroPanelBlock>
+      )
+    }
+  </HeroPanel>
+</PageHero>
 
 {/* ── Introduction ─────────────────────────────────────────────────── */}
 <Section surface="canvas" spacing="tight" as="section">

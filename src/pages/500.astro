@@ -10,12 +10,13 @@ import ErrorPage from '@/components/error/ErrorPage.astro';
  * Astro renders it automatically when a route throws, and passes it an `error`
  * prop. That is documented as *not* available for prerendered pages.
  *
- * This site is `output: 'static'`, so every page here is prerendered and the
- * automatic path will almost never fire — the only on-demand routes are the
- * two Razorpay endpoints under `/api/`, and they return JSON rather than HTML.
+ * This site is `output: 'static'` with no adapter, so every page here is
+ * prerendered and the automatic path can never fire — there are no on-demand
+ * routes left to throw. (There were two: the Razorpay endpoints under
+ * `/api/`, removed along with the payment page.)
  *
  * So this page earns its place a different way: because it prerenders, it
- * builds to `dist/client/500.html`, and Netlify, Cloudflare Pages, and Vercel
+ * builds to `dist/500.html`, and Netlify, Cloudflare, and Vercel
  * will all serve that file for a 5xx if you point them at it. Without it those
  * hosts fall back to a generic white error page with no branding and no way
  * back to the site.

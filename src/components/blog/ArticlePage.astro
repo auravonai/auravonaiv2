@@ -1,5 +1,4 @@
 ---
-import ArrowLeft from 'lucide-astro/ArrowLeft';
 import Clock from 'lucide-astro/Clock';
 import Calendar from 'lucide-astro/Calendar';
 import Copy from 'lucide-astro/Copy';
@@ -10,6 +9,7 @@ import ChevronRight from 'lucide-astro/ChevronRight';
 
 import Card from '@/components/ui/Card.astro';
 import Badge from '@/components/ui/Badge.astro';
+import HeroBackdrop from '@/components/ui/HeroBackdrop.astro';
 import Eyebrow from '@/components/ui/Eyebrow.astro';
 import Button from '@/components/ui/Button.astro';
 import type { Article } from '@/lib/articles';
@@ -51,16 +51,37 @@ const tocItems = article.content.flatMap((block) =>
 >
 </div>
 
-{/* ── Article header ── */}
-<header class="border-b border-hairline bg-canvas-soft">
-  <div class="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 md:py-14">
-    <a
-      href="/blog"
-      class="mb-8 inline-flex items-center gap-1.5 text-body-sm text-body transition-colors hover:text-ink"
-    >
-      <ArrowLeft size={14} aria-hidden="true" />
-      Back to Blog
-    </a>
+{/* ── Article header ──────────────────────────────────────────────────
+    Deliberately NOT converted to the shared PageHero. Every other page on
+    the site gained a right-hand panel because its hero left a 1400px band
+    two-thirds empty; an article is a reading page, and its header is capped
+    at `max-w-4xl` on purpose so the title sits over the same measure as the
+    prose beneath it. Widening it to fill the band would be the one place
+    that change made the page worse.
+
+    What it does take from the redesign is the family backdrop, so an article
+    reads as part of the blog rather than as a bare template, and a real
+    breadcrumb in place of the old "Back to Blog" link — the trail below
+    matches the `BreadcrumbList` in src/pages/blog/[slug].astro exactly
+    (Home → Blog → title), which is the pairing Google requires. If that
+    schema ever gains the category level, add it here in the same commit. */}
+<header class="relative overflow-hidden border-b border-hairline bg-canvas-soft">
+  <HeroBackdrop variant="dots" />
+
+  <div class="relative mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 md:py-14">
+    <nav aria-label="Breadcrumb" class="mb-8">
+      <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
+        <li><a href="/" class="transition-colors hover:text-ink">Home</a></li>
+        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
+        <li><a href="/blog" class="transition-colors hover:text-ink">Blog</a></li>
+        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
+        <li>
+          <span class="line-clamp-1 text-body" aria-current="page">
+            {article.title}
+          </span>
+        </li>
+      </ol>
+    </nav>
 
     <div class="mb-4 flex flex-wrap items-center gap-3">
       {

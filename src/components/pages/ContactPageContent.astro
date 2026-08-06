@@ -11,6 +11,9 @@ import Card from '@/components/ui/Card.astro';
 import Reveal from '@/components/ui/Reveal.astro';
 import Button from '@/components/ui/Button.astro';
 import Field from '@/components/ui/Field.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import HeroPanel from '@/components/ui/HeroPanel.astro';
+import HeroPanelBlock from '@/components/ui/HeroPanelBlock.astro';
 import { WHATSAPP_NUMBER, WHATSAPP_URL } from '@/lib/site';
 
 const contactCards = [
@@ -84,86 +87,71 @@ const expectations = [
 ];
 ---
 
-{/* ── Hero ── */}
-<section class="border-b border-hairline bg-canvas-soft band-tight">
-  <div class="container-page text-center">
-    <Reveal>
-      <p class="mb-5 inline-flex items-center gap-2 text-body-sm text-body">
-        <span class="size-1.5 rounded-full bg-link" aria-hidden="true"></span>
-        Available for New Projects
-      </p>
+{/* ── Hero ──────────────────────────────────────────────────────────────
+    The four contact channels moved INTO the hero panel and the separate
+    full-width "contact cards" band that used to sit directly beneath was
+    removed with them. Same four destinations, same hrefs — but a visitor
+    who came here to get in touch now sees every route to us without
+    scrolling, and the page no longer spends a whole band restating what the
+    hero could have said. Do not re-add the cards band: it would put the same
+    four mailto links on the page twice. */}
+<PageHero
+  eyebrow="Available for New Projects"
+  title="Let's Build Something"
+  titleTail="Amazing"
+  lead="Book a free 30-minute strategy call, or send us a message. We respond within 24 hours — usually much faster."
+  backdrop="dots"
+>
+  <ul slot="meta" class="flex flex-wrap items-center gap-2.5">
+    {
+      trustChips.map(({ icon, text }) => {
+        const Icon = icon as any;
+        return (
+          <li class="flex items-center gap-1.5 rounded-sm bg-canvas px-3 py-1.5 text-body-sm text-body shadow-level-1">
+            <Icon size={14} class="text-mute" aria-hidden="true" />
+            {text}
+          </li>
+        );
+      })
+    }
+  </ul>
 
-      <h1 class="text-display-xl">
-        Let's Build Something <span class="text-mute">Amazing</span>
-      </h1>
-      <p class="mx-auto mt-4 mb-8 max-w-xl text-body-lg text-body">
-        Book a free 30-minute strategy call, or send us a message. We respond
-        within 24 hours — usually much faster.
-      </p>
-
-      <ul class="flex flex-wrap items-center justify-center gap-2.5">
+  <HeroPanel slot="aside">
+    <HeroPanelBlock label="Reach us directly">
+      <ul class="-my-1">
         {
-          trustChips.map(({ icon, text }) => {
+          contactCards.map(({ icon, title, value, href, description }) => {
             const Icon = icon as any;
+            const isExternal = href.startsWith('http');
             return (
-              <li class="flex items-center gap-1.5 rounded-sm bg-canvas px-3 py-1.5 text-body-sm text-body shadow-level-1">
-                <Icon size={14} class="text-mute" aria-hidden="true" />
-                {text}
+              <li>
+                <a
+                  href={href}
+                  target={isExternal ? '_blank' : undefined}
+                  rel={isExternal ? 'noopener noreferrer' : undefined}
+                  class="group flex items-start gap-3 rounded-sm py-2.5"
+                >
+                  <span class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-sm bg-canvas-soft text-ink transition-colors duration-200 group-hover:bg-ink group-hover:text-on-primary">
+                    <Icon size={15} aria-hidden="true" />
+                  </span>
+                  <span class="min-w-0 flex-1">
+                    <span class="block text-body-sm font-medium break-all text-ink transition-colors group-hover:text-link">
+                      {value}
+                    </span>
+                    <span class="block text-caption text-mute">
+                      {title} · {description}
+                    </span>
+                  </span>
+                </a>
               </li>
             );
           })
         }
       </ul>
-    </Reveal>
-  </div>
-</section>
+    </HeroPanelBlock>
+  </HeroPanel>
+</PageHero>
 
-{/* ── Contact cards ── */}
-<section class="border-b border-hairline bg-canvas py-10">
-  <div class="container-page">
-    <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {
-        contactCards.map(({ icon, title, value, href, description }, i) => {
-          const Icon = icon as any;
-          const isExternal = href.startsWith('http');
-          return (
-            <Reveal as="li" delay={i * 80} class="flex">
-              <Card
-                as="a"
-                surface="canvas"
-                elevation={2}
-                padding="sm"
-                interactive
-                class="group flex flex-1 flex-col"
-                href={href}
-                target={isExternal ? '_blank' : undefined}
-                rel={isExternal ? 'noopener noreferrer' : undefined}
-              >
-                <span class="mb-3 flex size-11 shrink-0 items-center justify-center rounded-md bg-canvas-soft text-ink">
-                  <Icon size={20} aria-hidden="true" />
-                </span>
-
-                <span class="mb-1 block font-mono text-caption uppercase tracking-[0.08em] text-mute">
-                  {title}
-                </span>
-                <span class="mb-1 block flex-1 text-body-sm font-medium break-all text-ink">
-                  {value}
-                </span>
-
-                <span class="mt-3 flex items-center justify-between gap-2 border-t border-hairline pt-3">
-                  <span class="text-caption text-mute">{description}</span>
-                  <ArrowRight
-                    size={14}
-                    class="shrink-0 text-mute opacity-0 transition-opacity duration-200 group-hover:opacity-100" aria-hidden="true" />
-                </span>
-              </Card>
-            </Reveal>
-          );
-        })
-      }
-    </ul>
-  </div>
-</section>
 
 {/* ── Form + sidebar ── */}
 <section class="bg-canvas py-14 md:py-20">

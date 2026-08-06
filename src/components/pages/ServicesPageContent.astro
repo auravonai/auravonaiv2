@@ -153,7 +153,10 @@ const panelHeading =
         Discuss Your Project
         <ArrowRight size={16} class="transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
       </Button>
-      <Button href="/payment" variant="secondary" size="lg">View Pricing</Button>
+      {/* The "View Pricing" button that sat here pointed at /payment, which no
+          longer exists. Its redirect target is /contact — the same place the
+          button beside it already goes — so repointing it would have left two
+          adjacent CTAs doing one thing. Dropped instead. */}
     </div>
   </Reveal>
 </Section>

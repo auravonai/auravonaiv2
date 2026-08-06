@@ -2,7 +2,6 @@
 import type { GetStaticPaths } from 'astro';
 
 import ArrowRight from 'lucide-astro/ArrowRight';
-import ChevronRight from 'lucide-astro/ChevronRight';
 
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Section from '@/components/ui/Section.astro';
@@ -10,6 +9,10 @@ import Card from '@/components/ui/Card.astro';
 import Eyebrow from '@/components/ui/Eyebrow.astro';
 import Reveal from '@/components/ui/Reveal.astro';
 import Button from '@/components/ui/Button.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import HeroPanel from '@/components/ui/HeroPanel.astro';
+import HeroPanelBlock from '@/components/ui/HeroPanelBlock.astro';
+import HeroPanelNav from '@/components/ui/HeroPanelNav.astro';
 
 import { breadcrumbSchema, webPageSchema } from '@/lib/seo';
 import { SITE_URL } from '@/lib/site';
@@ -57,6 +60,21 @@ interface Props {
 const { category, posts } = Astro.props;
 const path = blogCategoryPath(category.slug);
 const relatedServices = getServicePages(category.relatedServices);
+
+/**
+ * Sibling categories for the hero panel. Empty categories are dropped — a
+ * link to a cluster page with nothing in it is worse than no link.
+ */
+const otherCategoryLinks = blogCategories
+  .filter((other) => other.slug !== category.slug)
+  .map((other) => ({
+    label: other.name,
+    href: blogCategoryPath(other.slug),
+    count: getArticlesInCategory(other.slug).length,
+  }))
+  .filter((row) => row.count > 0)
+  .slice(0, 6)
+  .map(({ label, href, count }) => ({ label, href, meta: String(count) }));
 
 const breadcrumbs = breadcrumbSchema(
   [
@@ -122,25 +140,29 @@ const formatDate = (value: string) => {
   </Fragment>
 
   {/* ══════════════ HERO ══════════════ */}
-  <Section surface="soft" as="section">
-    <nav aria-label="Breadcrumb" class="mb-10">
-      <ol class="flex flex-wrap items-center gap-1.5 text-body-sm text-mute">
-        <li><a href="/" class="transition-colors hover:text-ink">Home</a></li>
-        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
-        <li><a href="/blog" class="transition-colors hover:text-ink">Blog</a></li>
-        <li aria-hidden="true"><ChevronRight size={12} aria-hidden="true" /></li>
-        <li><span class="text-body" aria-current="page">{category.heading}</span></li>
-      </ol>
-    </nav>
-
-    <Reveal>
-      <Eyebrow class="mb-4">
-        {posts.length} {posts.length === 1 ? 'article' : 'articles'}
-      </Eyebrow>
-      <h1 class="max-w-3xl text-display-xl">{category.heading}</h1>
-      <p class="mt-6 max-w-2xl text-body-lg text-body">{category.intro}</p>
-    </Reveal>
-  </Section>
+  <PageHero
+    eyebrow={`${posts.length} ${posts.length === 1 ? 'article' : 'articles'}`}
+    title={category.heading}
+    lead={category.intro}
+    backdrop="dots"
+    asideWidth="sm"
+    breadcrumb={[
+      { label: 'Home', href: '/' },
+      { label: 'Blog', href: '/blog' },
+      { label: category.heading },
+    ]}
+  >
+    <HeroPanel
+      slot="aside"
+      footerLabel="All articles"
+      footerHref="/blog"
+      footerCta="Back to the blog"
+    >
+      <HeroPanelBlock label="Other topics">
+        <HeroPanelNav items={otherCategoryLinks} />
+      </HeroPanelBlock>
+    </HeroPanel>
+  </PageHero>
 
   {/* ══════════════ POSTS ══════════════ */}
   <Section surface="canvas" as="section" divided>

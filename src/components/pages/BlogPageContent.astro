@@ -10,8 +10,16 @@ import Eyebrow from '@/components/ui/Eyebrow.astro';
 import Card from '@/components/ui/Card.astro';
 import Badge from '@/components/ui/Badge.astro';
 import Button from '@/components/ui/Button.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import HeroPanel from '@/components/ui/HeroPanel.astro';
+import HeroPanelBlock from '@/components/ui/HeroPanelBlock.astro';
+import HeroPanelNav from '@/components/ui/HeroPanelNav.astro';
 import { articles } from '@/lib/articles';
-import { blogCategories, blogCategoryPath } from '@/lib/blog';
+import {
+  blogCategories,
+  blogCategoryPath,
+  getArticlesInCategory,
+} from '@/lib/blog';
 import { CARD_SIZES, coverSrcset } from '@/lib/images';
 
 /**
@@ -24,6 +32,25 @@ const categories = ['All', ...blogCategories.map((category) => category.name)];
 
 const featured = articles.filter((p) => p.featured);
 
+/**
+ * Hero panel rows — the taxonomy, with a live count per category.
+ *
+ * These are the only crawlable links to the category pages that appear above
+ * the fold; the filter bar below is client-side only, so a crawler following
+ * it lands nowhere. The `blogCategoryPath` links are real URLs with their own
+ * pages, which is what makes this block worth the space.
+ */
+const categoryLinks = blogCategories
+  .map((category) => ({
+    label: category.name,
+    href: blogCategoryPath(category.slug),
+    count: getArticlesInCategory(category.slug).length,
+  }))
+  .filter((row) => row.count > 0)
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 6)
+  .map(({ label, href, count }) => ({ label, href, meta: String(count) }));
+
 // Cover images are remote Unsplash URLs. They stay as plain <img> with
 // explicit dimensions and lazy loading rather than going through
 // astro:assets — optimising them would make every build depend on a
@@ -31,37 +58,52 @@ const featured = articles.filter((p) => p.featured);
 ---
 
 {/* ── Page hero ── */}
-<section class="border-b border-hairline bg-canvas-soft band-tight">
-  <div class="container-page text-center">
-    <Reveal>
-      <Eyebrow class="mb-4">Insights &amp; Tutorials</Eyebrow>
-      <h1 class="text-display-xl">
-        Engineering &amp; <span class="text-mute">AI Insights</span>
-      </h1>
-      <p class="mx-auto mt-5 mb-8 max-w-xl text-body-lg text-body">
-        Practical articles on AI development, modern web engineering, and
-        building products that hold up in production.
-      </p>
-
-      <div class="relative mx-auto max-w-md">
-        <label for="blog-search" class="sr-only">Search articles</label>
-        <Search
-          size={16}
-          aria-hidden="true"
-          class="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-mute"
-        />
-        <input
-          id="blog-search"
-          type="search"
-          autocomplete="off"
-          spellcheck="false"
-          placeholder="Search articles…"
-          class="h-12 w-full rounded-sm bg-canvas pr-4 pl-11 text-body-md text-ink shadow-level-1 transition-shadow duration-150 placeholder:text-mute focus:shadow-[inset_0_0_0_1px_var(--color-link)]"
-        />
-      </div>
-    </Reveal>
+<PageHero
+  eyebrow="Insights & Tutorials"
+  title="Engineering &"
+  titleTail="AI Insights"
+  lead="Practical articles on AI development, modern web engineering, and building products that hold up in production."
+  backdrop="dots"
+  asideWidth="sm"
+>
+  {/* The search box stays in the copy column rather than moving into the
+      panel: it is the primary action on this page, and the panel is for
+      browsing by topic when you do not yet know what to search for. */}
+  <div slot="meta" class="relative max-w-md">
+    <label for="blog-search" class="sr-only">Search articles</label>
+    <Search
+      size={16}
+      aria-hidden="true"
+      class="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-mute"
+    />
+    <input
+      id="blog-search"
+      type="search"
+      autocomplete="off"
+      spellcheck="false"
+      placeholder="Search articles…"
+      class="h-12 w-full rounded-sm bg-canvas pr-4 pl-11 text-body-md text-ink shadow-level-1 transition-shadow duration-150 placeholder:text-mute focus:shadow-[inset_0_0_0_1px_var(--color-link)]"
+    />
   </div>
-</section>
+
+  <HeroPanel
+    slot="aside"
+    footerLabel="Want this by email?"
+    footerHref="#newsletter"
+    footerCta="Subscribe"
+  >
+    <HeroPanelBlock label={`Browse by topic · ${articles.length} articles`}>
+      <HeroPanelNav items={categoryLinks} />
+    </HeroPanelBlock>
+
+    <HeroPanelBlock label="What we publish" surface="soft">
+      <p class="text-body-sm text-body">
+        What we have learned running AI and software in production — including
+        cost, failure modes, and the approaches that did not work.
+      </p>
+    </HeroPanelBlock>
+  </HeroPanel>
+</PageHero>
 
 {/* ── Featured articles — hidden while a filter or search is active ── */}
 <section id="featured-section" class="border-b border-hairline bg-canvas py-10">

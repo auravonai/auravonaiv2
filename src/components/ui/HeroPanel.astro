@@ -1,0 +1,62 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+
+/**
+ * The card that fills the hero's right column.
+ *
+ * Shared chrome, varied content. The shell is identical everywhere so the
+ * site still reads as one system, but what goes inside is drawn from each
+ * page's own data — which is what makes `/services` stop looking like
+ * `/industries`. Compose the interior from `HeroPanelBlock`.
+ *
+ * Generalised from the "at a glance" card that the 34 marketing spokes have
+ * used since the redesign (ServicePageTemplate). That card was the only hero
+ * on the site that filled its band; this is it, extracted.
+ *
+ * It sticks on `lg` so the panel stays with the reader through the hero
+ * band — the same behaviour the marketing spokes already had.
+ */
+interface Props {
+  /** Left side of the footer bar. Omit along with `footerHref` for no footer. */
+  footerLabel?: string;
+  footerHref?: string;
+  /** Anchor text for the footer link. Descriptive, never "click here". */
+  footerCta?: string;
+  /** `false` drops the sticky behaviour — for panels taller than the band. */
+  sticky?: boolean;
+  class?: string;
+}
+
+const {
+  footerLabel,
+  footerHref,
+  footerCta,
+  sticky = true,
+  class: className,
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    'overflow-hidden rounded-lg bg-canvas shadow-level-3',
+    sticky && 'lg:sticky lg:top-24',
+    className,
+  ]}
+>
+  <slot />
+
+  {
+    footerHref && footerCta && (
+      <div class="flex items-center justify-between gap-3 border-t border-hairline bg-canvas-soft px-5 py-4">
+        {footerLabel && <span class="text-body-sm text-mute">{footerLabel}</span>}
+        <a
+          href={footerHref}
+          class="flex items-center gap-1 text-body-sm text-link transition-colors hover:text-link-deep"
+        >
+          {footerCta}
+          <ArrowRight size={14} aria-hidden="true" />
+        </a>
+      </div>
+    )
+  }
+</div>
