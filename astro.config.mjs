@@ -130,6 +130,28 @@ export default defineConfig({
   // into a single `src/scripts/*.ts` entry imported via `<script src>` — not a
   // config flag.
 
+  // On inlining the stylesheet — tested, then deliberately left at Astro's
+  // default, for the same reason as the script note above.
+  //
+  // `build.inlineStylesheets: 'always'` does clear Lighthouse's
+  // render-blocking finding outright, because there is no longer a second
+  // request between the HTML and first paint. Measured on the homepage at
+  // mobile emulation: FCP 2252 ms → 2103 ms, LCP 2852 ms → 2792 ms, score
+  // 93 → 94.
+  //
+  // It was still reverted. The cost is that the same ~10.7 KB gzipped of CSS
+  // is re-sent inside all 90 documents and can never be cached across a
+  // navigation — the homepage went from 30.9 KB to 42.3 KB gzipped. A ~150 ms
+  // first-paint win on entry, paid for on every page the visitor opens after
+  // it, on a site where the whole point is that visitors move between
+  // service pages. The shared stylesheet is immutable and cached for a year
+  // (see public/_headers), so the second page load currently costs zero CSS
+  // bytes.
+  //
+  // If this is revisited, the version worth building is real critical CSS —
+  // inline only what the navbar and hero need, load the rest async — not an
+  // all-or-nothing flag.
+
   vite: {
     plugins: [tailwindcss()],
   },

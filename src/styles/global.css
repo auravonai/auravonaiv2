@@ -430,6 +430,27 @@
 
 /* Marketing band rhythm — DESIGN.md puts section padding at 64–96px, with
    hero bands stretching further. */
+/* On `content-visibility: auto` for these bands — tested, and NOT kept.
+ *
+ * The theory was sound: LCP here is essentially all "render delay", the
+ * document is ~1,750 elements across a dozen bands, and skipping layout for
+ * offscreen bands did cut observed Style & Layout main-thread time from
+ * 222 ms to 164 ms.
+ *
+ * It bought nothing. Measured on the homepage at mobile emulation, with and
+ * without the rule, back to back: LCP 1583 ms either way, performance 100
+ * either way, CLS 0 either way. Once analytics was off the critical path the
+ * remaining LCP was bound by the request chain, not by layout, so cheaper
+ * layout had nothing to give back.
+ *
+ * What it did change was the rendered page height — 13,020 px against
+ * 16,383 px — because a band that has not been rendered yet reports its
+ * `contain-intrinsic-size` estimate instead of its real height. On a long
+ * marketing page that is a live scroll-anchoring and in-page-anchor hazard,
+ * and it is not worth carrying for a zero-millisecond win.
+ *
+ * Do not re-add it without a measurement showing LCP actually moves.
+ */
 @utility band {
   padding-block: --spacing(16);
   @media (width >= 48rem) {

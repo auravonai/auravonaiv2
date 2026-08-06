@@ -125,11 +125,21 @@ const tocItems = article.content.flatMap((block) =>
 
 {/* ── Hero image ── */}
 <div class="mx-auto w-full max-w-4xl px-4 pt-8 sm:px-6">
+  {/*
+    Descriptive alt, not `alt=""`.
+
+    An empty alt is the correct call for a purely decorative image, and that
+    is how every cover on this site was marked. But these covers are also the
+    image Google Images indexes for the post, and an image with no alt text
+    has nothing to rank on — so the site was publishing 16 hero images and 40+
+    card images that were invisible to image search. The article title is the
+    honest description of what the cover represents here.
+  */}
   <img
     src={article.image}
     srcset={coverSrcset(article.image)}
     sizes={HERO_SIZES}
-    alt=""
+    alt={article.title}
     width="1200"
     height="630"
     fetchpriority="high"
@@ -294,7 +304,7 @@ const tocItems = article.content.flatMap((block) =>
                     src={a.image}
                     srcset={coverSrcset(a.image)}
                     sizes={CARD_SIZES}
-                    alt=""
+                    alt={a.title}
                     width="600"
                     height="340"
                     loading="lazy"

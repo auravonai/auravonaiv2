@@ -408,10 +408,40 @@ const navLinkBase =
 
   // ── Scroll state ──────────────────────────────────────────────────
   if (header) {
-    const onScroll = () => {
-      header.dataset.scrolled = window.scrollY > 12 ? 'true' : 'false';
+    // Reading `window.scrollY` and then writing to the DOM inside the scroll
+    // event itself is a forced synchronous layout: the write invalidates
+    // layout, and the next event's read has to flush it again. Three
+    // components on this site had the same read-then-write pattern, so every
+    // scroll tick paid for it several times over — that was the "Forced
+    // reflow" finding.
+    //
+    // Batching into requestAnimationFrame moves the read to a point where
+    // layout is already clean, and skipping the write when the state has not
+    // actually changed means a normal scroll touches the DOM almost never.
+    let ticking = false;
+    let scrolled: boolean | null = null;
+
+    const update = () => {
+      ticking = false;
+      const next = window.scrollY > 12;
+      if (next === scrolled) return;
+      scrolled = next;
+      header.dataset.scrolled = String(next);
     };
-    onScroll();
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+
+    // The first sync-up is scheduled rather than called directly. Reading
+    // scrollY inline here runs immediately after the parser has been writing
+    // to the DOM, so it forces the very layout flush this batching exists to
+    // avoid. The server-rendered default is already the unscrolled state, so
+    // waiting one frame costs nothing visually and only matters at all when
+    // the page is restored mid-scroll.
+    requestAnimationFrame(update);
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 

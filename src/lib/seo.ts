@@ -158,10 +158,15 @@ export const organizationSchema = {
       areaServed: 'Worldwide',
     },
   ],
+  // The profiles this entity actually owns, and only those. `sameAs` is how
+  // Google reconciles a site with a knowledge-graph entity, so a URL listed
+  // here that nobody maintains weakens the whole set rather than padding it.
+  // github.com/auravonai was listed and is not ours — removed 2026-08-06.
+  // Keep in step with `SOCIALS` in lib/site.ts.
   sameAs: [
-    'https://x.com/auravonai',
+    'https://www.instagram.com/auravon_ai/',
     'https://www.linkedin.com/company/auravon-ai-tech/',
-    'https://github.com/auravonai',
+    'https://x.com/auravonai',
   ],
   // NOTE: no `aggregateRating` and no `Review` nodes. There is no verifiable
   // review corpus behind this site yet, and inventing one is both a Google

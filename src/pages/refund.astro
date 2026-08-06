@@ -1,12 +1,39 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import RefundContent from '@/components/legal/RefundContent.astro';
+import { breadcrumbSchema, webPageSchema } from '@/lib/seo';
+
+/**
+ * Legal pages carry a `BreadcrumbList` because LegalPageLayout now renders a
+ * visible Home > {title} trail. Google only honours breadcrumb markup that
+ * matches a trail the visitor can actually see, so the two ship together —
+ * if one changes, change the other in the same commit.
+ */
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: 'Home', path: '/' },
+    { name: 'Refund & Cancellation Policy', path: '/refund' },
+  ],
+  '/refund',
+);
+
+const webPage = webPageSchema({
+  path: '/refund',
+  name: 'Refund & Cancellation Policy',
+  description: 'Refunds are subject to project stage and work completed. Read this before making a payment — it explains exactly what applies when.',
+  hasBreadcrumb: true,
+});
 ---
 
 <BaseLayout
   title="Refund & Cancellation Policy"
-  description="Due to the digital and customized nature of our services, refunds are subject to project stage and work completed. Please read this policy carefully before making a payment."
+  description="Refunds are subject to project stage and work completed. Read this before making a payment — it explains exactly what applies when."
   canonical="/refund"
 >
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(webPage)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbs)} />
+  </Fragment>
+
   <RefundContent />
 </BaseLayout>

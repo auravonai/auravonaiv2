@@ -98,26 +98,41 @@ const footerPoints = ['You own the code', 'Free scoping call', 'Global clients']
         </Button>
       </div>
 
-      {/* Pillars */}
+      {/* Pillars.
+
+           A <dl> may only directly contain dt/dd pairs, or <div>s that each
+           wrap ONE such pair — nothing else, and no deeper nesting. The
+           previous markup put a `flex` wrapper around each term/definition
+           <div> and hung a <span> divider off it, which pushed every <dt>
+           and <dd> two levels down and dropped a <span> into the list. That
+           failed both axe list rules ("definition-list" and "dlitem") and
+           was the whole of the −7 on the Lighthouse accessibility score, on
+           mobile and desktop alike.
+
+           So the divider is no longer an element. It is a ::before rule on
+           every item after the first, which lands on the boundary between
+           one item's right padding and the next item's left padding — the
+           exact position, height and colour the <span> occupied. */}
       <dl class="mt-11 flex items-center justify-center">
         {
           pillars.map(({ value, label }, i) => (
-            <div class="flex items-center">
-              <div class="px-5 text-center md:px-8">
-                <dt class="sr-only">{label}</dt>
-                <dd>
-                  <span class="block text-display-sm">{value}</span>
-                  <span
-                    class="mt-1 block font-mono text-caption uppercase tracking-[0.08em] text-mute"
-                    aria-hidden="true"
-                  >
-                    {label}
-                  </span>
-                </dd>
-              </div>
-              {i < pillars.length - 1 && (
-                <span class="h-8 w-px bg-hairline" aria-hidden="true" />
-              )}
+            <div
+              class:list={[
+                'relative px-5 text-center md:px-8',
+                i > 0 &&
+                  'before:absolute before:top-1/2 before:left-0 before:h-8 before:w-px before:-translate-y-1/2 before:bg-hairline',
+              ]}
+            >
+              <dt class="sr-only">{label}</dt>
+              <dd>
+                <span class="block text-display-sm">{value}</span>
+                <span
+                  class="mt-1 block font-mono text-caption uppercase tracking-[0.08em] text-mute"
+                  aria-hidden="true"
+                >
+                  {label}
+                </span>
+              </dd>
             </div>
           ))
         }

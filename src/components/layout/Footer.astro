@@ -1,8 +1,4 @@
 ---
-import X from 'lucide-astro/X';
-import Globe from 'lucide-astro/Globe';
-import Code2 from 'lucide-astro/Code2';
-import MessageCircle from 'lucide-astro/MessageCircle';
 import Mail from 'lucide-astro/Mail';
 import Shield from 'lucide-astro/Shield';
 import FileText from 'lucide-astro/FileText';
@@ -10,7 +6,7 @@ import RotateCcw from 'lucide-astro/RotateCcw';
 import ArrowUpRight from 'lucide-astro/ArrowUpRight';
 
 import Logo from '@/components/layout/Logo.astro';
-import Button from '@/components/ui/Button.astro';
+import BrandIcon from '@/components/ui/BrandIcon.astro';
 import { serviceCategories, servicesByCategory } from '@/lib/services';
 import {
   MARKETING_LABEL,
@@ -18,19 +14,10 @@ import {
   hasMarketingPage,
   marketingPath,
 } from '@/lib/marketing';
-import {
-  COMPANY_LINKS,
-  EMAILS,
-  LEGAL_LINKS,
-  SOCIALS,
-  WHATSAPP_URL,
-} from '@/lib/site';
+import { COMPANY_LINKS, EMAILS, LEGAL_LINKS, SOCIALS } from '@/lib/site';
 
+/** Legal-link glyphs only — the social marks come from BrandIcon. */
 const icons: Record<string, unknown> = {
-  X,
-  Globe,
-  Code2,
-  MessageCircle,
   Shield,
   FileText,
   RotateCcw,
@@ -133,31 +120,33 @@ const footerLink =
           We typically respond within 24 hours.
         </p>
 
-        <ul class="mb-6 flex items-center gap-2.5">
+        {/* Instagram, LinkedIn, X, and WhatsApp — the whole set. The mark
+             inherits `currentColor`, so the same icon is correct on the light
+             canvas and the dark one with no per-theme asset or rule.
+
+             WhatsApp is here and nowhere else in the footer. A "Chat on
+             WhatsApp" button used to sit directly below this row, which put
+             the same destination on screen twice within about 40px. The row
+             is the one that survives: it reads as one set of four places to
+             reach the company, and the floating WhatsApp button already
+             carries the CTA weight site-wide. */}
+        <ul class="flex items-center gap-2.5">
           {
-            SOCIALS.map((social) => {
-              const Icon = (icons[social.icon] ?? Globe) as any;
-              return (
-                <li>
-                  <a
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={social.label}
-                    class="flex size-9 items-center justify-center rounded-sm bg-canvas text-body shadow-level-1 transition-colors hover:text-ink hover:shadow-level-2"
-                  >
-                    <Icon size={14} aria-hidden="true" />
-                  </a>
-                </li>
-              );
-            })
+            SOCIALS.map((social) => (
+              <li>
+                <a
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  class="flex size-9 items-center justify-center rounded-sm bg-canvas text-body shadow-level-1 transition-colors hover:text-ink hover:shadow-level-2"
+                >
+                  <BrandIcon name={social.icon} size={14} />
+                </a>
+              </li>
+            ))
           }
         </ul>
-
-        <Button href={WHATSAPP_URL} variant="secondary" size="md" external>
-          <MessageCircle size={14} aria-hidden="true" />
-          Chat on WhatsApp
-        </Button>
       </div>
 
       {/* Company */}

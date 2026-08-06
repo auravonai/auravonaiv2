@@ -1,12 +1,44 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ContactPageContent from '@/components/pages/ContactPageContent.astro';
+import { breadcrumbSchema, webPageSchema } from '@/lib/seo';
+
+/**
+ * `ContactPage` is the correct WebPage subtype here and is one of the few
+ * subtypes Google reads as a genuine entity signal, so it is worth setting.
+ * See the note on `type` in webPageSchema — only ever use a subtype the page
+ * actually is.
+ *
+ * Title and description were 75 chars and 214 chars; both were truncated in
+ * search results. Rewritten to fit.
+ */
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: 'Home', path: '/' },
+    { name: 'Contact', path: '/contact' },
+  ],
+  '/contact',
+);
+
+const webPage = webPageSchema({
+  path: '/contact',
+  name: 'Contact Auravon AI',
+  description:
+    'Book a free 30-minute call, send a project brief, or message the team on WhatsApp.',
+  hasBreadcrumb: true,
+  type: 'ContactPage',
+});
 ---
 
 <BaseLayout
-  title="Hire Auravon AI — Start Your AI, SaaS or Web App Project Today"
-  description="Ready to build? Contact Auravon AI — an AI development agency for startups and businesses. Book a free 30-minute strategy call, send a project brief, or message us on WhatsApp. We respond within 24 hours."
+  title="Contact Auravon AI — Start a Project"
+  description="Book a free 30-minute scoping call, send a project brief, or message us on WhatsApp. We respond within 24 hours — usually much faster."
   canonical="/contact"
 >
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(webPage)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbs)} />
+  </Fragment>
+
   <ContactPageContent />
 </BaseLayout>

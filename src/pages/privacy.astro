@@ -1,12 +1,39 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PrivacyContent from '@/components/legal/PrivacyContent.astro';
+import { breadcrumbSchema, webPageSchema } from '@/lib/seo';
+
+/**
+ * Legal pages carry a `BreadcrumbList` because LegalPageLayout now renders a
+ * visible Home > {title} trail. Google only honours breadcrumb markup that
+ * matches a trail the visitor can actually see, so the two ship together —
+ * if one changes, change the other in the same commit.
+ */
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: 'Home', path: '/' },
+    { name: 'Privacy Policy', path: '/privacy' },
+  ],
+  '/privacy',
+);
+
+const webPage = webPageSchema({
+  path: '/privacy',
+  name: 'Privacy Policy',
+  description: 'How Auravon AI collects, uses, and safeguards your data — what we store, why we store it, and the rights you have over it.',
+  hasBreadcrumb: true,
+});
 ---
 
 <BaseLayout
   title="Privacy Policy"
-  description="Auravon AI respects user privacy and protects all customer information. This policy explains how we collect, use, and safeguard your data."
+  description="How Auravon AI collects, uses, and safeguards your data — what we store, why we store it, and the rights you have over it."
   canonical="/privacy"
 >
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(webPage)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbs)} />
+  </Fragment>
+
   <PrivacyContent />
 </BaseLayout>

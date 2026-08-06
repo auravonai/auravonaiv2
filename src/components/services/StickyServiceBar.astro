@@ -72,8 +72,29 @@ const { serviceTitle } = Astro.props;
 
     setVisible(false);
 
-    const onScroll = () => setVisible(window.scrollY > SHOW_AFTER);
-    onScroll();
+    // Same rAF batching as WhatsAppFloat — see the note there. Reading
+    // scrollY and writing in the scroll handler forces a synchronous layout
+    // on every tick.
+    let ticking = false;
+    let visible = false;
+
+    const update = () => {
+      ticking = false;
+      const next = window.scrollY > SHOW_AFTER;
+      if (next === visible) return;
+      visible = next;
+      setVisible(next);
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+
+    // Scheduled rather than inline, for the same read-after-write reason as
+    // WhatsAppFloat.
+    requestAnimationFrame(update);
     window.addEventListener('scroll', onScroll, { passive: true });
 
     dismiss?.addEventListener('click', () => {

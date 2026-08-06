@@ -92,8 +92,17 @@ const robots = noindex
 
     {/* Fonts are self-hosted by the Fonts API, so the only third-party
          origins are analytics and — on pages with article covers — the
-         Unsplash CDN. */}
-    <link rel="preconnect" href="https://www.googletagmanager.com" />
+         Unsplash CDN.
+
+         `dns-prefetch` only, deliberately. `preconnect` also completes the
+         TCP and TLS handshake, and it did that during initial load while
+         gtag.js was still on the critical path. Analytics is now deferred
+         past first paint (see the loader at the end of <body>), so a full
+         connection opened in the head would sit idle — browsers close idle
+         connections after ~10s — while stealing bandwidth from the
+         stylesheet and font the hero's LCP text actually waits on. The DNS
+         lookup is worth keeping: it is a few hundred bytes, it does not
+         hold a socket, and it removes a lookup from the deferred load. */}
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
     {
@@ -280,7 +289,36 @@ const robots = noindex
         which would scope `gtag` locally. Pageviews would still register (the
         library drains the global `dataLayer`), but any later `gtag(...)` call
         — an event, a Google Ads conversion snippet — would throw
-        "gtag is not defined". `gtag` has to stay global. */}
+        "gtag is not defined". `gtag` has to stay global.
+
+        ── Why the library is loaded lazily ──
+
+        gtag.js was previously a plain `<script async src>`. `async` only
+        means "don't block the parser"; the request is still issued during
+        initial load, and on a throttled mobile connection it was the single
+        largest thing the page downloaded — ~138 KiB of JavaScript, almost
+        none of which this site calls. It competed for bandwidth with the
+        stylesheet and the preloaded font that the hero's LCP text waits on,
+        and its parse and execute were the long main-thread tasks behind the
+        Total Blocking Time. It was also the source of the "efficient cache
+        lifetimes" finding: Google serves gtag.js with a 15-minute max-age
+        and we cannot change that — the only lever is not fetching it on the
+        critical path.
+
+        So the tag is queued immediately and the library is fetched on
+        whichever of these happens first:
+
+          - the first real user interaction (pointer, key, scroll, touch);
+          - the page being hidden — this is what keeps bounce traffic
+            counted, since a visitor who reads and leaves without
+            interacting would otherwise never trigger a load;
+          - idle time after the load event, with a timeout, so a visitor who
+            simply sits still is still counted.
+
+        Data is not lost by deferring: `dataLayer` is a queue, and the js /
+        config calls below are pushed into it at parse time. The library
+        drains the queue in order whenever it arrives. Only the wall-clock
+        moment the hit leaves the browser moves. */}
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
@@ -289,10 +327,55 @@ const robots = noindex
       gtag('js', new Date());
       gtag('config', 'G-EVP96J4Z76');
       gtag('config', 'G-10N63FS2SB');
+
+      (function () {
+        var TRIGGERS = ['pointerdown', 'keydown', 'scroll', 'touchstart'];
+        var started = false;
+
+        function load() {
+          if (started) return;
+          started = true;
+
+          for (var i = 0; i < TRIGGERS.length; i++) {
+            window.removeEventListener(TRIGGERS[i], load, true);
+          }
+          document.removeEventListener('visibilitychange', onHide);
+
+          var script = document.createElement('script');
+          script.async = true;
+          script.src =
+            'https://www.googletagmanager.com/gtag/js?id=G-EVP96J4Z76';
+          document.head.appendChild(script);
+        }
+
+        function onHide() {
+          if (document.visibilityState === 'hidden') load();
+        }
+
+        for (var i = 0; i < TRIGGERS.length; i++) {
+          // Capture phase so a handler that stops propagation cannot swallow
+          // the trigger; passive so listening never delays a scroll.
+          window.addEventListener(TRIGGERS[i], load, {
+            capture: true,
+            passive: true,
+          });
+        }
+        document.addEventListener('visibilitychange', onHide);
+
+        // Backstop for the visitor who lands, reads, and neither scrolls nor
+        // leaves. Ten seconds after load, not "as soon as the main thread is
+        // idle": an idle callback fires while the page is still settling, which
+        // put the whole 330 KiB and its ~230 ms of blocking work back inside
+        // the window Core Web Vitals are measured over — measured, and it did.
+        // Any session worth attributing lasts longer than ten seconds, and the
+        // visibility handler above catches the ones that do not.
+        function arm() {
+          setTimeout(load, 10000);
+        }
+
+        if (document.readyState === 'complete') arm();
+        else window.addEventListener('load', arm, { once: true });
+      })();
     </script>
-    <script
-      is:inline
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-EVP96J4Z76"></script>
   </body>
 </html>

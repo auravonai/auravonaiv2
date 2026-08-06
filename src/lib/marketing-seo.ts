@@ -26,9 +26,9 @@ import type { Faq } from './seo';
 export const MARKETING_HUB_SEO = {
   primaryKeyword: 'digital marketing services',
   path: '/digital-marketing',
-  metaTitle: 'Digital Marketing Services — SEO, Ads & Ecommerce | Auravon AI',
+  metaTitle: 'Digital Marketing Services — SEO & Ads | Auravon AI',
   metaDescription:
-    'Digital marketing services covering SEO, Google and Meta Ads, ecommerce development, and marketplace account management. Talk to us about what your business actually needs.',
+    'SEO, Google and Meta Ads, ecommerce development, and marketplace account management. Talk to us about what your business actually needs.',
   ogTitle: 'Digital Marketing Services — Auravon AI',
   ogDescription:
     'Eight service families, from organic search through to Amazon and Flipkart account management. Pick the one you need.',

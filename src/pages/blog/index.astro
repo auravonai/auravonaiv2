@@ -2,6 +2,24 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import BlogPageContent from '@/components/pages/BlogPageContent.astro';
 import { articles } from '@/lib/articles';
+import { breadcrumbSchema, webPageSchema } from '@/lib/seo';
+
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: 'Home', path: '/' },
+    { name: 'Blog', path: '/blog' },
+  ],
+  '/blog',
+);
+
+const webPage = webPageSchema({
+  path: '/blog',
+  name: 'Auravon AI Blog',
+  description:
+    'Practical articles on AI development, modern web engineering, and building products that hold up in production.',
+  hasBreadcrumb: true,
+  type: 'CollectionPage',
+});
 
 const blogListSchema = {
   '@context': 'https://schema.org',
@@ -19,17 +37,16 @@ const blogListSchema = {
 ---
 
 <BaseLayout
-  title="AI Development Blog — SaaS, Startup Software & AI Guides"
-  description="In-depth guides on AI app development cost, SaaS architecture, MVP building, Next.js performance, RAG chatbots, business automation, and startup tech stack — written by the Auravon AI engineering team."
+  title="AI Development Blog — Engineering Guides"
+  description="Practical guides on AI app cost, SaaS architecture, MVPs, Next.js performance, RAG chatbots, and automation — written by the engineers who ship them."
   canonical="/blog"
   remoteImages
 >
-  <script
-    slot="head"
-    type="application/ld+json"
-    is:inline
-    set:html={JSON.stringify(blogListSchema)}
-  />
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(webPage)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbs)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(blogListSchema)} />
+  </Fragment>
 
   <BlogPageContent />
 </BaseLayout>

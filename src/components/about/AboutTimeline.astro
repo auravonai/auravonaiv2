@@ -32,13 +32,23 @@ import { milestones } from '@/lib/about-seo';
       class="mb-14"
     />
 
-    <ol class="relative space-y-7">
-      {/* Spine: sits behind the markers, aligned to their centre. */}
+    {/*
+      The spine is a sibling of the <ol>, not a child of it.
+
+      It used to sit inside, which fails Lighthouse's `list` audit — "Lists do
+      not contain only <li> elements and script supporting elements". That
+      audit tests the HTML content model, so `aria-hidden` does NOT exempt it:
+      a <ul>/<ol> may only contain <li>, <script>, and <template>, full stop.
+      Wrapping instead keeps the decorative line exactly where it was, because
+      the wrapper now carries the positioning context the <ol> used to.
+    */}
+    <div class="relative">
       <span
         class="absolute top-2 bottom-2 left-[18px] w-px bg-hairline"
         aria-hidden="true"></span>
 
-      {
+      <ol class="space-y-7">
+        {
         milestones.map(({ year, title, description }, i) => (
           <Reveal as="li" delay={i * 60} class="relative flex gap-5 pl-14">
             <span
@@ -56,8 +66,9 @@ import { milestones } from '@/lib/about-seo';
               <p class="mt-1.5 text-body-sm text-body">{description}</p>
             </Card>
           </Reveal>
-        ))
-      }
-    </ol>
+          ))
+        }
+      </ol>
+    </div>
   </div>
 </section>

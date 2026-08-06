@@ -77,7 +77,7 @@ export const industries: readonly Industry[] = [
     primaryKeyword: 'ai for fintech',
     metaTitle: 'AI & Software Development for Fintech | Auravon AI',
     metaDescription:
-      'Custom software and AI for financial services: reconciliation, risk scoring, and document processing built with the audit trails and controls the sector requires.',
+      'Custom software and AI for financial services: reconciliation, risk scoring, and document processing, built with the audit trails the sector needs.',
     h1: 'AI and software engineering for fintech',
     summary:
       'Fintech engineering is ordinary software with an unusual failure cost: a bug that would be a nuisance elsewhere is a reconciliation break, a regulatory report, or money in the wrong account. We build financial systems where correctness, traceability, and the ability to explain any number to an auditor are design inputs rather than later additions.',
@@ -235,7 +235,7 @@ export const industries: readonly Industry[] = [
     primaryKeyword: 'ai for logistics',
     metaTitle: 'AI & Software Development for Logistics | Auravon AI',
     metaDescription:
-      'Logistics software and AI: route and load planning, shipment visibility, document processing, and the exception handling that decides whether a plan survives the day.',
+      'Logistics software and AI: route and load planning, shipment visibility, document processing, and the exception handling a plan lives or dies by.',
     h1: 'AI and software engineering for logistics',
     summary:
       'Logistics software succeeds or fails on how it handles the day going wrong. Plans are easy; the value is in what happens when a vehicle breaks down, a dock is blocked, or a shipment is short. We build planning, visibility, and exception-handling systems designed around the disruption rather than the happy path.',
@@ -314,7 +314,7 @@ export const industries: readonly Industry[] = [
     primaryKeyword: 'ai for ecommerce',
     metaTitle: 'AI & Software Development for Ecommerce | Auravon AI',
     metaDescription:
-      'Ecommerce engineering and AI: catalogue automation, search and recommendations, inventory sync, and custom platforms for businesses that have outgrown the templates.',
+      'Ecommerce engineering and AI: catalogue automation, search and recommendations, inventory sync, and custom platforms for those past the templates.',
     h1: 'AI and software engineering for ecommerce',
     summary:
       'Most ecommerce businesses do not need a new storefront; they need the systems behind it to stop losing them money. Catalogue data, inventory accuracy, search quality, and the integrations between channels are where revenue actually leaks. We build the layer underneath, and the storefront when the platform genuinely has become the constraint.',
@@ -393,7 +393,7 @@ export const industries: readonly Industry[] = [
     primaryKeyword: 'ai for education',
     metaTitle: 'AI & Software Development for Education | Auravon AI',
     metaDescription:
-      'EdTech engineering and AI: learning platforms, assessment and feedback tooling, content generation, and the safeguarding constraints that come with younger users.',
+      'EdTech engineering and AI: learning platforms, assessment and feedback tooling, content generation, and the safeguarding younger users require.',
     h1: 'AI and software engineering for education',
     summary:
       'Education software has a usage pattern almost nothing else shares: near-zero load for weeks, then every user arriving within the same hour on results day. It also frequently involves minors, which changes what you may collect and how content must be filtered. We build learning platforms and assessment tooling around both realities.',

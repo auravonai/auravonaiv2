@@ -57,8 +57,8 @@ const breadcrumbSchema = {
 
 <BaseLayout
   remoteImages
-  title={`${article.title} — Auravon AI Blog`}
-  description={article.excerpt}
+  title={article.seoTitle ?? article.title}
+  description={article.metaDescription ?? article.excerpt}
   canonical={`/blog/${slug}`}
   ogType="article"
 >

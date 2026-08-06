@@ -29,15 +29,38 @@ export const EMAILS = [
   { type: 'Careers', addr: 'hr@auravonai.com' },
 ] as const;
 
+/**
+ * The only social profiles that exist. Confirmed by the user 2026-08-06.
+ *
+ * GitHub was listed here and in two `sameAs` blocks pointing at
+ * github.com/auravonai. It is gone: `sameAs` is a claim to Google that an
+ * entity owns a profile, so listing one that is not maintained is worse than
+ * listing nothing.
+ *
+ * `icon` names a mark in `components/ui/BrandIcon.astro`, not a Lucide icon —
+ * see the note in that file for why the real logos are drawn there.
+ */
 export const SOCIALS = [
-  { label: 'X / Twitter', href: 'https://x.com/auravonai', icon: 'X' },
+  {
+    label: 'Instagram',
+    // Canonical profile URL. The link the user supplied carried an `?igsh=`
+    // share token, which is per-share attribution rather than part of the
+    // address; it is stripped here so the footer and the `sameAs` in
+    // lib/seo.ts nominate the same clean URL.
+    href: 'https://www.instagram.com/auravon_ai/',
+    icon: 'instagram',
+  },
   {
     label: 'LinkedIn',
     href: 'https://www.linkedin.com/company/auravon-ai-tech/',
-    icon: 'Globe',
+    icon: 'linkedin',
   },
-  { label: 'GitHub', href: 'https://github.com/auravonai', icon: 'Code2' },
-  { label: 'WhatsApp', href: `https://wa.me/${WHATSAPP_NUMBER}`, icon: 'MessageCircle' },
+  { label: 'X', href: 'https://x.com/auravonai', icon: 'x' },
+  {
+    label: 'Chat on WhatsApp',
+    href: `https://wa.me/${WHATSAPP_NUMBER}`,
+    icon: 'whatsapp',
+  },
 ] as const;
 
 export const COMPANY_LINKS = [

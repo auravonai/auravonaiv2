@@ -251,8 +251,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "digital-marketing",
     title: "Core Digital Marketing Services",
     tagline: "SEO, Google Ads, Meta Ads & local search — full-funnel marketing that delivers measurable ROI across India and worldwide.",
-    metaTitle: "Digital Marketing Services | SEO, Google Ads, Meta Ads Agency | Auravon AI",
-    metaDescription: "Auravon AI is a global digital marketing agency offering SEO, Google Ads, Meta Ads, and performance marketing for businesses worldwide. Data-driven campaigns that grow traffic, leads, and revenue.",
+    metaTitle: "Digital Marketing Services | Auravon AI",
+    metaDescription:
+      "SEO, Google Ads, Meta Ads, and local visibility run as one practice, with the same people accountable for the reporting and the results.",
     keywords: [
       "digital marketing agency", "digital marketing services", "full service digital marketing agency",
       "performance marketing agency", "online marketing agency", "SEO google ads meta ads agency",
@@ -334,8 +335,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "digital-marketing",
     title: "SEO Services",
     tagline: "Rank higher on Google, drive consistent organic traffic, and turn search visibility into measurable business revenue — across India and worldwide.",
-    metaTitle: "SEO Services | Search Engine Optimization Agency | Auravon AI",
-    metaDescription: "Auravon AI provides expert SEO services for businesses worldwide. We deliver top Google rankings through technical SEO, on-page optimization, link building, and content strategy — with transparent reporting and no black-hat tactics.",
+    metaTitle: "SEO Services | Auravon AI",
+    metaDescription:
+      "Technical SEO, on-page work, and content strategy for businesses that need organic search to bring in customers. No black-hat shortcuts.",
     keywords: [
       "SEO services", "SEO agency", "search engine optimization agency",
       "technical SEO services", "on-page SEO services", "link building services",
@@ -418,8 +420,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "digital-marketing",
     title: "Google Ads Management",
     tagline: "High-converting Google Ads campaigns that put your business in front of buyers actively searching for what you sell — across India and worldwide.",
-    metaTitle: "Google Ads Management Services | PPC Advertising Agency | Auravon AI",
-    metaDescription: "Auravon AI manages Google Ads campaigns for businesses worldwide. Expert PPC management for Search, Shopping, Display, and Performance Max — delivering measurable ROI with transparent reporting and zero wasted spend.",
+    metaTitle: "Google Ads Management | PPC Agency | Auravon AI",
+    metaDescription:
+      "Search, Shopping, Display, and Performance Max campaigns built and managed against your real margins, with reporting you can audit.",
     keywords: [
       "Google Ads agency", "Google Ads management services", "PPC management agency",
       "pay per click advertising", "Google Ads expert", "paid search advertising agency",
@@ -502,8 +505,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "digital-marketing",
     title: "Meta Ads (Facebook & Instagram)",
     tagline: "Targeted Facebook and Instagram ad campaigns that build brand awareness, generate qualified leads, and drive ecommerce sales — across India and worldwide.",
-    metaTitle: "Meta Ads Services | Facebook & Instagram Advertising Agency | Auravon AI",
-    metaDescription: "Auravon AI runs high-performing Meta Ads campaigns (Facebook & Instagram) for businesses worldwide. Expert paid social advertising with audience research, creative testing, and ROAS-focused campaign management.",
+    metaTitle: "Meta Ads Management | Facebook & Instagram | Auravon AI",
+    metaDescription:
+      "Facebook and Instagram ad campaigns: creative testing, audience structure, and tracking set up so you can see what the spend returns.",
     keywords: [
       "Meta Ads agency", "Facebook advertising agency", "Instagram ads management",
       "Meta Ads management services", "paid social media advertising", "Facebook lead generation ads",
@@ -585,8 +589,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "digital-marketing",
     title: "Google My Business Optimization",
     tagline: "Dominate local search results, rank in the Google Maps top-3, and attract more customers from your city — across India.",
-    metaTitle: "Google My Business Optimization Services | GMB Agency | Auravon AI",
-    metaDescription: "Auravon AI optimizes Google Business Profiles for businesses worldwide — rank in the local pack, dominate Google Maps results, and attract more customers through expert GMB setup, optimization, and review management.",
+    metaTitle: "Google Business Profile Optimization | Auravon AI",
+    metaDescription:
+      "Google Business Profile setup and optimisation for local visibility: categories, posts, photos, review handling, and local citations.",
     keywords: [
       "Google My Business optimization", "GMB optimization services", "Google Business Profile management",
       "GMB agency", "local SEO google maps", "Google My Business setup services",
@@ -668,8 +673,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "digital-marketing",
     title: "Google Map Listing Services",
     tagline: "Get your business on Google Maps, verified and optimized — so local customers searching for what you offer find you first, not your competitors.",
-    metaTitle: "Google Maps Business Listing Services | Local Map Optimization | Auravon AI",
-    metaDescription: "Auravon AI handles Google Maps listing setup, verification, and optimization for businesses worldwide. Get found in local map searches, attract nearby customers, and dominate local search with expert Google Maps optimization.",
+    metaTitle: "Google Maps Listing Services | Auravon AI",
+    metaDescription:
+      "Get your business found in Google Maps and the local pack: listing setup, verification, category strategy, and ongoing local signals.",
     keywords: [
       "Google Maps listing services", "Google map listing setup", "add business to google maps",
       "Google Maps optimization", "local business listing services", "Google Maps verification",
@@ -752,8 +758,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "web-services",
     title: "Web Services",
     tagline: "Custom websites, reliable hosting, and cloud infrastructure — everything your business needs to win online, under one roof.",
-    metaTitle: "Web Development & Hosting Services | Professional Website Agency | Auravon AI",
-    metaDescription: "Auravon AI delivers professional website development, managed cloud hosting, and DevOps services for businesses worldwide. Fast, secure, SEO-ready websites built to generate leads and revenue.",
+    metaTitle: "Web Development & Hosting Services | Auravon AI",
+    metaDescription:
+      "Websites, hosting, and deployment handled end to end, built to load fast, stay online, and be maintainable by whoever comes next.",
     keywords: [
       "web development services", "website development agency", "professional website services",
       "website hosting services", "managed web hosting", "devops services",
@@ -835,8 +842,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "web-services",
     title: "Website Development",
     tagline: "High-converting, fast-loading business websites built on Next.js and React — designed to rank on Google and turn visitors into customers.",
-    metaTitle: "Website Development Services | Next.js, React & WordPress Agency | Auravon AI",
-    metaDescription: "Professional website development for businesses worldwide. We build fast, SEO-ready websites on Next.js, React, and WordPress — with Lighthouse 95+, mobile-first design, and conversion-focused layouts. Free consultation.",
+    metaTitle: "Website Development Services | Auravon AI",
+    metaDescription:
+      "Custom business websites built for speed, search visibility, and conversion, not a template with your logo dropped into the header.",
     keywords: [
       "website development services", "custom website development", "Next.js website development",
       "React website development", "WordPress development services", "business website development",
@@ -918,8 +926,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "web-services",
     title: "Website Hosting Services",
     tagline: "Managed cloud hosting on AWS and Vercel — faster than shared hosting, more reliable than DIY VPS, and monitored 24/7 so your website is always on.",
-    metaTitle: "Managed Website Hosting Services | Cloud Hosting & VPS | Auravon AI",
-    metaDescription: "Managed website hosting on AWS and Vercel with 99.9% uptime, free SSL, daily backups, Cloudflare CDN, and 24/7 monitoring. Free migration from your current host — zero downtime guaranteed.",
+    metaTitle: "Managed Website Hosting | Auravon AI",
+    metaDescription:
+      "Managed hosting with backups, SSL, uptime monitoring, and updates, so your site stays fast and online without you thinking about it.",
     keywords: [
       "managed website hosting", "cloud hosting services", "managed cloud hosting",
       "AWS website hosting", "Vercel hosting services", "VPS hosting services",
@@ -1001,8 +1010,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "web-services",
     title: "DevOps & Deployment",
     tagline: "CI/CD pipelines, Docker containerization, and AWS infrastructure that let your team ship code confidently — without downtime, without incidents, without fear.",
-    metaTitle: "DevOps & Deployment Services | CI/CD, Docker & AWS Infrastructure | Auravon AI",
-    metaDescription: "Expert DevOps engineering — CI/CD pipelines with GitHub Actions, Docker containerization, AWS infrastructure, Terraform IaC, and zero-downtime deployments. Free infrastructure audit for startups and SaaS companies worldwide.",
+    metaTitle: "DevOps & Deployment Services | Auravon AI",
+    metaDescription:
+      "CI/CD pipelines, environment setup, and deployment automation, so releases stop being an event your team has to brace itself for.",
     keywords: [
       "DevOps services", "CI/CD pipeline setup", "Docker containerization services",
       "AWS infrastructure services", "GitHub Actions CI/CD", "DevOps consulting",
@@ -1085,8 +1095,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "ecommerce-development",
     title: "Ecommerce Development",
     tagline: "Shopify, WooCommerce, and custom ecommerce stores engineered to sell — conversion-optimized, SEO-ready, and built to scale.",
-    metaTitle: "Ecommerce Development Services | Shopify, WooCommerce & Custom Stores | Auravon AI",
-    metaDescription: "Expert ecommerce development for businesses worldwide. We build high-converting Shopify stores, WooCommerce sites, and custom ecommerce platforms — mobile-first, SEO-ready, and optimized for sales.",
+    metaTitle: "Ecommerce Development Services | Auravon AI",
+    metaDescription:
+      "Online stores on Shopify, WooCommerce, or a custom stack, with the checkout, catalogue, and integrations built to hold up under real traffic.",
     keywords: [
       "ecommerce development services", "online store development", "ecommerce website development",
       "shopify development agency", "woocommerce development services", "custom ecommerce development",
@@ -1168,8 +1179,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "ecommerce-development",
     title: "Shopify Development",
     tagline: "Custom Shopify stores built for fast loading, high conversions, and seamless selling — from launch-ready DTC stores to complex Shopify Plus operations.",
-    metaTitle: "Shopify Development Services | Custom Shopify Store Agency | Auravon AI",
-    metaDescription: "Expert Shopify development for brands worldwide. Custom themes, Shopify Plus builds, app integrations, and conversion-optimized store design. Free Shopify audit included.",
+    metaTitle: "Shopify Development Services | Auravon AI",
+    metaDescription:
+      "Shopify stores, custom themes, and app integrations for merchants who need the storefront to load fast and turn browsers into orders.",
     keywords: [
       "shopify development services", "shopify store development", "shopify expert agency",
       "shopify theme development", "shopify plus development", "shopify custom theme",
@@ -1251,8 +1263,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "ecommerce-development",
     title: "WooCommerce Development",
     tagline: "Powerful WordPress ecommerce stores with complete data ownership, zero transaction fees, and unlimited customization for businesses that need flexibility.",
-    metaTitle: "WooCommerce Development Services | WordPress Ecommerce Agency | Auravon AI",
-    metaDescription: "Expert WooCommerce development for businesses worldwide. Custom WooCommerce stores on WordPress with full ownership, no transaction fees, subscriptions, B2B pricing, and complete control. Free consultation.",
+    metaTitle: "WooCommerce Development Services | Auravon AI",
+    metaDescription:
+      "WooCommerce stores built and optimised on WordPress: payments, shipping, catalogue structure, and the performance work most skip.",
     keywords: [
       "woocommerce development services", "woocommerce developer agency", "woocommerce store development",
       "wordpress ecommerce development", "woocommerce customization", "woocommerce setup services",
@@ -1334,8 +1347,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "ecommerce-development",
     title: "Custom Ecommerce Development",
     tagline: "Fully bespoke ecommerce platforms for businesses whose requirements go beyond what Shopify or WooCommerce can deliver.",
-    metaTitle: "Custom Ecommerce Development | Bespoke Online Store Platform | Auravon AI",
-    metaDescription: "Custom ecommerce platform development for complex businesses worldwide. Multi-vendor marketplaces, B2B portals, subscription commerce, and headless ecommerce built on Next.js and Node.js.",
+    metaTitle: "Custom Ecommerce Development | Auravon AI",
+    metaDescription:
+      "Bespoke ecommerce platforms for catalogues, pricing rules, and workflows that off-the-shelf carts cannot model without a fight.",
     keywords: [
       "custom ecommerce development", "bespoke ecommerce platform", "custom online store development",
       "headless ecommerce development", "multi-vendor marketplace development", "B2B ecommerce platform",
@@ -1418,8 +1432,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "ecommerce-account-management",
     title: "Ecommerce Account Management",
     tagline: "End-to-end Amazon, Flipkart, and Meesho seller account management — listings, sponsored ads, inventory, and month-on-month sales growth.",
-    metaTitle: "Ecommerce Account Management Services | Amazon, Flipkart & Meesho | Auravon AI",
-    metaDescription: "Professional ecommerce account management for Amazon, Flipkart, and Meesho sellers in India. Listing optimization, A+ content, sponsored ads, review management, and consistent sales growth.",
+    metaTitle: "Ecommerce Account Management | Auravon AI",
+    metaDescription:
+      "Day-to-day marketplace management across Amazon, Flipkart, and Meesho: listings, pricing, inventory, ads, and account health.",
     keywords: [
       "ecommerce account management services", "amazon account management", "flipkart account management",
       "meesho account management", "amazon seller services", "marketplace management services",
@@ -1501,8 +1516,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "ecommerce-account-management",
     title: "Amazon Account Management",
     tagline: "End-to-end Amazon seller account management — listing optimization, A+ content, Sponsored Ads, FBA, and consistent month-on-month sales growth.",
-    metaTitle: "Amazon Account Management Services | Amazon Seller Growth Agency | Auravon AI",
-    metaDescription: "Professional Amazon seller account management in India. Listing optimization, A+ content, Sponsored Products/Brands/Display management, FBA setup, and ACoS reduction. Free Amazon audit.",
+    metaTitle: "Amazon Seller Account Management | Auravon AI",
+    metaDescription:
+      "Amazon listing optimisation, A+ content, PPC, inventory, and account health, handled by people who work in Seller Central every day.",
     keywords: [
       "amazon account management services", "amazon seller management", "amazon listing optimization",
       "amazon PPC management", "amazon sponsored ads management", "amazon FBA management",
@@ -1584,8 +1600,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "ecommerce-account-management",
     title: "Flipkart Account Management",
     tagline: "Professional Flipkart seller account management — listing optimization, Flipkart Ads, logistics, and consistent sales growth on India's leading marketplace.",
-    metaTitle: "Flipkart Account Management Services | Flipkart Seller Growth | Auravon AI",
-    metaDescription: "Expert Flipkart seller account management in India. Listing optimization, Flipkart Ads management, FAssured qualification, review management, and sales growth. Free Flipkart account audit.",
+    metaTitle: "Flipkart Seller Account Management | Auravon AI",
+    metaDescription:
+      "Flipkart catalogue, pricing, ad campaigns, and seller account health, managed so your listings stay live, compliant, and competitive.",
     keywords: [
       "flipkart account management services", "flipkart seller management", "flipkart listing optimization",
       "flipkart ads management", "flipkart account manager india", "flipkart seller hub management",
@@ -1667,8 +1684,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "ecommerce-account-management",
     title: "Meesho Account Management",
     tagline: "Expert Meesho supplier account management — catalog optimization, Meesho Ads, order volume growth, and maintaining the supplier ratings that unlock more visibility.",
-    metaTitle: "Meesho Account Management Services | Meesho Seller Growth | Auravon AI",
-    metaDescription: "Professional Meesho supplier account management in India. Catalog optimization, Meesho Ads, order volume growth, and supplier rating management. Free Meesho account review.",
+    metaTitle: "Meesho Seller Account Management | Auravon AI",
+    metaDescription:
+      "Meesho catalogue uploads, pricing strategy, returns handling, and account health management for sellers scaling on the platform.",
     keywords: [
       "meesho account management services", "meesho supplier management", "meesho catalog optimization",
       "meesho ads management", "meesho seller management india", "meesho supplier panel management",
@@ -1751,8 +1769,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "social-media-handling",
     title: "Social Media Management",
     tagline: "Strategic organic content, community management, and paid campaigns across Instagram, Facebook, and LinkedIn — managed end-to-end by a dedicated team.",
-    metaTitle: "Social Media Management Services | Instagram, Facebook & LinkedIn Agency | Auravon AI",
-    metaDescription: "Full-service social media management for businesses worldwide. Content strategy, Reels, stories, community management, paid campaigns, and monthly growth reporting. Free social audit.",
+    metaTitle: "Social Media Management Services | Auravon AI",
+    metaDescription:
+      "Content planning, posting, and community management across the platforms where your customers actually spend their attention.",
     keywords: [
       "social media management services", "social media agency", "instagram management services",
       "facebook management services", "social media marketing agency", "social media content agency",
@@ -1834,8 +1853,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "social-media-handling",
     title: "Instagram Management",
     tagline: "Professional Instagram management — content strategy, Reels, stories, engagement, and follower growth that turns your profile into a business asset.",
-    metaTitle: "Instagram Management Services | Instagram Growth Agency | Auravon AI",
-    metaDescription: "Professional Instagram management for businesses worldwide. Content strategy, Reels production, stories, community management, hashtag strategy, and monthly growth. Free Instagram audit.",
+    metaTitle: "Instagram Management Services | Auravon AI",
+    metaDescription:
+      "Instagram content, reels, stories, and community management built on a posting rhythm your audience can rely on and your team can keep.",
     keywords: [
       "instagram management services", "instagram growth agency", "instagram content strategy",
       "instagram management company", "professional instagram management", "instagram reels management",
@@ -1917,8 +1937,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "social-media-handling",
     title: "Facebook Marketing & Page Management",
     tagline: "Build a loyal Facebook following, drive traffic, and generate leads through consistent strategic content and community management.",
-    metaTitle: "Facebook Page Management Services | Facebook Marketing Agency | Auravon AI",
-    metaDescription: "Professional Facebook page management for businesses worldwide. Content strategy, post creation, community management, event promotion, and integration with Meta Ads. Free Facebook audit.",
+    metaTitle: "Facebook Page Management | Auravon AI",
+    metaDescription:
+      "Facebook page content, scheduling, and community management, plus the setup work that makes the page findable in the first place.",
     keywords: [
       "facebook management services", "facebook page management", "facebook marketing agency",
       "facebook content strategy", "facebook community management", "facebook marketing services",
@@ -2000,8 +2021,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "social-media-handling",
     title: "Social Media Ad Campaign Management",
     tagline: "Performance-driven Meta Ads campaigns — Facebook and Instagram advertising managed for ROAS, lead quality, and profitable customer acquisition.",
-    metaTitle: "Social Media Ad Campaign Management | Meta Ads Agency | Auravon AI",
-    metaDescription: "Expert Meta Ads management for Facebook and Instagram — audience targeting, creative testing, conversion campaigns, and ABO/CBO optimization. Profitable paid social for businesses worldwide.",
+    metaTitle: "Social Media Ad Campaign Management | Auravon AI",
+    metaDescription:
+      "Paid social across Meta, Instagram, and LinkedIn: creative testing, audience structure, and tracking wired up before the spend starts.",
     keywords: [
       "social media ad campaign management", "meta ads management services", "facebook ads management",
       "instagram ads management", "paid social media advertising", "meta advertising agency",
@@ -2084,8 +2106,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "content-marketing",
     title: "Content Marketing Services",
     tagline: "SEO-optimized blog content, website copy, and keyword strategy that builds organic traffic, brand authority, and a pipeline of leads that doesn't require ad spend.",
-    metaTitle: "Content Marketing Services | SEO Content Agency | Auravon AI",
-    metaDescription: "Expert content marketing for businesses worldwide. SEO blog writing, website copywriting, keyword research, and content strategy that ranks on Google and converts visitors into leads.",
+    metaTitle: "Content Marketing Services | Auravon AI",
+    metaDescription:
+      "Content built around what your buyers actually search for, planned, written, and published on a schedule that compounds over time.",
     keywords: [
       "content marketing services", "SEO content writing services", "content marketing agency",
       "blog content services", "SEO blog writing agency", "content strategy services",
@@ -2167,8 +2190,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "content-marketing",
     title: "SEO Blog Writing",
     tagline: "In-depth, research-backed blog articles built to rank on Google — written by category specialists who understand both search intent and your industry.",
-    metaTitle: "SEO Blog Writing Services | Content Writing Agency | Auravon AI",
-    metaDescription: "Expert SEO blog writing for businesses worldwide. Long-form, E-E-A-T optimized articles targeting buyer-intent keywords — written by industry specialists to rank, engage, and convert.",
+    metaTitle: "SEO Blog Writing Services | Auravon AI",
+    metaDescription:
+      "Researched blog content written to rank and to be worth reading, briefed from real search demand rather than a keyword tool export.",
     keywords: [
       "SEO blog writing services", "SEO content writing agency", "blog writing services",
       "professional blog writers", "SEO article writing", "content writing services",
@@ -2250,8 +2274,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "content-marketing",
     title: "Website Content Writing & Copywriting",
     tagline: "Conversion-focused website copy written to persuade your target audience and drive them to take action — not just describe what you do.",
-    metaTitle: "Website Content Writing Services | Web Copywriting Agency | Auravon AI",
-    metaDescription: "Professional website content writing and copywriting for businesses worldwide. Service pages, home page, about page, and landing page copy that ranks on Google and converts visitors into leads.",
+    metaTitle: "Website Content Writing | Auravon AI",
+    metaDescription:
+      "Homepage, service, and landing page copy that says what you do clearly enough that a first-time visitor knows what to do next.",
     keywords: [
       "website content writing services", "web copywriting services", "website copy agency",
       "landing page copywriting", "service page content writing", "conversion copywriting",
@@ -2333,8 +2358,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "content-marketing",
     title: "Keyword Research & SEO Strategy",
     tagline: "Data-driven keyword research that uncovers exactly what your target customers are searching for — and maps a content strategy to capture every opportunity.",
-    metaTitle: "Keyword Research Services | SEO Keyword Strategy Agency | Auravon AI",
-    metaDescription: "Expert keyword research and SEO content strategy for businesses worldwide. Comprehensive keyword mapping, intent analysis, competitive gaps, and 12-month content roadmap. Free keyword gap analysis.",
+    metaTitle: "Keyword Research & SEO Strategy | Auravon AI",
+    metaDescription:
+      "Keyword research mapped to intent and to pages, so you know which terms are worth chasing and which are someone else's to win.",
     keywords: [
       "keyword research services", "SEO keyword strategy", "keyword research agency",
       "keyword analysis services", "SEO keyword research", "keyword mapping services",
@@ -2417,8 +2443,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "graphic-design",
     title: "Graphic Design Services",
     tagline: "Brand identity, logos, social media creatives, and marketing visuals that communicate your value, build recognition, and make your business look as professional as it operates.",
-    metaTitle: "Graphic Design Services | Brand Design Agency | Auravon AI",
-    metaDescription: "Professional graphic design services for businesses worldwide. Brand identity, logo design, social media creatives, and marketing materials that build a recognizable, credible brand.",
+    metaTitle: "Graphic Design Services | Auravon AI",
+    metaDescription:
+      "Brand identity, logos, and social creatives designed as one system rather than as unrelated files from unrelated freelancers.",
     keywords: [
       "graphic design services", "brand design agency", "graphic design company",
       "professional graphic designer", "brand visual design", "logo and branding design",
@@ -2500,8 +2527,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "graphic-design",
     title: "Brand Identity Design",
     tagline: "Complete brand identity systems — logo, color palette, typography, visual elements, and guidelines — built to communicate who you are and win the trust of your target audience.",
-    metaTitle: "Brand Identity Design Services | Branding Agency | Auravon AI",
-    metaDescription: "Professional brand identity design for businesses worldwide. Complete brand systems: logo, color palette, typography, and brand guidelines that build recognition and credibility.",
+    metaTitle: "Brand Identity Design Services | Auravon AI",
+    metaDescription:
+      "Logo, palette, type, and usage rules delivered as a system your team can apply consistently without asking a designer every time.",
     keywords: [
       "brand identity design services", "branding agency", "brand identity design",
       "complete branding services", "visual brand identity", "brand system design",
@@ -2583,8 +2611,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "graphic-design",
     title: "Logo Design",
     tagline: "Professional, memorable logo design that represents your business accurately, works across every medium, and builds recognition from day one.",
-    metaTitle: "Logo Design Services | Professional Logo Designer | Auravon AI",
-    metaDescription: "Professional logo design for businesses worldwide. 3 unique concepts, vector source files, unlimited revisions, and all format variations — logos that work everywhere your brand appears.",
+    metaTitle: "Logo Design Services | Auravon AI",
+    metaDescription:
+      "Logo design with the full file set and usage guidance, built to work at favicon size and on a billboard without being redrawn.",
     keywords: [
       "logo design services", "professional logo designer", "custom logo design",
       "business logo design", "logo design agency", "brand logo design",
@@ -2666,8 +2695,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "graphic-design",
     title: "Social Media Creatives Design",
     tagline: "On-brand social media graphics, reels thumbnails, stories, and ad creatives that stop the scroll, build recognition, and drive engagement month after month.",
-    metaTitle: "Social Media Creatives Design Services | Social Media Graphics | Auravon AI",
-    metaDescription: "Professional social media creatives design for businesses worldwide. Monthly on-brand Instagram, Facebook, and LinkedIn graphics — feed posts, stories, reels thumbnails, and ad creatives.",
+    metaTitle: "Social Media Creative Design | Auravon AI",
+    metaDescription:
+      "Post, story, and ad creatives designed as templates your team can reuse, so output does not stall every time you need a graphic.",
     keywords: [
       "social media creatives design", "social media graphics design", "social media design services",
       "Instagram graphics design", "Facebook post design", "social media post design",
@@ -2750,8 +2780,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "business-consulting",
     title: "Business Consulting Services",
     tagline: "Digital growth strategy, market research, and business planning that gives you the clarity, data, and prioritized roadmap to grow faster — without wasting budget on the wrong initiatives.",
-    metaTitle: "Business Consulting Services | Digital Growth Strategy Agency | Auravon AI",
-    metaDescription: "Expert business consulting for companies worldwide. Digital growth strategy, business strategy development, market research, and competitor analysis — data-backed plans that drive measurable results.",
+    metaTitle: "Business Consulting Services | Auravon AI",
+    metaDescription:
+      "Strategy, market research, and growth planning for businesses deciding where to invest next, where to double down, and where to stop.",
     keywords: [
       "business consulting services", "digital growth strategy", "business strategy consulting",
       "market research consulting", "digital transformation consulting", "growth strategy agency",
@@ -2833,8 +2864,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "business-consulting",
     title: "Business Strategy Development",
     tagline: "Data-backed business growth strategies that align your digital channels, product positioning, and revenue goals — with a 90-day action roadmap your team can execute.",
-    metaTitle: "Business Strategy Consulting Services | Growth Strategy Agency | Auravon AI",
-    metaDescription: "Expert business strategy consulting for companies worldwide. 90-day growth roadmaps, revenue optimization, digital channel strategy, and KPI frameworks — backed by data, built for execution.",
+    metaTitle: "Business Strategy Consulting | Auravon AI",
+    metaDescription:
+      "Positioning, pricing, and go-to-market strategy worked through with you, then written down as decisions rather than as a slide deck.",
     keywords: [
       "business strategy consulting", "growth strategy services", "business strategy development",
       "revenue growth strategy", "business growth consulting", "strategic planning services",
@@ -2916,8 +2948,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "business-consulting",
     title: "Digital Growth Planning",
     tagline: "A comprehensive digital transformation roadmap — channels, content, ads, and technology investments sequenced and prioritized for maximum ROI and sustainable long-term growth.",
-    metaTitle: "Digital Growth Planning Services | Digital Transformation Strategy | Auravon AI",
-    metaDescription: "Expert digital growth planning for businesses worldwide. Channel-by-channel digital strategy, budget allocation, 12-month roadmap, and ROI projections — built on market data and competitive analysis.",
+    metaTitle: "Digital Growth Planning | Auravon AI",
+    metaDescription:
+      "A channel-by-channel growth plan with budgets, sequencing, and the measurement set up to tell you when something is not working.",
     keywords: [
       "digital growth planning services", "digital transformation strategy", "digital growth strategy",
       "digital marketing roadmap", "digital channel strategy", "online growth planning",
@@ -2999,8 +3032,9 @@ const serviceRegistry: Record<string, ServicePageData> = {
     categorySlug: "business-consulting",
     title: "Market Research & Competitor Analysis",
     tagline: "In-depth market research and competitive intelligence that reveals where the opportunity is, what your competitors are doing, and exactly where your business has the advantage to win.",
-    metaTitle: "Market Research & Competitor Analysis Services | Business Intelligence | Auravon AI",
-    metaDescription: "Professional market research and competitor analysis for businesses worldwide. Industry analysis, competitive intelligence, target audience research, and strategic insights — actionable reports backed by data.",
+    metaTitle: "Market Research & Competitor Analysis | Auravon AI",
+    metaDescription:
+      "Competitor, demand, and positioning research that shows where the gap actually is, before you spend a budget finding out the hard way.",
     keywords: [
       "market research services", "competitor analysis services", "competitive intelligence",
       "market analysis services", "business market research", "competitive analysis agency",

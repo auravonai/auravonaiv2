@@ -68,9 +68,9 @@ export const blogCategories: readonly BlogCategory[] = [
     name: 'AI Solutions',
     heading: 'AI solutions',
     primaryKeyword: 'ai solutions for business',
-    metaTitle: 'AI Solutions for Business — Guides & Case Notes | Auravon AI',
+    metaTitle: 'AI Solutions for Business — Guides | Auravon AI',
     metaDescription:
-      'Practical writing on applying AI in a business: agents, chatbots, RAG, cost, and what actually survives contact with real users. Written by the engineers who build it.',
+      'Practical writing on applying AI in a business: agents, chatbots, RAG, cost, and what survives contact with real users — from the engineers who build it.',
     intro:
       'Most writing about business AI is either a vendor pitch or a research summary. These are notes from building the things — what a project costs, where the interesting failures are, and which problems a model genuinely solves versus which ones it only appears to.',
     relatedServices: [
@@ -85,9 +85,9 @@ export const blogCategories: readonly BlogCategory[] = [
     name: 'Automation',
     heading: 'Business automation',
     primaryKeyword: 'business process automation',
-    metaTitle: 'Business Automation Guides — Tools, ROI & Limits | Auravon AI',
+    metaTitle: 'Business Automation Guides — Tools & ROI | Auravon AI',
     metaDescription:
-      'How to automate business processes without buying software you do not need: tool comparisons, honest ROI maths, and the point where a no-code tool stops being enough.',
+      'Automating business processes without buying software you do not need: tool comparisons, honest ROI maths, and where no-code stops being enough.',
     intro:
       'Automation is easy to start and easy to over-buy. These pieces cover choosing between tools, working out whether the saving is real, and recognising the point where a workflow builder should be replaced by something written properly.',
     relatedServices: ['ai-development', 'api-development', 'custom-software-development'],
@@ -109,9 +109,9 @@ export const blogCategories: readonly BlogCategory[] = [
     name: 'Web Development',
     heading: 'Web development',
     primaryKeyword: 'web application development',
-    metaTitle: 'Web Development Guides — Performance & Architecture | Auravon AI',
+    metaTitle: 'Web Development Guides — Performance | Auravon AI',
     metaDescription:
-      'Web application engineering in depth: framework performance, database tuning, and the architectural choices that decide whether a site is still fast in two years.',
+      'Web engineering in depth: framework performance, database tuning, and the architectural choices that decide if a site is still fast in two years.',
     intro:
       'Web work is where most performance problems are made and where most of them can be fixed. These cover the specifics — rendering strategy, query patterns, and the measurements worth trusting.',
     relatedServices: ['web-application-development', 'api-development', 'cloud-devops'],
@@ -121,7 +121,7 @@ export const blogCategories: readonly BlogCategory[] = [
     name: 'Mobile Apps',
     heading: 'Mobile apps',
     primaryKeyword: 'mobile app development',
-    metaTitle: 'Mobile App Development — Framework & Platform Guides | Auravon AI',
+    metaTitle: 'Mobile App Development Guides | Auravon AI',
     metaDescription:
       'Choosing a mobile stack and living with it: cross-platform trade-offs, native escape hatches, and what each choice costs once the app is in the stores.',
     intro:
@@ -145,7 +145,7 @@ export const blogCategories: readonly BlogCategory[] = [
     name: 'SEO & Digital Marketing',
     heading: 'Search & marketing',
     primaryKeyword: 'seo for ai search',
-    metaTitle: 'SEO & Search Marketing — AI Overviews & Rankings | Auravon AI',
+    metaTitle: 'SEO & Search Marketing Guides | Auravon AI',
     metaDescription:
       'How search is changing and what still works: AI Overviews, recovering lost traffic, and the technical groundwork that survives every algorithm update.',
     intro:

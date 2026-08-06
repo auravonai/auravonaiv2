@@ -1,12 +1,45 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ProjectsPageContent from '@/components/pages/ProjectsPageContent.astro';
+import { breadcrumbSchema, webPageSchema } from '@/lib/seo';
+
+/**
+ * Title and description were both over the SERP budget — 83 characters with
+ * the brand suffix, and a 219-character description. Google cut the tail off
+ * both, so the page advertised itself with a truncated sentence. Rewritten to
+ * ≤60 / ~150, keyword first.
+ *
+ * The `BreadcrumbList` is new. This page had none, so it was one of six that
+ * showed no breadcrumb trail in search results while every service and blog
+ * page did. The trail matches what PageHero renders.
+ */
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: 'Home', path: '/' },
+    { name: 'Projects', path: '/projects' },
+  ],
+  '/projects',
+);
+
+const webPage = webPageSchema({
+  path: '/projects',
+  name: 'AI & Software Development Portfolio',
+  description:
+    'Web apps, mobile products, AI integrations, and internal tools Auravon AI has designed and shipped.',
+  hasBreadcrumb: true,
+  type: 'CollectionPage',
+});
 ---
 
 <BaseLayout
-  title="AI & Software Development Portfolio — Real Projects Built by Auravon AI"
-  description="See what Auravon AI has built: AI CRM dashboards, SaaS analytics platforms, AI support chatbots, e-commerce rebuilds, HR management systems, and mobile apps — all shipped to production for real businesses."
+  title="AI & Software Development Portfolio"
+  description="Web apps, SaaS platforms, AI integrations, and internal tools Auravon AI has designed and shipped — with the problem, the approach, and the stack behind each."
   canonical="/projects"
 >
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(webPage)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbs)} />
+  </Fragment>
+
   <ProjectsPageContent />
 </BaseLayout>

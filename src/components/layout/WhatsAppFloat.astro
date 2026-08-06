@@ -1,7 +1,7 @@
 ---
-import MessageCircle from 'lucide-astro/MessageCircle';
 import X from 'lucide-astro/X';
 
+import BrandIcon from '@/components/ui/BrandIcon.astro';
 import { WHATSAPP_URL } from '@/lib/site';
 
 /**
@@ -32,7 +32,7 @@ import { WHATSAPP_URL } from '@/lib/site';
     rel="noopener noreferrer"
     class="flex items-center gap-2.5 rounded-pill bg-ink py-3 pr-5 pl-4 text-button-md text-on-primary shadow-level-4 transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0"
   >
-    <MessageCircle size={18} aria-hidden="true" />
+    <BrandIcon name="whatsapp" size={18} />
     <span class="hidden sm:block">Chat on WhatsApp</span>
   </a>
 </div>
@@ -53,8 +53,31 @@ import { WHATSAPP_URL } from '@/lib/site';
 
     setVisible(false);
 
-    const onScroll = () => setVisible(window.scrollY > SHOW_AFTER);
-    onScroll();
+    // Batched into rAF and guarded on a change, rather than reading scrollY
+    // and writing to the DOM inside the scroll event — that pattern forces a
+    // synchronous layout on every tick. Setting `inert` is especially costly
+    // to repeat, since it also invalidates the accessibility tree.
+    let ticking = false;
+    let visible = false;
+
+    const update = () => {
+      ticking = false;
+      const next = window.scrollY > SHOW_AFTER;
+      if (next === visible) return;
+      visible = next;
+      setVisible(next);
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+
+    // Scheduled, not called inline: `setVisible(false)` above just wrote to
+    // the DOM, so reading scrollY on the next line would force a synchronous
+    // layout. The written state and the first read are one frame apart.
+    requestAnimationFrame(update);
     window.addEventListener('scroll', onScroll, { passive: true });
 
     dismiss?.addEventListener('click', () => {

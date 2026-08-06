@@ -1,12 +1,40 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import TermsContent from '@/components/legal/TermsContent.astro';
+import { breadcrumbSchema, webPageSchema } from '@/lib/seo';
+
+/**
+ * Legal pages carry a `BreadcrumbList` because LegalPageLayout now renders a
+ * visible Home > {title} trail. Google only honours breadcrumb markup that
+ * matches a trail the visitor can actually see, so the two ship together —
+ * if one changes, change the other in the same commit.
+ */
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: 'Home', path: '/' },
+    { name: 'Terms & Conditions', path: '/terms' },
+  ],
+  '/terms',
+);
+
+const webPage = webPageSchema({
+  path: '/terms',
+  name: 'Terms & Conditions',
+  description:
+    "The terms governing use of Auravon AI's website and engagement of our software development, AI, and digital marketing services.",
+  hasBreadcrumb: true,
+});
 ---
 
 <BaseLayout
   title="Terms & Conditions"
-  description="The terms and conditions governing use of Auravon AI's website and engagement of our software development, AI, and digital services."
+  description="The terms governing use of Auravon AI's website and engagement of our software development, AI, and digital marketing services."
   canonical="/terms"
 >
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(webPage)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbs)} />
+  </Fragment>
+
   <TermsContent />
 </BaseLayout>

@@ -133,7 +133,7 @@ const categoryLinks = blogCategories
                   src={post.image}
                   srcset={coverSrcset(post.image)}
                   sizes={CARD_SIZES}
-                  alt=""
+                  alt={post.title}
                   width="1200"
                   height="630"
                   loading={i === 0 ? 'eager' : 'lazy'}
@@ -268,7 +268,7 @@ const categoryLinks = blogCategories
                   src={post.image}
                   srcset={coverSrcset(post.image)}
                   sizes={CARD_SIZES}
-                  alt=""
+                  alt={post.title}
                   width="800"
                   height="450"
                   loading="lazy"

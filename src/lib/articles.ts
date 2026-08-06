@@ -1,4 +1,4 @@
-﻿export type ContentBlock =
+export type ContentBlock =
   | { type: "paragraph"; text: string }
   | { type: "heading"; level: 2 | 3; text: string; id: string }
   | { type: "code"; lang: string; code: string }
@@ -8,8 +8,29 @@
 
 export type Article = {
   slug: string;
+  /** On-page H1. Written for a reader, so it may run long. */
   title: string;
+  /**
+   * The `<title>` tag. Separate from `title` because the two have different
+   * jobs: an H1 can run to 120 characters, a SERP title is cut off around 60.
+   *
+   * Write it WITHOUT the brand — BaseLayout appends " | Auravon AI", and the
+   * route previously appended " — Auravon AI Blog" on top of that, so every
+   * article shipped a title reading "… — Auravon AI Blog | Auravon AI" with
+   * the brand twice and the actual headline truncated out of the SERP.
+   *
+   * Budget: aim for ≤47 characters so the suffix lands under 60 total.
+   * Front-load the keyword; Google truncates the tail, never the head.
+   */
+  seoTitle?: string;
+  /** Reader-facing summary. Rendered on the card and under the H1. */
   excerpt: string;
+  /**
+   * The meta description. Falls back to `excerpt`, but excerpts here run
+   * 180–300 characters and Google cuts at ~160, so an article without this
+   * ships a description that ends mid-sentence. 140–155 is the target.
+   */
+  metaDescription?: string;
   category: string;
   readTime: string;
   date: string;
@@ -26,6 +47,9 @@ export const articles: Article[] = [
   {
     slug: "google-ai-overviews-seo-recovery-2026",
     title: "Your SEO Traffic Dropped and You Didn't Change a Thing. Here's Why — and the Fix.",
+    seoTitle: "Google AI Overviews SEO Recovery Guide",
+    metaDescription:
+      "Organic traffic down but rankings unchanged? AI Overviews are answering before the click. What changed, who lost most, and how to get cited.",
     excerpt:
       "Google AI Overviews now appear on 52% of all searches and answer the question before anyone clicks. If your organic traffic fell 20–60% in the last year and your rankings didn't change, this is why — and here's exactly what to do about it.",
     category: "SEO & Digital Marketing",
@@ -304,6 +328,9 @@ export const articles: Article[] = [
   {
     slug: "ai-agents-for-business-2026",
     title: "AI Agents for Business in 2026: What They Are, What They Cost, and How to Build the Right One",
+    seoTitle: "AI Agents for Business: Cost & Build Guide",
+    metaDescription:
+      "What an AI agent actually is, where it beats a chatbot, what a real build costs, and how to tell a useful agent from an expensive demo.",
     excerpt:
       "Gartner projects 40% of SMBs will deploy at least one AI agent by end of 2026. Most won't know the difference between an agent and a chatbot until they've paid for the wrong one. Here's the complete breakdown: what agents actually do, what each type costs, and how to build one that earns its keep.",
     category: "AI Solutions",
@@ -609,6 +636,9 @@ export const articles: Article[] = [
   {
     slug: "build-ai-chatbot-business-2026",
     title: "How to Build an AI Chatbot for Your Business in 2026 (The Right Way)",
+    seoTitle: "How to Build an AI Chatbot for Business",
+    metaDescription:
+      "A practical build path for a business chatbot in 2026 — scoping, grounding it in your own data, handoff to humans, and the failure modes to plan for.",
     excerpt:
       "Most businesses deploy the wrong kind of chatbot and wonder why it fails. This guide breaks down the four types — rule-based, LLM-powered, RAG-based, and agentic — what each costs to build, and how to know which one your business actually needs.",
     category: "AI Solutions",
@@ -785,6 +815,9 @@ export const articles: Article[] = [
   {
     slug: "n8n-vs-zapier-make-automation-2026",
     title: "n8n vs Zapier vs Make in 2026: Which Automation Platform Should You Actually Use?",
+    seoTitle: "n8n vs Zapier vs Make: 2026 Comparison",
+    metaDescription:
+      "An honest comparison of the three automation platforms — pricing models, where each breaks down at scale, and which one fits your team's skills.",
     excerpt:
       "Most comparison posts rank these tools on feature checklists. That is the wrong frame. Here is how Zapier, Make, and n8n each fail at different things — and when to skip all three and build custom.",
     category: "Automation",
@@ -946,6 +979,9 @@ export const articles: Article[] = [
   {
     slug: "ai-automations-roi-business-2026",
     title: "7 AI Automations That Pay for Themselves in 30 Days (With Real Cost Breakdowns)",
+    seoTitle: "7 AI Automations With Fast Payback",
+    metaDescription:
+      "Seven automations that repay their build cost quickly, with the workflow, the setup effort, and the conditions each one needs to actually work.",
     excerpt:
       "Businesses running these seven AI automations are cutting $80,000–$150,000 in annual operating costs. Here's exactly what each one does, what it costs to build, and which one you should implement first.",
     category: "AI Solutions",
@@ -1180,6 +1216,9 @@ export const articles: Article[] = [
   {
     slug: "mvp-cost-agency-overcharging-2026",
     title: "Your MVP Should Cost $8,000–$20,000. If Someone Quoted You More, Read This.",
+    seoTitle: "What an MVP Should Actually Cost",
+    metaDescription:
+      "How MVP quotes are built, which line items are padding, and the questions that expose an overpriced proposal before you sign it.",
     excerpt:
       "Agencies are quoting $50,000–$150,000 for products that should cost a fraction of that. Here's exactly why it happens, how to spot the red flags before you sign, and what a fair price actually looks like.",
     category: "Startup Tech",
@@ -1333,6 +1372,9 @@ export const articles: Article[] = [
   {
     slug: "ai-app-development-cost-guide",
     title: "How Much Does It Cost to Build an AI-Powered App in 2026?",
+    seoTitle: "AI App Development Cost Guide 2026",
+    metaDescription:
+      "What drives the price of an AI-powered app — model choice, data work, evaluation, and the running costs most quotes leave out entirely.",
     excerpt:
       "The honest, numbers-first answer to the most common question we get from founders. What drives the cost of building an AI app, what you can expect to pay for different project types, and where teams waste money.",
     category: "AI Solutions",
@@ -1567,6 +1609,9 @@ export const articles: Article[] = [
   {
     slug: "vibe-coding-ai-development-2025",
     title: "Vibe Coding in 2026: What's Real, What's Hype, and What It Means for Builders",
+    seoTitle: "Vibe Coding: What's Real and What Isn't",
+    metaDescription:
+      "Where AI-assisted coding genuinely speeds delivery, where it quietly adds risk, and what it changes for teams shipping production software.",
     excerpt:
       "Andrej Karpathy coined the term in February 2025 and every developer had an opinion. We've shipped real products using AI-assisted development. Here's what the hype gets right — and what silently breaks when you build on vibes.",
     category: "AI Solutions",
@@ -1756,6 +1801,9 @@ export async function POST(req: Request) {
   {
     slug: "building-ai-powered-saas-2025",
     title: "Building AI-Powered SaaS Products in 2026: Architecture That Holds Up",
+    seoTitle: "AI-Powered SaaS Architecture That Holds",
+    metaDescription:
+      "The architecture decisions behind AI SaaS that survives real users — multi-tenancy, cost control, evaluation, and graceful model failure.",
     excerpt:
       "Most teams add AI on top of an existing architecture and wonder why it breaks under load. Here's how to design a SaaS product where AI is a structural component — not an afterthought.",
     category: "AI Solutions",
@@ -1985,6 +2033,9 @@ async function getAIResponse(query: string, tenantId: string) {
   {
     slug: "nextjs-performance-optimization",
     title: "Next.js Performance Optimization Guide 2026: Core Web Vitals, Caching, and What Actually Matters",
+    seoTitle: "Next.js Performance Optimization Guide",
+    metaDescription:
+      "Core Web Vitals, caching layers, and bundle discipline in Next.js — the changes that move real numbers and the ones that only look busy.",
     excerpt:
       "Chasing 100/100 Lighthouse scores is its own genre of content. This is not that. Here is how to make real Next.js apps measurably faster — Server Components, cache invalidation, LCP fixes, and bundle analysis — in ways that affect real users on real devices.",
     category: "Web Development",
@@ -2151,6 +2202,9 @@ ANALYZE=true next build`,
   {
     slug: "rag-chatbot-langchain-guide",
     title: "How to Build a RAG Chatbot with LangChain and Pinecone (Production Guide)",
+    seoTitle: "Build a RAG Chatbot: LangChain + Pinecone",
+    metaDescription:
+      "A production RAG walkthrough — chunking, embeddings, retrieval quality, citations, and the evaluation loop that keeps answers grounded.",
     excerpt:
       "Most RAG tutorials stop at 'it works in the notebook.' Here is how to build a retrieval-augmented chatbot that holds up in production — chunking strategy, hybrid retrieval, prompt engineering for RAG, and how to evaluate accuracy before shipping.",
     category: "AI Solutions",
@@ -2255,6 +2309,9 @@ def build_prompt(query: str, context_chunks: list[str]) -> list[dict]:
   {
     slug: "saas-pricing-strategy-startups",
     title: "SaaS Pricing Strategy for Startups: What Works and What Doesn't",
+    seoTitle: "SaaS Pricing Strategy for Startups",
+    metaDescription:
+      "Pricing models that fit early SaaS, how to pick a value metric, and the packaging mistakes that cap revenue long before churn does.",
     excerpt:
       "Getting pricing wrong doesn't hurt immediately — you'll see the damage in churned trials, stalled expansions, and deals that go nowhere. Here's what we've seen work across products we've helped build.",
     category: "SaaS",
@@ -2326,6 +2383,9 @@ def build_prompt(query: str, context_chunks: list[str]) -> list[dict]:
   {
     slug: "whatsapp-automation-business",
     title: "WhatsApp Business API: Building Reliable Automation for 2026",
+    seoTitle: "WhatsApp Business API Automation Guide",
+    metaDescription:
+      "Building reliable WhatsApp automation — template approval, session windows, delivery guarantees, and where the API will bite you.",
     excerpt:
       "The WhatsApp Business API has higher open rates than email and more scale than manual support. Here's how to automate it without creating a brittle, untestable mess.",
     category: "Automation",
@@ -2408,6 +2468,9 @@ export async function POST(req: Request) {
   {
     slug: "react-native-vs-flutter-2025",
     title: "React Native vs Flutter in 2026: A Practical Comparison",
+    seoTitle: "React Native vs Flutter: 2026 Comparison",
+    metaDescription:
+      "A practical comparison for teams choosing a cross-platform stack — performance, hiring, ecosystem maturity, and long-term maintenance.",
     excerpt:
       "This comparison exists in thousands of blog posts. Most compare synthetic benchmarks. Here's what we've seen working with both frameworks across real production apps.",
     category: "Mobile Apps",
@@ -2474,6 +2537,9 @@ export async function POST(req: Request) {
   {
     slug: "startup-tech-stack-2025",
     title: "The Startup Tech Stack Guide for 2026",
+    seoTitle: "The Startup Tech Stack Guide for 2026",
+    metaDescription:
+      "Choosing a stack you will not regret in year two — defaults that work, decisions worth delaying, and the ones that are expensive to reverse.",
     excerpt:
       "The technical decisions you make in the first few months are hard to undo. Here's what we'd choose if we were starting a SaaS product today, and why.",
     category: "Startup Tech",
@@ -2565,6 +2631,9 @@ model User {
   {
     slug: "postgresql-performance-tips",
     title: "PostgreSQL Performance Tuning in 2026: Indexes, N+1 Queries, and What Actually Helps",
+    seoTitle: "PostgreSQL Performance Tuning Guide",
+    metaDescription:
+      "Indexes that earn their keep, killing N+1 queries, and reading EXPLAIN output — the Postgres work that actually shifts latency.",
     excerpt:
       "Slow PostgreSQL queries almost always come down to three root causes: missing indexes, ORM-generated N+1 queries, or a misread query planner. Here is how to diagnose and fix each one — with real EXPLAIN ANALYZE output and composite index patterns for multi-tenant apps.",
     category: "Web Development",
