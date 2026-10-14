@@ -1,10 +1,16 @@
 {
-  // Cloudflare Workers Static Assets — no Worker script.
+  // Cloudflare Workers Static Assets + a tiny API Worker.
   //
-  // There is no `main` here on purpose. Every route in src/pages/ prerenders
-  // (`output: 'static'`, no adapter), so the deploy is 91 files served
-  // straight from Cloudflare's edge. A Worker would only add an invocation
-  // in front of a static file lookup.
+  // Every route in src/pages/ still prerenders (`output: 'static'`, no
+  // adapter) and is served straight from Cloudflare's edge. The Worker in
+  // `worker/index.ts` exists only for the ₹1,000 booking payment
+  // (/api/booking/*): `run_worker_first` limits it to /api/*, so page, image
+  // and video requests never invoke it and page speed is unchanged.
+  //
+  // Secrets — set once, never commit:
+  //   npx wrangler secret put RAZORPAY_KEY_ID
+  //   npx wrangler secret put RAZORPAY_KEY_SECRET
+  //   npx wrangler secret put CALENDLY_URL
   //
   // This also means no `compatibility_flags: ["nodejs_compat"]`. That flag
   // existed for the two Razorpay endpoints — `node:crypto` in
@@ -14,11 +20,17 @@
 
   "name": "auravon-ai",
   "compatibility_date": "2026-04-15",
+  "main": "./worker/index.ts",
 
   "assets": {
     // ./dist, not ./dist/client — the adapter's two-directory split went away
     // with the adapter. Astro writes a flat static build here now.
     "directory": "./dist",
+    "binding": "ASSETS",
+
+    // The Worker runs for these paths only; everything else is a pure
+    // static-asset hit, exactly as before.
+    "run_worker_first": ["/api/*"],
 
     // Without this, an unknown URL returns Cloudflare's blank 404 and the
     // custom /404.html is never served. `404-page` also makes the response a

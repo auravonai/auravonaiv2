@@ -41,6 +41,7 @@
  */
 
 import { ORG_ID, type Faq } from './seo';
+import { offerSchema, servicePrice } from './pricing';
 import { SITE_URL } from './site';
 import { servicePages, type ServicePage } from './services';
 
@@ -258,6 +259,10 @@ export function spokeServiceSchema(page: ServicePage) {
       '@type': 'BusinessAudience',
       name: 'Startups, scale-ups, and enterprises',
     },
+    // The same "Starting from" figure the page renders — see lib/pricing.ts.
+    ...(servicePrice(page.slug)
+      ? { offers: offerSchema(servicePrice(page.slug)!, `${SITE_URL}/services/${page.slug}`) }
+      : {}),
   };
 }
 

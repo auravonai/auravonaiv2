@@ -1,0 +1,63 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+import ArrowUpRight from 'lucide-astro/ArrowUpRight';
+
+import WorkVideo from '@/components/work/WorkVideo.astro';
+import PriceTag from '@/components/pricing/PriceTag.astro';
+import { media, workPath, type WorkProject } from '@/lib/work';
+
+/**
+ * Portfolio card. Two links, not one wrapping anchor: the case study (the
+ * internal page we want crawled and read) and the live demo (external, new
+ * tab). The `h3` is the case-study link's text, so its accessible name is the
+ * project name rather than "View case study".
+ */
+interface Props {
+  project: WorkProject;
+  size?: 'lg' | 'md';
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { project, size = 'md', headingLevel = 'h3' } = Astro.props;
+const Heading = headingLevel;
+const href = workPath(project.slug);
+---
+
+<article
+  class="group flex h-full flex-col overflow-hidden rounded-lg bg-canvas shadow-level-2 transition-shadow duration-200 hover:shadow-level-3"
+>
+  <a href={href} class="block overflow-hidden border-b border-hairline" tabindex="-1" aria-hidden="true">
+    <WorkVideo
+      src={media(project.slug, 'walkthrough.mp4')}
+      poster={media(project.slug, 'poster.webp')}
+      label={`Silent walkthrough of ${project.name}`}
+    />
+  </a>
+
+  <div class:list={['flex flex-1 flex-col', size === 'lg' ? 'p-7' : 'p-6']}>
+    <p class="font-mono text-caption uppercase tracking-[0.08em] text-mute">{project.kind}</p>
+    <Heading class:list={['mt-2', size === 'lg' ? 'text-display-md' : 'text-display-sm']}>
+      <a href={href} class="transition-colors hover:text-link">{project.name}</a>
+    </Heading>
+    <p class="mt-2 flex-1 text-body-sm text-body">{project.tagline}</p>
+
+    <PriceTag inr={project.priceFrom} prefix="Similar build from" class="mt-5" />
+
+    <div class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-body-sm font-medium">
+      <a href={href} class="inline-flex items-center gap-1.5 text-link">
+        Case study
+        <ArrowRight size={14} class="transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden="true" />
+      </a>
+      <a
+        href={project.liveUrl}
+        target="_blank"
+        rel="noopener"
+        class="inline-flex items-center gap-1.5 text-body hover:text-ink"
+      >
+        Live demo
+        <ArrowUpRight size={14} aria-hidden="true" />
+        <span class="sr-only">(opens in a new tab)</span>
+      </a>
+    </div>
+  </div>
+</article>

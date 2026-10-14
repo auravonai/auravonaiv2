@@ -1,0 +1,279 @@
+---
+import ChevronDown from 'lucide-astro/ChevronDown';
+import ShieldCheck from 'lucide-astro/ShieldCheck';
+import CalendarCheck from 'lucide-astro/CalendarCheck';
+import RotateCcw from 'lucide-astro/RotateCcw';
+import Video from 'lucide-astro/Video';
+import Lock from 'lucide-astro/Lock';
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import Card from '@/components/ui/Card.astro';
+import Field from '@/components/ui/Field.astro';
+import Button from '@/components/ui/Button.astro';
+
+import { breadcrumbSchema, webPageSchema } from '@/lib/seo';
+import { serviceCategories, servicesByCategory } from '@/lib/services';
+import { getMarketingCategories, hasMarketingPage } from '@/lib/marketing';
+import {
+  BOOKING_FEE_INR,
+  formatInr,
+  marketingPrice,
+  servicePrice,
+  UNIT_SUFFIX,
+  type StartingPrice,
+} from '@/lib/pricing';
+import { WHATSAPP_URL } from '@/lib/site';
+
+/**
+ * /start — book a scoping meeting.
+ *
+ *   1. Details   — who, what, budget, Meet or Teams. Plain HTML form.
+ *   2. Payment   — ₹1,000 through Razorpay Checkout. checkout.js is loaded
+ *                  only when the visitor presses Pay, so this page costs no
+ *                  third-party bytes on load.
+ *   3. Schedule  — after the Worker verifies the payment signature with
+ *                  Razorpay, it returns the Calendly link and the scheduler is
+ *                  embedded inline, prefilled with name, email and the payment
+ *                  reference. The Calendly link is never in this page's source,
+ *                  so the calendar cannot be reached without paying.
+ *
+ * Server half: `worker/index.ts` (`/api/booking/*`). Client half:
+ * `src/scripts/booking.ts`.
+ */
+const path = '/start';
+const fee = formatInr(BOOKING_FEE_INR);
+const title = 'Start Your Project — Book a Scoping Meeting';
+const description = `Book a Google Meet or Microsoft Teams call with the engineer who will build your project. ${fee} booking, credited to your project or fully refunded.`;
+
+const label = (name: string, p?: StartingPrice) =>
+  p ? `${name} — from ${formatInr(p.inr)}${UNIT_SUFFIX[p.unit]}` : name;
+
+const groups = [
+  ...serviceCategories.map((c) => ({
+    label: c.label,
+    options: servicesByCategory(c.id).map((s) => ({
+      value: s.slug,
+      text: label(s.cardTitle, servicePrice(s.slug)),
+    })),
+  })),
+  ...getMarketingCategories().map((c) => ({
+    label: c.label,
+    options: [
+      ...(hasMarketingPage(c.slug) ? [{ value: c.slug, text: label(c.label, marketingPrice(c.slug)) }] : []),
+      ...c.subServices.map((s) => ({ value: s.slug, text: label(s.label, marketingPrice(s.slug)) })),
+    ],
+  })),
+];
+
+const budgets = [
+  'Under ₹25,000',
+  '₹25,000 – ₹50,000',
+  '₹50,000 – ₹1 lakh',
+  '₹1 – 3 lakh',
+  '₹3 – 10 lakh',
+  'Above ₹10 lakh',
+  'Not sure yet',
+];
+
+const control =
+  'w-full rounded-sm bg-canvas px-3 text-body-md text-ink shadow-level-1 ' +
+  'transition-shadow duration-150 focus:shadow-[inset_0_0_0_1px_var(--color-link)]';
+
+const webPage = webPageSchema({ path, name: title, description, hasBreadcrumb: true });
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: 'Home', path: '/' },
+    { name: 'Start a project', path },
+  ],
+  path,
+);
+---
+
+<BaseLayout title={title} description={description} canonical={path}>
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(webPage)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbs)} />
+  </Fragment>
+
+  <PageHero
+    eyebrow="Start your project"
+    title="Book a meeting with your engineer."
+    titleTail="Pick a time in two minutes."
+    lead={`Tell us what you need, confirm with a refundable ${fee} booking, then choose a Google Meet or Microsoft Teams slot. You talk to the person who will build it — not a sales rep.`}
+    backdrop="grid"
+    breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Start a project' }]}
+  >
+    <ul slot="meta" class="flex flex-wrap gap-x-6 gap-y-3 text-body-sm text-body">
+      <li class="flex items-center gap-1.5"><RotateCcw size={14} class="text-mute" aria-hidden="true" />{fee} refundable</li>
+      <li class="flex items-center gap-1.5"><Video size={14} class="text-mute" aria-hidden="true" />Google Meet or Teams</li>
+      <li class="flex items-center gap-1.5"><CalendarCheck size={14} class="text-mute" aria-hidden="true" />Quote in 3 business days</li>
+    </ul>
+  </PageHero>
+
+  <section class="bg-canvas py-14 md:py-20">
+    <div class="container-page grid gap-10 lg:grid-cols-3">
+      <div class="lg:col-span-2">
+        {/* Progress */}
+        <ol class="mb-6 flex flex-wrap gap-2 text-body-sm" aria-label="Booking steps">
+          {['Your details', `Pay ${fee}`, 'Pick a time'].map((step, i) => (
+            <li
+              data-step-indicator={i + 1}
+              class="step-pill flex items-center gap-2 rounded-full bg-canvas-soft px-3 py-1.5 text-mute"
+              data-active={i === 0 ? '' : undefined}
+            >
+              <span class="font-mono text-caption">{String(i + 1).padStart(2, '0')}</span>{step}
+            </li>
+          ))}
+        </ol>
+
+        {/* ── Step 1 + 2: details and payment ─────────────────────────── */}
+        <Card surface="soft" elevation={1} padding="lg" id="booking-details">
+          <h2 class="text-display-md">Tell us about your project</h2>
+          <p class="mt-1 mb-7 text-body-sm text-body">
+            This goes to the engineer before the call, so the meeting starts with answers,
+            not questions.
+          </p>
+
+          <form id="booking-form" class="space-y-5">
+            <div class="grid gap-5 sm:grid-cols-2">
+              <Field name="name" label="Full name" required placeholder="Your name" />
+              <Field name="email" type="email" label="Email" required placeholder="you@company.com" />
+            </div>
+            <div class="grid gap-5 sm:grid-cols-2">
+              <Field name="phone" type="tel" label="Phone / WhatsApp" required placeholder="+91 98765 43210" />
+              <Field name="company" label="Company (optional)" placeholder="Acme Pvt Ltd" />
+            </div>
+
+            <div>
+              <label for="field-service" class="mb-1.5 block text-body-sm font-medium text-body">
+                Service <span class="text-error" aria-hidden="true">*</span>
+              </label>
+              <div class="relative">
+                <select id="field-service" name="service" required class:list={[control, 'h-12 appearance-none pr-10']}>
+                  <option value="">Choose a service</option>
+                  {
+                    groups.map((g) => (
+                      <optgroup label={g.label}>
+                        {g.options.map((o) => <option value={o.value}>{o.text}</option>)}
+                      </optgroup>
+                    ))
+                  }
+                  <optgroup label="Other">
+                    <option value="other">Something else / not sure yet</option>
+                  </optgroup>
+                </select>
+                <ChevronDown size={16} aria-hidden="true" class="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2 text-mute" />
+              </div>
+            </div>
+
+            <div class="grid gap-5 sm:grid-cols-2">
+              <Field name="budget" type="select" label="Budget" required placeholder="Select a range" options={budgets} />
+              <fieldset>
+                <legend class="mb-1.5 block text-body-sm font-medium text-body">
+                  Meeting on <span class="text-error" aria-hidden="true">*</span>
+                </legend>
+                <div class="grid h-12 grid-cols-2 gap-2">
+                  <label class="platform-option flex cursor-pointer items-center justify-center gap-2 rounded-sm bg-canvas text-body-sm text-ink shadow-level-1">
+                    <input type="radio" name="platform" value="Google Meet" required checked style="accent-color:var(--color-link)" />
+                    Google Meet
+                  </label>
+                  <label class="platform-option flex cursor-pointer items-center justify-center gap-2 rounded-sm bg-canvas text-body-sm text-ink shadow-level-1">
+                    <input type="radio" name="platform" value="Microsoft Teams" style="accent-color:var(--color-link)" />
+                    MS Teams
+                  </label>
+                </div>
+              </fieldset>
+            </div>
+
+            <Field
+              name="brief"
+              type="textarea"
+              label="What do you want to build?"
+              required
+              rows={4}
+              placeholder="A few lines is enough: what it should do, who uses it, any deadline or reference sites."
+            />
+
+            <label class="flex items-start gap-3 text-body-sm text-body">
+              <input type="checkbox" name="consent" required class="mt-1" style="accent-color:var(--color-link)" />
+              <span>
+                I understand the {fee} booking is credited to my project, or refunded in full if
+                the quote doesn’t fit my budget, as set out in the{' '}
+                <a href="/refund#booking-fee" class="text-link" style="text-decoration:underline;text-underline-offset:2px" target="_blank">refund policy</a>{' '}
+                and{' '}<a href="/terms" class="text-link" style="text-decoration:underline;text-underline-offset:2px" target="_blank">terms</a>.
+              </span>
+            </label>
+
+            <p id="booking-error" class="hidden rounded-sm bg-error-soft px-4 py-3 text-body-sm text-error-deep" role="alert"></p>
+
+            <div class="space-y-3">
+              <Button type="submit" variant="primary" size="lg" class="w-full" id="booking-submit">
+                <Lock size={16} aria-hidden="true" />
+                <span data-submit-label>Pay {fee} &amp; choose a time</span>
+              </Button>
+              <p class="text-center text-caption text-mute">
+                Secure payment by Razorpay · UPI, cards, net banking and wallets
+              </p>
+            </div>
+          </form>
+        </Card>
+
+        {/* ── Step 3: schedule ─────────────────────────────────────────── */}
+        <div id="booking-schedule" hidden>
+          <Card surface="soft" elevation={1} padding="lg">
+            <div class="flex items-start gap-3">
+              <ShieldCheck size={22} class="mt-1 shrink-0 text-link" aria-hidden="true" />
+              <div>
+                <h2 class="text-display-md">Payment received — pick your time</h2>
+                <p class="mt-1 text-body-sm text-body">
+                  Reference <strong class="font-mono text-ink" data-payment-id></strong>. A receipt is on
+                  its way to your email. Choose a slot below; the <span data-platform>meeting</span> link
+                  is sent with the calendar invite.
+                </p>
+              </div>
+            </div>
+          </Card>
+          <div id="calendly-embed" style="min-height:700px" class="mt-6 overflow-hidden rounded-lg bg-canvas shadow-level-2"></div>
+          <p class="mt-4 text-body-sm text-mute">
+            Calendar not loading?{' '}<a data-calendly-fallback href="#" target="_blank" rel="noopener" class="text-link" style="text-decoration:underline;text-underline-offset:2px">Open the scheduler in a new tab</a>{' '}
+            or{' '}<a href={WHATSAPP_URL} class="text-link" style="text-decoration:underline;text-underline-offset:2px">message us on WhatsApp</a> with your reference.
+          </p>
+        </div>
+      </div>
+
+      {/* ── Sidebar ──────────────────────────────────────────────────── */}
+      <aside class="space-y-5">
+        <Card surface="canvas" elevation={2} padding="lg">
+          <h2 class="text-display-sm">What the {fee} covers</h2>
+          <ul class="mt-4 space-y-3 text-body-sm text-body">
+            <li><strong class="text-ink">A one-hour call</strong> with the engineer who would build your project.</li>
+            <li><strong class="text-ink">A written quote</strong> with scope, timeline and fixed price within 3 business days.</li>
+            <li><strong class="text-ink">Credited in full</strong> against your first invoice if you go ahead.</li>
+            <li><strong class="text-ink">Refunded in full</strong> if the quote doesn’t fit your budget, or you cancel 24+ hours before.</li>
+          </ul>
+        </Card>
+        <Card surface="soft" elevation={1} padding="lg">
+          <h2 class="text-display-sm">Not ready to book?</h2>
+          <p class="mt-2 text-body-sm text-body">
+            Browse{' '}<a href="/work" class="text-link" style="text-decoration:underline;text-underline-offset:2px">our live work</a>, check{' '}
+            <a href="/pricing" class="text-link" style="text-decoration:underline;text-underline-offset:2px">starting prices</a>, or ask a quick
+            question on{' '}<a href={WHATSAPP_URL} class="text-link" style="text-decoration:underline;text-underline-offset:2px">WhatsApp</a> — free.
+          </p>
+        </Card>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { initBooking } from '@/scripts/booking';
+  initBooking();
+</script>
+
+<style>
+  /* Page-scoped so the shared stylesheet stays unchanged for every other page. */
+  .platform-option:has(:checked) { box-shadow: inset 0 0 0 1.5px var(--color-link); }
+  .step-pill[data-done] { color: var(--color-ink); }
+  .step-pill[data-active] { background: var(--color-ink); color: var(--color-canvas); }
+</style>

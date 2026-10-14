@@ -78,7 +78,8 @@ const featuredServices = FEATURED_SLUGS.map((slug) => {
 const staticLinks = [
   { href: '/industries', label: 'Industries' },
   { href: MARKETING_BASE, label: 'Marketing' },
-  { href: '/projects', label: 'Projects' },
+  { href: '/work', label: 'Work' },
+  { href: '/pricing', label: 'Pricing' },
   { href: '/about', label: 'About' },
   { href: '/blog', label: 'Blog' },
   { href: '/contact', label: 'Contact' },
@@ -144,14 +145,8 @@ const navLinkBase =
 
       {/* Desktop CTAs */}
       <div class="hidden shrink-0 items-center gap-3 lg:flex">
-        <a
-          href="/contact"
-          class="text-body-sm text-body transition-colors hover:text-ink"
-        >
-          Get Quote
-        </a>
         <ThemeToggle />
-        <Button href="/contact" variant="primary" size="sm">Start a Project</Button>
+        <Button href="/start" variant="primary" size="sm">Start a Project</Button>
       </div>
 
       {/* Mobile: theme sits outside the drawer so it's reachable without
@@ -379,7 +374,7 @@ const navLinkBase =
     <Button href="/contact" variant="secondary" size="lg" class="w-full">
       Get Free Quote
     </Button>
-    <Button href="/contact" variant="primary" size="lg" class="w-full">
+    <Button href="/start" variant="primary" size="lg" class="w-full">
       Start a Project
       <ArrowRight size={16} aria-hidden="true" />
     </Button>

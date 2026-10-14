@@ -1,0 +1,70 @@
+---
+/**
+ * Silent walkthrough video that costs nothing until it is on screen.
+ *
+ * `preload="none"` + a WebP poster means the page loads one small image per
+ * video, exactly like an <img>. The script below starts playback only while
+ * the video is at least half visible and pauses it again when it leaves, so a
+ * grid of eight cards never decodes eight videos at once. Visitors who ask for
+ * reduced motion, or have Save-Data on, get the poster plus native controls
+ * and nothing plays by itself.
+ */
+interface Props {
+  src: string;
+  poster: string;
+  /** Describes what the video shows — it has no audio and no captions. */
+  label: string;
+  /** `eager` only for a video that is the LCP element above the fold. */
+  loading?: 'lazy' | 'eager';
+  class?: string;
+}
+
+const { src, poster, label, loading = 'lazy', class: className } = Astro.props;
+---
+
+<video
+  class:list={['block w-full bg-canvas-soft', className]}
+  style="height:auto"
+  width="1280"
+  height="600"
+  muted
+  loop
+  playsinline
+  preload="none"
+  poster={poster}
+  aria-label={label}
+  data-work-video
+  data-eager={loading === 'eager' ? '' : undefined}
+>
+  {/* VP9 first: ~30% smaller, and the only option in Chromium builds
+       without the proprietary H.264 decoder. MP4 covers older Safari. */}
+  <source src={src.replace(/\.mp4$/, '.webm')} type="video/webm" />
+  <source src={src} type="video/mp4" />
+</video>
+
+<script>
+  const videos = document.querySelectorAll<HTMLVideoElement>('video[data-work-video]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } })
+    .connection?.saveData;
+
+  if (reduce || saveData || !('IntersectionObserver' in window)) {
+    videos.forEach((v) => (v.controls = true));
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const { target, isIntersecting } of entries) {
+          const v = target as HTMLVideoElement;
+          if (isIntersecting) {
+            v.preload = 'auto';
+            v.play().catch(() => (v.controls = true));
+          } else {
+            v.pause();
+          }
+        }
+      },
+      { threshold: 0.5 },
+    );
+    videos.forEach((v) => io.observe(v));
+  }
+</script>

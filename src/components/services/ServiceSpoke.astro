@@ -15,6 +15,8 @@ import HeroPanel from '@/components/ui/HeroPanel.astro';
 import HeroPanelBlock from '@/components/ui/HeroPanelBlock.astro';
 import HeroPanelNav from '@/components/ui/HeroPanelNav.astro';
 import ServiceIcon from '@/components/services/ServiceIcon.astro';
+import PriceTag from '@/components/pricing/PriceTag.astro';
+import CurrencySelect from '@/components/pricing/CurrencySelect.astro';
 
 import {
   serviceCategories,
@@ -23,6 +25,7 @@ import {
   type ServicePage,
 } from '@/lib/services';
 import { getIndustriesForService, industryPath } from '@/lib/industries';
+import { servicePrice } from '@/lib/pricing';
 
 /**
  * The spoke template. One component renders all 15 service pages.
@@ -48,6 +51,7 @@ interface Props {
 const { page } = Astro.props;
 
 const category = serviceCategories.find((c) => c.id === page.category)!;
+const price = servicePrice(page.slug);
 const related = getServicePages(page.relatedServices);
 
 /**
@@ -105,8 +109,16 @@ const stackChips = page.technologies.flatMap((group) => group.items).slice(0, 8)
     <ServiceIcon name={page.icon} size={18} />
   </span>
 
+  <div slot="meta">
+  {
+    price && (
+      <div class="mb-5 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <PriceTag inr={price.inr} unit={price.unit} variant="badge" />
+        <CurrencySelect />
+      </div>
+    )
+  }
   <ul
-    slot="meta"
     class="flex flex-wrap items-center gap-x-6 gap-y-3 text-body-sm text-body"
   >
     {
@@ -118,9 +130,10 @@ const stackChips = page.technologies.flatMap((group) => group.items).slice(0, 8)
       ))
     }
   </ul>
+  </div>
 
   <Fragment slot="actions">
-    <Button href="/contact" variant="primary" size="lg">
+    <Button href={`/start?service=${page.slug}`} variant="primary" size="lg">
       {page.ctaLabel}
       <ArrowRight
         size={16}
@@ -456,8 +469,16 @@ const stackChips = page.technologies.flatMap((group) => group.items).slice(0, 8)
     <h2 class="text-display-xl">{page.ctaHeading}</h2>
     <p class="mt-4 mb-8 text-body-md text-body">{page.ctaBody}</p>
 
+    {
+      price && (
+        <p class="mb-8" style="margin-top:-1rem">
+          <PriceTag inr={price.inr} unit={price.unit} />
+          <span class="text-body-sm text-mute"> · {price.includes}</span>
+        </p>
+      )
+    }
     <div class="flex flex-col items-center justify-center gap-3 sm:flex-row">
-      <Button href="/contact" variant="primary" size="lg">
+      <Button href={`/start?service=${page.slug}`} variant="primary" size="lg">
         {page.ctaLabel}
         <ArrowRight
           size={16}
@@ -465,7 +486,7 @@ const stackChips = page.technologies.flatMap((group) => group.items).slice(0, 8)
           aria-hidden="true"
         />
       </Button>
-      <Button href="/projects" variant="secondary" size="lg">See Our Work</Button>
+      <Button href="/work" variant="secondary" size="lg">See Our Work</Button>
     </div>
   </Reveal>
 </Section>

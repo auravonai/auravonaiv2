@@ -22,6 +22,9 @@ import HeroPanel from '@/components/ui/HeroPanel.astro';
 import HeroPanelBlock from '@/components/ui/HeroPanelBlock.astro';
 import HeroPanelNav from '@/components/ui/HeroPanelNav.astro';
 import StickyServiceBar from '@/components/services/StickyServiceBar.astro';
+import PriceTag from '@/components/pricing/PriceTag.astro';
+import CurrencySelect from '@/components/pricing/CurrencySelect.astro';
+import { marketingPrice } from '@/lib/pricing';
 import {
   getRelatedServices,
   serviceCategories,
@@ -45,6 +48,7 @@ const { service } = Astro.props;
 const related = getRelatedServices(service.relatedServices);
 
 const category = serviceCategories.find((c) => c.slug === service.categorySlug);
+const price = marketingPrice(service.slug);
 
 /**
  * Process commitments, not outcome claims.
@@ -55,7 +59,7 @@ const category = serviceCategories.find((c) => c.slug === service.categorySlug);
  * card below for why that is gone.
  */
 const heroAssurances = [
-  { icon: CheckCircle2, text: 'Free consultation' },
+  { icon: CheckCircle2, text: 'Refundable ₹1,000 booking' },
   { icon: Shield, text: 'No lock-in contracts' },
   { icon: Clock, text: '24 hr response' },
   { icon: Globe, text: 'Worldwide clients' },
@@ -195,8 +199,16 @@ const siblingLinks = related.slice(0, 5).map((sibling) => ({
   backdropIntensity="faint"
   breadcrumb={breadcrumb}
 >
+  <div slot="meta">
+  {
+    price && (
+      <div class="mb-5 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <PriceTag inr={price.inr} unit={price.unit} variant="badge" />
+        <CurrencySelect />
+      </div>
+    )
+  }
   <ul
-    slot="meta"
     class="flex flex-wrap gap-x-6 gap-y-3 text-body-sm text-body"
   >
     {
@@ -211,9 +223,10 @@ const siblingLinks = related.slice(0, 5).map((sibling) => ({
       })
     }
   </ul>
+  </div>
 
   <Fragment slot="actions">
-    <Button href="/contact" variant="primary" size="lg">
+    <Button href={`/start?service=${service.slug}`} variant="primary" size="lg">
       Start a conversation
       <ArrowRight
         size={16}

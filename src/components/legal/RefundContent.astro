@@ -8,6 +8,7 @@ import LegalPageLayout from '@/components/legal/LegalPageLayout.astro';
  */
 const sections = [
   { id: "overview", title: "Policy Overview" },
+  { id: "booking-fee", title: "₹1,000 Project Booking" },
   { id: "consultation", title: "Consultation Payments" },
   { id: "project-deposits", title: "Project Deposits" },
   { id: "eligibility", title: "Refund Eligibility" },
@@ -72,7 +73,7 @@ const eligibilityTone: Record<Eligibility, string> = {
   badge="Legal Document"
   title="Refund & Cancellation Policy"
   subtitle="Due to the digital and customized nature of our services, refunds are subject to project stage and work completed. Please read this policy carefully before making a payment."
-  lastUpdated="May 14, 2026"
+  lastUpdated="October 14, 2026"
   sections={sections}
 >
   {/* Overview */}
@@ -101,13 +102,52 @@ const eligibilityTone: Record<Eligibility, string> = {
   </section>
 
   {/* Consultation Payments */}
+  <section id="booking-fee">
+    <h2>₹1,000 Project Booking</h2>
+    <p>
+      Scoping meetings booked through our <a href="/start">Start a Project</a> page are
+      confirmed with a booking amount of <strong>₹1,000</strong>, paid through Razorpay.
+      It reserves a one-hour Google Meet or Microsoft Teams call with the engineer who
+      would build your project, followed by a written quote within three business days.
+    </p>
+    <ul>
+      <li>
+        <strong>If you proceed with the project</strong> — the full ₹1,000 is credited
+        against your first invoice.
+      </li>
+      <li>
+        <strong>If our written quote does not fit the budget you shared</strong>, or we
+        decline the project — the full ₹1,000 is refunded. Tell us by email or WhatsApp
+        within 14 days of receiving the quote.
+      </li>
+      <li>
+        <strong>If you cancel or reschedule at least 24 hours before the meeting</strong> —
+        the amount is refunded in full or moved to the new slot, as you prefer.
+      </li>
+      <li>
+        <strong>If you miss the meeting without notice, or cancel less than 24 hours
+        before it</strong> — the amount is retained for the reserved time.
+      </li>
+      <li>
+        <strong>If we cancel or miss the meeting</strong> — the amount is refunded in full,
+        whatever the reason.
+      </li>
+    </ul>
+    <p>
+      Booking refunds are issued in full, with no deduction for gateway fees, to the
+      original payment method within 5–7 business days of approval. Quote your Razorpay
+      payment reference when you contact us.
+    </p>
+  </section>
+
   <section id="consultation">
     <h2>Consultation Payments</h2>
 
-    <h3>Free Initial Consultation</h3>
+    <h3>Free Enquiries</h3>
     <p>
-      Our initial 30-minute discovery call is provided at <strong>no charge</strong>. No
-      payment is required to speak with our team about your project requirements.
+      Questions by WhatsApp, email or our contact form are always answered at
+      <strong>no charge</strong>. A scheduled scoping meeting is confirmed with the
+      refundable booking described in <a href="#booking-fee">₹1,000 Project Booking</a>.
     </p>
 
     <h3>Extended / Paid Consultations</h3>

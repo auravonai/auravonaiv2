@@ -65,9 +65,12 @@ export const SOCIALS = [
 
 export const COMPANY_LINKS = [
   { label: 'About', href: '/about' },
+  { label: 'Our Work', href: '/work' },
+  { label: 'Pricing', href: '/pricing' },
   { label: 'Projects', href: '/projects' },
   { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/contact' },
+  { label: 'Start a Project', href: '/start' },
 ] as const;
 
 export const LEGAL_LINKS = [

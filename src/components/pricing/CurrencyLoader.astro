@@ -1,0 +1,32 @@
+---
+/**
+ * ~400 bytes, inline, no request. Loads `/js/currency.js` only when it is
+ * needed: the visitor changes a currency picker, or saved a non-INR choice
+ * on an earlier visit. Guarded so several instances on a page act as one.
+ *
+ * Why not a normal Astro <script>: that ships as a `type="module"` request,
+ * which Lighthouse schedules as high priority and charges to First
+ * Contentful Paint — on the service pages it cost ~300 ms of simulated FCP
+ * for a feature most visitors never touch.
+ */
+---
+
+<script is:inline>
+  (function () {
+    if (window.__auravonCurrency) return;
+    window.__auravonCurrency = 1;
+    var load = function () { return import('/js/currency.js'); };
+    var saved;
+    try { saved = localStorage.getItem('auravon-currency'); } catch (e) {}
+    if (saved && saved !== 'INR') {
+      var go = function () { load().then(function (m) { m.setCurrency(saved); }); };
+      'requestIdleCallback' in window ? requestIdleCallback(go) : setTimeout(go, 1);
+    }
+    document.addEventListener('change', function (e) {
+      var t = e.target;
+      if (t && t.matches && t.matches('[data-currency-select]')) {
+        load().then(function (m) { m.setCurrency(t.value); });
+      }
+    });
+  })();
+</script>

@@ -1,0 +1,136 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+import Info from 'lucide-astro/Info';
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import Section from '@/components/ui/Section.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Button from '@/components/ui/Button.astro';
+import WorkCard from '@/components/work/WorkCard.astro';
+import CurrencySelect from '@/components/pricing/CurrencySelect.astro';
+
+import BookingCTA from '@/components/pricing/BookingCTA.astro';
+
+import { breadcrumbSchema, webPageSchema } from '@/lib/seo';
+import { SITE_URL } from '@/lib/site';
+import { CONCEPT_NOTE, media, workPath, workProjects } from '@/lib/work';
+
+/**
+ * /work — the live portfolio.
+ *
+ * Platforms first: they are the higher-value work and the hardest to fake,
+ * so a buyer skimming the top of the page sees the strongest proof. Every
+ * card links to an indexable case study, which is where the per-project
+ * keyword ("matrimony app development", "dental clinic website") lives.
+ */
+const platforms = workProjects.filter((p) => p.category === 'platform');
+const websites = workProjects.filter((p) => p.category === 'website');
+
+const path = workPath();
+const title = 'Our Work — Live Apps & Websites We Built';
+const description =
+  'Click through 8 live products built by Auravon AI: streaming, matrimony and auction platforms plus clinic, restaurant, e-commerce and B2B websites. Video walkthroughs and prices.';
+
+const webPage = webPageSchema({
+  path,
+  name: title,
+  description,
+  hasBreadcrumb: true,
+  type: 'CollectionPage',
+});
+
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: 'Home', path: '/' },
+    { name: 'Work', path },
+  ],
+  path,
+);
+
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  '@id': `${SITE_URL}${path}#projects`,
+  itemListElement: workProjects.map((p, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: `${SITE_URL}${workPath(p.slug)}`,
+    name: p.name,
+    image: `${SITE_URL}${media(p.slug, 'poster.webp')}`,
+  })),
+};
+---
+
+<BaseLayout title={title} description={description} canonical={path}>
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(webPage)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbs)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(itemList)} />
+  </Fragment>
+
+  <PageHero
+    eyebrow="Our work"
+    title="Live products we built."
+    titleTail="Click through every one."
+    lead="No mock-ups and no stock screenshots. Each project below is a working build you can open, sign into and click around — with a silent walkthrough video, the features we built and what a similar build costs."
+    backdrop="grid"
+    breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Work' }]}
+  >
+    <Fragment slot="actions">
+      <Button href="/start" variant="primary" size="lg">
+        Start your project
+        <ArrowRight size={16} aria-hidden="true" />
+      </Button>
+      <Button href="/pricing" variant="secondary" size="lg">See pricing</Button>
+    </Fragment>
+    <div slot="meta">
+      <CurrencySelect />
+    </div>
+  </PageHero>
+
+  <Section surface="canvas" spacing="tight" as="section">
+    <Reveal class="max-w-2xl">
+      <h2 class="text-display-lg">Platforms &amp; marketplaces</h2>
+      <p class="mt-3 text-body-md text-body">
+        Multi-sided products with user apps and full admin consoles — the kind of MVP a
+        founder takes to users or investors.
+      </p>
+    </Reveal>
+    <ul class="mt-10 grid gap-6 lg:grid-cols-3">
+      {
+        platforms.map((project, i) => (
+          <Reveal as="li" delay={i * 60} class="flex">
+            <WorkCard project={project} size="lg" />
+          </Reveal>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Section surface="soft" spacing="tight" as="section" divided>
+    <Reveal class="max-w-2xl">
+      <h2 class="text-display-lg">Business websites</h2>
+      <p class="mt-3 text-body-md text-body">
+        Sites that do a job — take bookings, reservations, orders or quote requests — with
+        the dashboards behind them.
+      </p>
+    </Reveal>
+    <ul class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {
+        websites.map((project, i) => (
+          <Reveal as="li" delay={i * 60} class="flex">
+            <WorkCard project={project} />
+          </Reveal>
+        ))
+      }
+    </ul>
+
+    <p class="mt-10 flex max-w-3xl items-start gap-2 text-body-sm text-mute">
+      <Info size={16} class="mt-0.5 shrink-0" aria-hidden="true" />
+      <span>{CONCEPT_NOTE} Looking for our engineering case studies? See{' '}<a href="/projects" class="text-link hover:underline">projects</a>.</span>
+    </p>
+  </Section>
+
+  <BookingCTA heading="Want one like these?" />
+</BaseLayout>

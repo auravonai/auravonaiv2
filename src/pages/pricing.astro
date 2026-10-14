@@ -1,0 +1,221 @@
+---
+import ArrowRight from 'lucide-astro/ArrowRight';
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import HeroPanel from '@/components/ui/HeroPanel.astro';
+import HeroPanelBlock from '@/components/ui/HeroPanelBlock.astro';
+import Section from '@/components/ui/Section.astro';
+import Reveal from '@/components/ui/Reveal.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Accordion from '@/components/ui/Accordion.astro';
+import Button from '@/components/ui/Button.astro';
+import PriceTag from '@/components/pricing/PriceTag.astro';
+import CurrencySelect from '@/components/pricing/CurrencySelect.astro';
+import BookingCTA from '@/components/pricing/BookingCTA.astro';
+
+import { breadcrumbSchema, faqPageSchema, webPageSchema, type Faq } from '@/lib/seo';
+import { serviceCategories, servicesByCategory } from '@/lib/services';
+import { getMarketingCategories, hasMarketingPage, marketingPath } from '@/lib/marketing';
+import {
+  BOOKING_FEE_INR,
+  formatInr,
+  marketingPrice,
+  servicePrice,
+} from '@/lib/pricing';
+
+/**
+ * /pricing — every starting price in one place.
+ *
+ * Each row links to the service page that carries the same figure, both
+ * read from `lib/pricing.ts`. The FAQ is the booking policy in plain words;
+ * the same terms are in the refund policy, which is the binding version.
+ */
+const path = '/pricing';
+const title = 'Pricing — Website, App & AI Development Costs in India';
+const description =
+  'Starting prices for websites from ₹7,999, web apps from ₹24,999, AI agents from ₹29,999 and social media management from ₹3,999/month. See prices in your currency.';
+const fee = formatInr(BOOKING_FEE_INR);
+
+const engineering = serviceCategories.map((category) => ({
+  label: category.label,
+  blurb: category.blurb,
+  rows: servicesByCategory(category.id)
+    .map((s) => ({ name: s.cardTitle, href: `/services/${s.slug}`, price: servicePrice(s.slug) }))
+    .filter((r) => r.price),
+}));
+
+const marketing = getMarketingCategories().map((category) => ({
+  label: category.label,
+  blurb: category.menuDescription,
+  rows: [
+    ...(hasMarketingPage(category.slug)
+      ? [{ name: category.label, href: marketingPath(category.slug), price: marketingPrice(category.slug) }]
+      : []),
+    ...category.subServices.map((s) => ({
+      name: s.label,
+      href: marketingPath(s.slug),
+      price: marketingPrice(s.slug),
+    })),
+  ].filter((r) => r.price),
+}));
+
+const faqs: Faq[] = [
+  {
+    question: 'Why do I pay ₹1,000 to book a meeting?',
+    answer: `The ${fee} booking reserves a one-hour slot with the engineer who would build your project and confirms you are ready to discuss it seriously. It is not a fee for the call: it is credited in full against your first invoice if you go ahead, and refunded in full if our written quote does not fit your budget.`,
+  },
+  {
+    question: 'When is the ₹1,000 refunded?',
+    answer: `If our written quote is above the budget you shared, or we decide we are not the right team for the work, the full ${fee} is refunded to the original payment method within 5–7 business days of you telling us. If you cancel or reschedule at least 24 hours before the meeting, it is also refunded or moved to the new slot. It is kept only if you miss the meeting without notice.`,
+  },
+  {
+    question: 'Are these the final prices?',
+    answer: 'They are starting prices for a focused first version of each service, so you know the entry point before you talk to anyone. The final figure depends on the number of screens and integrations, content, design depth and timeline. You get a fixed written quote within three business days of the scoping call, and that is the number you sign.',
+  },
+  {
+    question: 'Do prices include GST?',
+    answer: 'No. Prices are in Indian rupees and exclude 18% GST, which is added on invoices to Indian clients. Clients outside India are invoiced without GST, in INR or in a fixed amount in their currency agreed in the quote.',
+  },
+  {
+    question: 'How accurate is the currency converter?',
+    answer: 'It converts the INR price using live exchange rates when they are available and a recent fixed rate otherwise, so the figure is an approximation shown with “≈”. Your quote states the exact amount and currency you will pay.',
+  },
+  {
+    question: 'How do I pay for the project itself?',
+    answer: 'Projects are usually billed in milestones — commonly 40% to start, 40% at the main delivery and 20% at launch — by bank transfer, UPI or card. Monthly services such as SEO, social media or maintenance are billed at the start of each month.',
+  },
+];
+
+const webPage = webPageSchema({ path, name: title, description, hasBreadcrumb: true });
+const breadcrumbs = breadcrumbSchema(
+  [
+    { name: 'Home', path: '/' },
+    { name: 'Pricing', path },
+  ],
+  path,
+);
+const faqPage = faqPageSchema(faqs, path);
+---
+
+<BaseLayout title={title} description={description} canonical={path}>
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(webPage)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbs)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(faqPage)} />
+  </Fragment>
+
+  <PageHero
+    eyebrow="Pricing"
+    title="Clear starting prices."
+    titleTail="Fixed quote before you commit."
+    lead="Every service has a published starting price, so you know the entry point before the first call. Pick your currency to see an estimate; your quote is issued in writing within three business days."
+    backdrop="grid"
+    breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Pricing' }]}
+  >
+    <div slot="meta"><CurrencySelect /></div>
+    <Fragment slot="actions">
+      <Button href="/start" variant="primary" size="lg">
+        Book a meeting
+        <ArrowRight size={16} aria-hidden="true" />
+      </Button>
+      <Button href="/work" variant="secondary" size="lg">See our work</Button>
+    </Fragment>
+
+    <HeroPanel slot="aside" footerLabel="Questions first?" footerHref="/contact" footerCta="Message us free">
+      <HeroPanelBlock label="How it works">
+        <ol class="space-y-3 text-body-sm text-body">
+          <li class="flex gap-3"><span class="font-mono text-caption text-mute">01</span>Pick a service and pay the {fee} booking</li>
+          <li class="flex gap-3"><span class="font-mono text-caption text-mute">02</span>Choose a Google Meet or Teams slot</li>
+          <li class="flex gap-3"><span class="font-mono text-caption text-mute">03</span>Get a fixed written quote in 3 business days</li>
+          <li class="flex gap-3"><span class="font-mono text-caption text-mute">04</span>{fee} credited to the project — or refunded</li>
+        </ol>
+      </HeroPanelBlock>
+      <HeroPanelBlock label="All prices" surface="soft">
+        <p class="text-body-sm text-body">In INR, excluding 18% GST. Ad spend and third-party fees are paid directly by you.</p>
+      </HeroPanelBlock>
+    </HeroPanel>
+  </PageHero>
+
+  <Section surface="canvas" spacing="tight" as="section">
+    <Reveal class="max-w-2xl">
+      <Eyebrow class="mb-4">Software &amp; AI engineering</Eyebrow>
+      <h2 class="text-display-lg">Development pricing</h2>
+    </Reveal>
+    <div class="price-groups mt-10">
+      {
+        engineering.map((group) => (
+          <Reveal>
+            <h3 class="text-display-sm">{group.label}</h3>
+            <p class="mt-1 text-body-sm text-mute">{group.blurb}</p>
+            <ul class="mt-4 divide-y divide-hairline rounded-lg bg-canvas shadow-level-1">
+              {group.rows.map((row) => (
+                <li class="price-row grid gap-2 p-5 md:items-center">
+                  <a href={row.href} class="text-body-md font-medium text-ink hover:text-link">{row.name}</a>
+                  <span class="text-body-sm text-body">{row.price!.includes}</span>
+                  <span class="price-cell"><PriceTag inr={row.price!.inr} unit={row.price!.unit} prefix="From" /></span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section surface="soft" spacing="tight" as="section" divided>
+    <Reveal class="max-w-2xl">
+      <Eyebrow class="mb-4">Websites, e-commerce &amp; marketing</Eyebrow>
+      <h2 class="text-display-lg">Digital services pricing</h2>
+    </Reveal>
+    <div class="price-groups mt-10">
+      {
+        marketing.map((group) => (
+          <Reveal>
+            <h3 class="text-display-sm">{group.label}</h3>
+            <p class="mt-1 text-body-sm text-mute">{group.blurb}</p>
+            <ul class="mt-4 divide-y divide-hairline rounded-lg bg-canvas shadow-level-1">
+              {group.rows.map((row) => (
+                <li class="price-row grid gap-2 p-5 md:items-center">
+                  <a href={row.href} class="text-body-md font-medium text-ink hover:text-link">{row.name}</a>
+                  <span class="text-body-sm text-body">{row.price!.includes}</span>
+                  <span class="price-cell"><PriceTag inr={row.price!.inr} unit={row.price!.unit} prefix="From" /></span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section surface="canvas" spacing="tight" as="section" divided>
+    <Reveal class="max-w-2xl">
+      <Eyebrow class="mb-4">FAQ</Eyebrow>
+      <h2 class="text-display-lg">Booking, refunds and payment</h2>
+    </Reveal>
+    <Reveal class="mt-8 max-w-3xl">
+      {
+        faqs.map((faq) => (
+          <Accordion question={faq.question} headingLevel="h3">
+            {faq.answer}
+          </Accordion>
+        ))
+      }
+      <p class="mt-6 text-body-sm text-mute">
+        The binding terms are in our{' '}<a href="/refund" class="text-link hover:underline">refund policy</a>.
+      </p>
+    </Reveal>
+  </Section>
+
+  <BookingCTA />
+</BaseLayout>
+
+<style>
+  /* Page-scoped: keeps the shared stylesheet byte-identical for other pages. */
+  .price-groups > * + * { margin-top: 3rem; }
+  @media (min-width: 768px) {
+    .price-row { grid-template-columns: minmax(0, 14rem) minmax(0, 1fr) auto; column-gap: 1.5rem; }
+    .price-cell { text-align: right; }
+  }
+</style>

@@ -9,6 +9,7 @@ import {
   getArticlesInCategory,
 } from '@/lib/blog';
 import { getAllIndustrySlugs, industryPath } from '@/lib/industries';
+import { workPath, workProjects } from '@/lib/work';
 
 /**
  * Ported from the reference's src/app/sitemap.ts.
@@ -55,12 +56,16 @@ const staticPages: Entry[] = [
   { path: '/digital-marketing', priority: 0.8, changefreq: 'monthly' },
   { path: '/industries', priority: 0.85, changefreq: 'monthly' },
   { path: '/projects', priority: 0.9, changefreq: 'monthly' },
+  // Live portfolio + the two conversion pages added with it.
+  { path: '/work', priority: 0.9, changefreq: 'monthly', lastmod: '2026-10-14' },
+  { path: '/pricing', priority: 0.9, changefreq: 'monthly', lastmod: '2026-10-14' },
+  { path: '/start', priority: 0.7, changefreq: 'yearly', lastmod: '2026-10-14' },
   { path: '/about', priority: 0.8, changefreq: 'monthly' },
   { path: '/contact', priority: 0.85, changefreq: 'monthly' },
   { path: '/blog', priority: 0.8, changefreq: 'daily' },
   { path: '/privacy', priority: 0.3, changefreq: 'yearly' },
   { path: '/terms', priority: 0.3, changefreq: 'yearly' },
-  { path: '/refund', priority: 0.3, changefreq: 'yearly' },
+  { path: '/refund', priority: 0.3, changefreq: 'yearly', lastmod: '2026-10-14' },
 ];
 
 export const GET: APIRoute = () => {
@@ -105,6 +110,13 @@ export const GET: APIRoute = () => {
         lastmod: newest === undefined ? undefined : isoDay(new Date(newest)),
       };
     }),
+    // One case study per live build. Commercial pages with their own keyword.
+    ...workProjects.map((p) => ({
+      path: workPath(p.slug),
+      priority: 0.8,
+      changefreq: 'monthly' as const,
+      lastmod: '2026-10-14',
+    })),
     ...articles.map((article) => ({
       path: `/blog/${article.slug}`,
       priority: 0.6,

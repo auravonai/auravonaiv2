@@ -1,0 +1,48 @@
+---
+import { formatInr, UNIT_SUFFIX, type PriceUnit } from '@/lib/pricing';
+
+/**
+ * "Starting from ₹24,999" — server-rendered in INR so crawlers, no-JS
+ * visitors and the first paint all see the real figure. `public/js/currency.js`
+ * rewrites only the number span, and only after a visitor has picked a
+ * different currency, so INR pages ship with zero layout shift and no network
+ * request. Pages that show prices must include one CurrencyLoader (via
+ * CurrencySelect, or directly as ServicesGrid does).
+ */
+interface Props {
+  inr: number;
+  unit?: PriceUnit;
+  /** `inline` sits in running text; `badge` is the hero / card chip. */
+  variant?: 'inline' | 'badge' | 'large';
+  prefix?: string;
+  class?: string;
+}
+
+const {
+  inr,
+  unit = 'project',
+  variant = 'inline',
+  prefix = 'Starting from',
+  class: className,
+} = Astro.props;
+
+const styles = {
+  inline: 'text-body-sm text-body',
+  badge:
+    'inline-flex items-center gap-1.5 rounded-full bg-canvas px-3 py-1 text-body-sm text-body shadow-level-1',
+  large: 'text-body-md text-body',
+} as const;
+---
+
+<span class:list={[styles[variant], className]} data-price>
+  {prefix && <span class="text-mute">{prefix} </span>}
+  <strong
+    class:list={[
+      'text-ink tabular-nums',
+      variant === 'large' && 'text-display-sm',
+    ]}
+    style="font-weight:600"
+    data-inr={inr}>{formatInr(inr)}</strong
+  >{UNIT_SUFFIX[unit] && <span class="text-mute">{UNIT_SUFFIX[unit]}</span>}
+  <span class="text-mute" data-gst> + GST</span>
+</span>

@@ -51,3 +51,15 @@
 # more likely to change than artwork.
 /site.webmanifest
   Cache-Control: public, max-age=604800
+
+# Portfolio media (walkthrough videos, posters, screenshots). Not content-
+# hashed, so 30 days rather than immutable — re-recording a walkthrough at the
+# same path propagates within a month. Videos are served with byte ranges by
+# Cloudflare, which is what lets <video> seek and start without a full download.
+/media/*
+  Cache-Control: public, max-age=2592000
+
+# On-demand currency converter. Fixed path (loaded by an inline import()),
+# so a short TTL lets edits propagate within a day.
+/js/*
+  Cache-Control: public, max-age=86400

@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { workPath, workProjects } from '@/lib/work';
 
 import { SITE_URL } from '@/lib/site';
 import { serviceCategories, servicesByCategory } from '@/lib/services';
@@ -77,9 +78,12 @@ function buildLlmsTxt(): string {
   lines.push(link('Services', '/services', 'AI and software engineering catalogue'));
   lines.push(link(MARKETING_LABEL, marketingPath(), 'The digital marketing practice'));
   lines.push(link('Industries', '/industries', 'Sectors we build for and their constraints'));
+  lines.push(link('Work', '/work', 'Eight live builds with video walkthroughs and prices'));
+  lines.push(link('Pricing', '/pricing', 'Starting price for every service, in INR'));
   lines.push(link('Projects', '/projects', 'Systems we have designed and shipped'));
   lines.push(link('Blog', '/blog', 'Engineering notes on AI and software in production'));
-  lines.push(link('Contact', '/contact', 'Start a project or ask a question'));
+  lines.push(link('Contact', '/contact', 'Ask a question free by WhatsApp or email'));
+  lines.push(link('Start a project', '/start', 'Book a scoping meeting (₹1,000, refundable)'));
   lines.push('');
 
   /* ── AI & software services ──────────────────────────────────────── */
@@ -108,6 +112,14 @@ function buildLlmsTxt(): string {
     for (const sub of category.subServices) {
       lines.push(link(sub.label, marketingPath(sub.slug), sub.menuDescription));
     }
+  }
+  lines.push('');
+
+  /* ── Live work ───────────────────────────────────────────────────── */
+  lines.push('## Live work');
+  lines.push('');
+  for (const project of workProjects) {
+    lines.push(link(project.name, workPath(project.slug), project.tagline));
   }
   lines.push('');
 

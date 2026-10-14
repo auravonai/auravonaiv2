@@ -1,0 +1,40 @@
+---
+import CurrencyLoader from '@/components/pricing/CurrencyLoader.astro';
+
+/**
+ * Currency picker. Any number can appear on a page; they stay in sync.
+ * Server-rendered with INR selected — the script restores a saved choice.
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+const id = `currency-${Math.random().toString(36).slice(2, 8)}`;
+
+// Keep in sync with FALLBACK in public/js/currency.js.
+const names: Record<string, string> = {
+  INR: 'INR ₹ — Indian Rupee',
+  USD: 'USD $ — US Dollar',
+  EUR: 'EUR € — Euro',
+  GBP: 'GBP £ — British Pound',
+  AED: 'AED — UAE Dirham',
+  SAR: 'SAR — Saudi Riyal',
+  AUD: 'AUD $ — Australian Dollar',
+  CAD: 'CAD $ — Canadian Dollar',
+  SGD: 'SGD $ — Singapore Dollar',
+};
+---
+
+<div class:list={['inline-flex items-center gap-2', className]}>
+  <label for={id} class="text-body-sm text-mute">Show prices in</label>
+  <select
+    id={id}
+    data-currency-select
+    class="rounded-sm bg-canvas px-2.5 py-1.5 text-body-sm text-ink shadow-level-1 focus:shadow-[inset_0_0_0_1px_var(--color-link)]"
+  >
+    {Object.entries(names).map(([code, name]) => <option value={code}>{name}</option>)}
+  </select>
+</div>
+
+<CurrencyLoader />

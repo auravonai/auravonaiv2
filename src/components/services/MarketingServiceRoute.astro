@@ -7,6 +7,7 @@ import {
 } from '@/lib/digital-agency-data';
 import { MARKETING_LABEL, marketingPath } from '@/lib/marketing';
 import { ORG_ID, webPageSchema } from '@/lib/seo';
+import { marketingPrice, offerSchema } from '@/lib/pricing';
 
 /**
  * The 34 digital-marketing service pages under `/digital-marketing/[slug]`.
@@ -56,6 +57,8 @@ const serviceSchema = {
   serviceType: category?.label ?? service.title,
   areaServed: service.locations.map((l) => ({ '@type': 'Place', name: l })),
   isPartOf: { '@id': `${url}#webpage` },
+  // Same figure the hero renders — see lib/pricing.ts.
+  ...(marketingPrice(slug) ? { offers: offerSchema(marketingPrice(slug)!, url) } : {}),
 };
 
 /**
