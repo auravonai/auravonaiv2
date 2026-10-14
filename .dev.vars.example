@@ -1,0 +1,5 @@
+# Copy to .dev.vars and fill in. Upload to Cloudflare with:
+#   npx wrangler secret bulk .dev.vars
+RAZORPAY_KEY_ID=rzp_test_xxxxxxxxxxxxxx
+RAZORPAY_KEY_SECRET=xxxxxxxxxxxxxxxxxxxxxxxx
+CALENDLY_URL=https://calendly.com/your-name/your-secret-event
