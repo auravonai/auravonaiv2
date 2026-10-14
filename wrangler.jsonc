@@ -22,6 +22,12 @@
   "compatibility_date": "2026-04-15",
   "main": "./worker/index.ts",
 
+  // Serve ONLY on auravonai.com. No public *.workers.dev copy of the site
+  // (a duplicate-content and security liability) and no per-version preview
+  // URLs. Custom-domain routing is managed in the Cloudflare dashboard.
+  "workers_dev": false,
+  "preview_urls": false,
+
   "assets": {
     // ./dist, not ./dist/client — the adapter's two-directory split went away
     // with the adapter. Astro writes a flat static build here now.
